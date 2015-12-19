@@ -1,0 +1,8 @@
+{
+  "name": "echo-go",
+  "description": "Echo request example",
+  "runtime": "golang",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::293503197324:role/lambda"
+}

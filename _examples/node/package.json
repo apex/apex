@@ -1,0 +1,8 @@
+{
+  "name": "echo-node",
+  "description": "Echo request example",
+  "runtime": "nodejs",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::293503197324:role/lambda"
+}
