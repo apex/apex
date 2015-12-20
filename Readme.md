@@ -1,7 +1,7 @@
 
 # Apex
 
-Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.com/lambda/) functions. With shims for languages not yet supported by Lambda, you can use Golang, Ruby, and others out of the box.
+Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.com/lambda/) functions. With shims for languages not yet supported by Lambda, you can use Golang out of the box.
 
 ## Installation
 
@@ -22,9 +22,9 @@ Currently supports:
 ## Features
 
 - Supports languages Lambda does not natively support via shim
-- Transparently generates a zip for your deploy
 - Binary install (useful for continuous deployment in CI etc)
 - Command-line function invocation with JSON streams
+- Transparently generates a zip for your deploy
 
 ## Example
 
