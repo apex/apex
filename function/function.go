@@ -59,6 +59,7 @@ type Config struct {
 	Memory      int64  `json:"memory"`
 	Timeout     int64  `json:"timeout"`
 	Role        string `json:"role"`
+	Main        string `json:"main"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -209,7 +210,7 @@ func (f *Function) Zip() (io.Reader, error) {
 	zip := archive.NewZipWriter(buf)
 
 	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		if err := r.Compile(); err != nil {
+		if err := r.Compile(f.Main); err != nil {
 			return nil, fmt.Errorf("compiling: %s", err)
 		}
 	}

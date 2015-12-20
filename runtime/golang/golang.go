@@ -1,6 +1,7 @@
 package golang
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 )
@@ -19,8 +20,12 @@ func (r *Runtime) Handler() string {
 	return "index.handle"
 }
 
-func (r *Runtime) Compile() error {
-	cmd := exec.Command("sh", "-c", `GOOS=linux GOARCH=amd64 go build -o main main.go`)
+func (r *Runtime) Compile(target string) error {
+	if target == "" {
+		target = "main.go"
+	}
+
+	cmd := exec.Command("sh", "-c", fmt.Sprintf(`GOOS=linux GOARCH=amd64 go build -o main %s`, target))
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
