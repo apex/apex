@@ -56,7 +56,7 @@ Deploy the function:
 $ apex deploy
 ```
 
-Create a file with a sample request in "request.js":
+Create a file with a sample request in "request.json":
 
 ```js
 {
