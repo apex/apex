@@ -106,6 +106,7 @@ func invoke(fn *function.Function, verbose bool) {
 		}
 
 		io.Copy(os.Stdout, reply)
+		fmt.Fprintf(os.Stdout, "\n")
 	}
 }
 
