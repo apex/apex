@@ -11,6 +11,14 @@ Download [binaries](https://github.com/apex/apex/releases) or:
 $ go get github.com/apex/apex/...
 ```
 
+## Runtimes
+
+Currently supports:
+
+- Nodejs
+- Golang
+- Python
+
 ## Example
 
 This example shows how you can use Apex to launch a simple Node.js echo function.
