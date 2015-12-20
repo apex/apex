@@ -38,7 +38,7 @@ exports.handle = function(e, ctx) {
 }
 ```
 
-Next create a "package.json" with the function name a configuration:
+Next create a "lambda.json" with the function name a configuration:
 
 ```json
 {

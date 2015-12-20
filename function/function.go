@@ -52,7 +52,7 @@ type Config struct {
 }
 
 // Function represents a Lambda function, with configuration loaded
-// from the "package.json" file on disk. Operations are performed
+// from the "lambda.json" file on disk. Operations are performed
 // against the function directory as the CWD, so os.Chdir() first.
 type Function struct {
 	Config
@@ -61,9 +61,9 @@ type Function struct {
 	runtime runtime.Runtime
 }
 
-// Open the package.json file and prime the config.
+// Open the lambda.json file and prime the config.
 func (f *Function) Open() error {
-	p, err := os.Open(filepath.Join(f.Path, "package.json"))
+	p, err := os.Open(filepath.Join(f.Path, "lambda.json"))
 	if err != nil {
 		return err
 	}
