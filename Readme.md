@@ -30,7 +30,7 @@ Currently supports:
 
 This example shows how you can use Apex to launch a simple Node.js echo function.
 
-First create the function implementation in "index.js".
+First create the function implementation in "index.js":
 
 ```js
 exports.handle = function(e, ctx) {
@@ -50,13 +50,13 @@ Next create a "package.json" with the function name a configuration:
 }
 ```
 
-Create and deploy the function:
+Deploy the function:
 
 ```
 $ apex deploy
 ```
 
-Create a file with a sample request "request.js":
+Create a file with a sample request in "request.js":
 
 ```js
 {
