@@ -94,13 +94,18 @@ $ echo -n '{ "event": { "user": "{{name}}" } }' | phony | apex invoke
 ...
 ```
 
-## Environment variables
+## Credentials
 
-Currently the following environment variables are used:
+Via environment variables:
 
 - `AWS_ACCESS_KEY` AWS account access key
 - `AWS_SECRET_KEY` AWS account secret key
 - `AWS_REGION` AWS region
+
+Via ~/.aws configuration:
+
+- `AWS_PROFILE` profile name to use
+- `AWS_REGION` AWS region (aws-sdk-go does not read ~/.aws/config)
 
 ## Links
 
