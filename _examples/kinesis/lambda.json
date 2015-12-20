@@ -1,0 +1,8 @@
+{
+  "name": "kinesis",
+  "description": "Kinesis consumer example",
+  "runtime": "golang",
+  "memory": 128,
+  "timeout": 15,
+  "role": "arn:aws:iam::293503197324:role/lambda"
+}
