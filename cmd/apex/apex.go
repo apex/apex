@@ -19,12 +19,13 @@ var version = "0.0.2"
 const usage = `
   Usage:
     apex deploy [-C path]
-    apex invoke [-C path] [-v]
+    apex invoke [-C path] [--async] [-v]
     apex zip [-C path]
     apex -h | --help
     apex --version
 
   Options:
+    -a, --async        Async invocation
     -C, --chdir path   Working directory
     -h, --help         Output help information
     -v, --verbose      Output verbose logs
@@ -69,15 +70,20 @@ func main() {
 	case args["deploy"].(bool):
 		deploy(fn)
 	case args["invoke"].(bool):
-		invoke(fn, args["--verbose"].(bool))
+		invoke(fn, args["--verbose"].(bool), args["--async"].(bool))
 	case args["zip"].(bool):
 		zip(fn)
 	}
 }
 
 // invoke reads request json from stdin and outputs the responses.
-func invoke(fn *function.Function, verbose bool) {
+func invoke(fn *function.Function, verbose, async bool) {
 	dec := json.NewDecoder(os.Stdin)
+	kind := function.RequestResponse
+
+	if async {
+		kind = function.Event
+	}
 
 	for {
 		var v struct {
@@ -95,7 +101,7 @@ func invoke(fn *function.Function, verbose bool) {
 			log.Fatalf("error: %s", err)
 		}
 
-		reply, logs, err := fn.Request(v.Event, v.Context)
+		reply, logs, err := fn.Invoke(v.Event, v.Context, kind)
 		if err != nil {
 			log.Fatalf("error: %s", err)
 		}

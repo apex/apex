@@ -28,6 +28,16 @@ var (
 	ErrUnchanged = errors.New("function: unchanged")
 )
 
+// InvocationType determines how an invocation request is made.
+type InvocationType string
+
+// Invocation types.
+const (
+	RequestResponse InvocationType = "RequestResponse"
+	Event                          = "Event"
+	DryRun                         = "DryRun"
+)
+
 // InvokeError records an error from an invocation.
 type InvokeError struct {
 	Message string   `json:"errorMessage"`
@@ -147,8 +157,8 @@ func (f *Function) Create(zip []byte) error {
 	return err
 }
 
-// Request invokes the remote Lambda function, returning the response and logs.
-func (f *Function) Request(event, context interface{}) (reply, logs io.Reader, err error) {
+// Invoke the remote Lambda function, returning the response and logs, if any.
+func (f *Function) Invoke(event, context interface{}, kind InvocationType) (reply, logs io.Reader, err error) {
 	eventBytes, err := json.Marshal(event)
 	if err != nil {
 		return nil, nil, err
@@ -162,7 +172,7 @@ func (f *Function) Request(event, context interface{}) (reply, logs io.Reader, e
 	res, err := f.Service.Invoke(&lambda.InvokeInput{
 		ClientContext:  aws.String(base64.StdEncoding.EncodeToString(contextBytes)),
 		FunctionName:   aws.String(f.Name),
-		InvocationType: aws.String("RequestResponse"),
+		InvocationType: aws.String(string(kind)),
 		LogType:        aws.String("Tail"),
 		Qualifier:      aws.String("$LATEST"),
 		Payload:        eventBytes,
@@ -182,6 +192,10 @@ func (f *Function) Request(event, context interface{}) (reply, logs io.Reader, e
 		}
 
 		return nil, nil, e
+	}
+
+	if kind == Event {
+		return bytes.NewReader(nil), bytes.NewReader(nil), nil
 	}
 
 	logs = base64.NewDecoder(base64.StdEncoding, strings.NewReader(*res.LogResult))
