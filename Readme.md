@@ -19,6 +19,13 @@ Currently supports:
 - Golang
 - Python
 
+## Features
+
+- Supports languages Lambda does not natively support via shim
+- Transparently generates a zip for your deploy
+- Binary install (useful for continuous deployment in CI etc)
+- Command-line function invocation with JSON streams
+
 ## Example
 
 This example shows how you can use Apex to launch a simple Node.js echo function.
