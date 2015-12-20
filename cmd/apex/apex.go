@@ -102,7 +102,6 @@ func invoke(fn *function.Function, verbose bool) {
 
 		if verbose {
 			io.Copy(os.Stderr, logs)
-			fmt.Fprintf(os.Stderr, "\n")
 		}
 
 		io.Copy(os.Stdout, reply)
