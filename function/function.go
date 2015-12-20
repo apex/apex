@@ -13,8 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/apex/apex/node"
 	"github.com/apex/apex/runtime"
+	"github.com/apex/apex/shim"
 	"github.com/apex/apex/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -201,8 +201,8 @@ func (f *Function) Zip() (io.Reader, error) {
 	}
 
 	if f.runtime.Shimmed() {
-		zip.AddBytes("index.js", node.MustAsset("index.js"))
-		zip.AddBytes("byline.js", node.MustAsset("byline.js"))
+		zip.AddBytes("index.js", shim.MustAsset("index.js"))
+		zip.AddBytes("byline.js", shim.MustAsset("byline.js"))
 	}
 
 	if err := zip.AddDir(f.Path); err != nil {
