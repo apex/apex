@@ -61,6 +61,24 @@ $ apex invoke < request.json
 {"hello":"world"}
 ```
 
+## Streaming input
+
+The `invoke` sub-command allows you to stream input over stdin:
+
+```
+$ apex invoke < request.json
+```
+
+This not only works for single requests, but for multiple, as shown in the following example using [phony(1)](https://github.com/yields/phony):
+
+```
+$ echo -n '{ "event": { "user": "{{name}}" } }' | phony | apex invoke
+{"user":"Delmer Malone"}
+{"user":"Jc Reeves"}
+{"user":"Luna Fletcher"}
+...
+```
+
 ## Environment variables
 
 Currently the following environment variables are used:
