@@ -136,7 +136,7 @@ func (f *Function) Create(zip []byte) error {
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
 		Runtime:      aws.String(f.runtime.Name()),
-		Handler:      aws.String("index.handle"),
+		Handler:      aws.String(f.runtime.Handler()),
 		Role:         aws.String(f.Role),
 		Publish:      aws.Bool(true),
 		Code: &lambda.FunctionCode{

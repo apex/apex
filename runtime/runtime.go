@@ -7,6 +7,7 @@ import (
 
 	"github.com/apex/apex/runtime/golang"
 	"github.com/apex/apex/runtime/nodejs"
+	"github.com/apex/apex/runtime/python"
 )
 
 // Runtime is a language runtime.
@@ -14,6 +15,9 @@ type Runtime interface {
 	// Name returns the canonical runtime to be used, for example
 	// since Go must be run as a shim, this is "nodejs", not "golang".
 	Name() string
+
+	// Handler returns the handler name for the runtime in the form "<file>.<func>".
+	Handler() string
 
 	// Shimmed returns true if the program should be shimmed.
 	Shimmed() bool
@@ -27,6 +31,7 @@ type CompiledRuntime interface {
 // runtimes map by name.
 var runtimes = map[string]Runtime{
 	"nodejs": &nodejs.Runtime{},
+	"python": &python.Runtime{},
 	"golang": &golang.Runtime{},
 }
 

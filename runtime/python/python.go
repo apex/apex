@@ -1,13 +1,13 @@
-package nodejs
+package python
 
 type Runtime struct{}
 
 func (r *Runtime) Name() string {
-	return "nodejs"
+	return "python2.7"
 }
 
 func (r *Runtime) Handler() string {
-	return "index.handle"
+	return "main.handle"
 }
 
 func (r *Runtime) Shimmed() bool {

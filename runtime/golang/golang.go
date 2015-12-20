@@ -15,6 +15,10 @@ func (r *Runtime) Shimmed() bool {
 	return true
 }
 
+func (r *Runtime) Handler() string {
+	return "index.handle"
+}
+
 func (r *Runtime) Compile() error {
 	cmd := exec.Command("sh", "-c", `GOOS=linux GOARCH=amd64 go build -o main main.go`)
 	cmd.Stderr = os.Stderr
