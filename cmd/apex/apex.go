@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/apex/apex/function"
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,18 +19,19 @@ var version = "0.0.2"
 
 const usage = `
   Usage:
-    apex deploy [-C path]
+    apex deploy [-C path] [--env name=val]...
     apex invoke [-C path] [--async] [-v]
     apex zip [-C path]
     apex -h | --help
     apex --version
 
   Options:
-    -a, --async        Async invocation
-    -C, --chdir path   Working directory
-    -h, --help         Output help information
-    -v, --verbose      Output verbose logs
-    -V, --version      Output version
+    -e, --env name=val  Environment variable
+    -a, --async         Async invocation
+    -C, --chdir path    Working directory
+    -h, --help          Output help information
+    -v, --verbose       Output verbose logs
+    -V, --version       Output version
 
   Examples:
     Deploy a function in the current directory
@@ -68,7 +70,7 @@ func main() {
 
 	switch {
 	case args["deploy"].(bool):
-		deploy(fn)
+		deploy(fn, args["--env"].([]string))
 	case args["invoke"].(bool):
 		invoke(fn, args["--verbose"].(bool), args["--async"].(bool))
 	case args["zip"].(bool):
@@ -116,7 +118,12 @@ func invoke(fn *function.Function, verbose, async bool) {
 }
 
 // deploy creates or updates the function.
-func deploy(fn *function.Function) {
+func deploy(fn *function.Function, env []string) {
+	for _, s := range env {
+		parts := strings.Split(s, "=")
+		fn.SetEnv(parts[0], parts[1])
+	}
+
 	if err := fn.Deploy(); err != nil && err != function.ErrUnchanged {
 		log.Fatalf("error: %s", err)
 	}

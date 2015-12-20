@@ -70,6 +70,7 @@ type Function struct {
 	Path    string
 	Service lambdaiface.LambdaAPI
 	runtime runtime.Runtime
+	env     map[string]string
 }
 
 // Open the lambda.json file and prime the config.
@@ -90,6 +91,14 @@ func (f *Function) Open() error {
 	f.runtime = r
 
 	return nil
+}
+
+// SetEnv sets environment variable `name` to `value`.
+func (f *Function) SetEnv(name, value string) {
+	if f.env == nil {
+		f.env = make(map[string]string)
+	}
+	f.env[name] = value
 }
 
 // Deploy generates a zip and creates or updates the function.
@@ -212,6 +221,14 @@ func (f *Function) Zip() (io.Reader, error) {
 	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
 		if err := r.Compile(f.Main); err != nil {
 			return nil, fmt.Errorf("compiling: %s", err)
+		}
+	}
+
+	if f.env != nil {
+		if b, err := json.Marshal(f.env); err != nil {
+			return nil, err
+		} else {
+			zip.AddBytes(".env.json", b)
 		}
 	}
 
