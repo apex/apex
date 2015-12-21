@@ -127,6 +127,8 @@ func deploy(fn *function.Function, env []string) {
 	if err := fn.Deploy(); err != nil && err != function.ErrUnchanged {
 		log.Fatalf("error: %s", err)
 	}
+
+	fn.Clean()
 }
 
 // zip outputs the generated archive to stdout.

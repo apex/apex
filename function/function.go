@@ -213,13 +213,21 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 	return reply, logs, nil
 }
 
+// Clean removes build artifacts from compiled runtimes.
+func (f *Function) Clean() error {
+	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
+		return r.Clean()
+	}
+	return nil
+}
+
 // Zip returns the zipped contents of the function.
 func (f *Function) Zip() (io.Reader, error) {
 	buf := new(bytes.Buffer)
 	zip := archive.NewZipWriter(buf)
 
 	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		if err := r.Compile(f.Main); err != nil {
+		if err := r.Build(f.Main); err != nil {
 			return nil, fmt.Errorf("compiling: %s", err)
 		}
 	}

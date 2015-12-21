@@ -20,7 +20,7 @@ func (r *Runtime) Handler() string {
 	return "index.handle"
 }
 
-func (r *Runtime) Compile(target string) error {
+func (r *Runtime) Build(target string) error {
 	if target == "" {
 		target = "main.go"
 	}
@@ -28,4 +28,8 @@ func (r *Runtime) Compile(target string) error {
 	cmd := exec.Command("sh", "-c", fmt.Sprintf(`GOOS=linux GOARCH=amd64 go build -o main %s`, target))
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func (r *Runtime) Clean() error {
+	return os.Remove("main")
 }
