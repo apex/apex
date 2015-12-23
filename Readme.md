@@ -1,5 +1,5 @@
 
-# Apex
+![Apex Serverless Architecture](assets/logo.png)
 
 Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.com/lambda/) functions. With shims for languages not yet supported by Lambda, you can use Golang out of the box.
 
