@@ -8,7 +8,7 @@ Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.
 Download [binaries](https://github.com/apex/apex/releases) or:
 
 ```
-$ go get github.com/apex/apex/...
+$ go get github.com/apex/apex/cmd/apex
 ```
 
 ## Runtimes
