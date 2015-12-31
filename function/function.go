@@ -130,6 +130,15 @@ func (f *Function) Deploy() error {
 	return f.Update(zip)
 }
 
+// Delete the function including all its versions
+func (f *Function) Delete() error {
+	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
+		FunctionName: &f.Name,
+	})
+
+	return err
+}
+
 // Info returns the function information.
 func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
 	return f.Service.GetFunction(&lambda.GetFunctionInput{

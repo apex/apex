@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/segmentio/go-prompt"
 	"github.com/tj/docopt"
 )
 
@@ -20,6 +21,7 @@ var version = "0.0.2"
 const usage = `
   Usage:
     apex deploy [-C path] [--env name=val]...
+    apex delete [-C path] [-y]
     apex invoke [-C path] [--async] [-v]
     apex zip [-C path]
     apex -h | --help
@@ -29,6 +31,7 @@ const usage = `
     -e, --env name=val  Environment variable
     -a, --async         Async invocation
     -C, --chdir path    Working directory
+    -y, --yes           Automatic yes to prompts
     -h, --help          Output help information
     -v, --verbose       Output verbose logs
     -V, --version       Output version
@@ -36,6 +39,9 @@ const usage = `
   Examples:
     Deploy a function in the current directory
     $ apex deploy
+
+    Delete a function in the current directory
+    $ apex delete
 
     Invoke a function in the current directory
     $ apex invoke < request.json
@@ -71,6 +77,10 @@ func main() {
 	switch {
 	case args["deploy"].(bool):
 		deploy(fn, args["--env"].([]string))
+	case args["delete"].(bool):
+		if args["--yes"].(bool) || prompt.Confirm("Are you sure? [yes/no]") {
+			delete(fn)
+		}
 	case args["invoke"].(bool):
 		invoke(fn, args["--verbose"].(bool), args["--async"].(bool))
 	case args["zip"].(bool):
@@ -129,6 +139,13 @@ func deploy(fn *function.Function, env []string) {
 	}
 
 	fn.Clean()
+}
+
+// delete the function.
+func delete(fn *function.Function) {
+	if err := fn.Delete(); err != nil {
+		log.Fatalf("error: %s", err)
+	}
 }
 
 // zip outputs the generated archive to stdout.
