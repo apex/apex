@@ -23,7 +23,7 @@ const usage = `
     apex deploy [-C path] [--env name=val]... [-v]
     apex delete [-C path] [-y] [-v]
     apex invoke [-C path] [--async] [-v]
-    apex zip [-C path] [-v]
+    apex build [-C path] [-v]
     apex -h | --help
     apex --version
 
@@ -50,7 +50,7 @@ const usage = `
     $ apex deploy -C functions/hello-world
 
     Output zip of a function in the current directory
-    $ apex zip > /tmp/out.zip
+    $ apex build > /tmp/out.zip
 `
 
 func main() {
@@ -84,8 +84,8 @@ func main() {
 		}
 	case args["invoke"].(bool):
 		invoke(fn, args["--verbose"].(bool), args["--async"].(bool))
-	case args["zip"].(bool):
-		zip(fn)
+	case args["build"].(bool):
+		build(fn)
 	}
 }
 
@@ -149,8 +149,8 @@ func delete(fn *function.Function) {
 	}
 }
 
-// zip outputs the generated archive to stdout.
-func zip(fn *function.Function) {
+// build outputs the generated archive to stdout.
+func build(fn *function.Function) {
 	zip, err := fn.Zip()
 	if err != nil {
 		log.Fatalf("error: %s", err)
