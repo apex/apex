@@ -20,10 +20,10 @@ var version = "0.0.2"
 
 const usage = `
   Usage:
-    apex deploy [-C path] [--env name=val]...
-    apex delete [-C path] [-y]
+    apex deploy [-C path] [--env name=val]... [-v]
+    apex delete [-C path] [-y] [-v]
     apex invoke [-C path] [--async] [-v]
-    apex zip [-C path]
+    apex zip [-C path] [-v]
     apex -h | --help
     apex --version
 
@@ -61,6 +61,7 @@ func main() {
 
 	fn := &function.Function{
 		Service: lambda.New(session.New(aws.NewConfig())),
+		Verbose: args["--verbose"].(bool),
 		Path:    ".",
 	}
 

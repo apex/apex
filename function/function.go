@@ -20,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
+	"github.com/dustin/go-humanize"
 	"github.com/jpillora/archive"
 )
 
@@ -68,9 +69,17 @@ type Config struct {
 type Function struct {
 	Config
 	Path    string
+	Verbose bool
 	Service lambdaiface.LambdaAPI
 	runtime runtime.Runtime
 	env     map[string]string
+}
+
+// log output when verbose output is enabled.
+func (f *Function) log(msg string, v ...interface{}) {
+	if f.Verbose {
+		fmt.Fprintf(os.Stderr, "  [%s] %s\n", f.Name, fmt.Sprintf(msg, v...))
+	}
 }
 
 // Open the lambda.json file and prime the config.
@@ -103,6 +112,8 @@ func (f *Function) SetEnv(name, value string) {
 
 // Deploy generates a zip and creates or updates the function.
 func (f *Function) Deploy() error {
+	f.log("deploying")
+
 	zip, err := f.ZipBytes()
 	if err != nil {
 		return err
@@ -124,6 +135,7 @@ func (f *Function) Deploy() error {
 	localHash := utils.Sha256(zip)
 
 	if localHash == remoteHash {
+		f.log("unchanged")
 		return ErrUnchanged
 	}
 
@@ -132,6 +144,8 @@ func (f *Function) Deploy() error {
 
 // Delete the function including all its versions
 func (f *Function) Delete() error {
+	f.log("deleting")
+
 	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
 		FunctionName: &f.Name,
 	})
@@ -141,6 +155,7 @@ func (f *Function) Delete() error {
 
 // Info returns the function information.
 func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
+	f.log("fetching config")
 	return f.Service.GetFunction(&lambda.GetFunctionInput{
 		FunctionName: &f.Name,
 	})
@@ -148,6 +163,8 @@ func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
 
 // Update the function with the given `zip`.
 func (f *Function) Update(zip []byte) error {
+	f.log("updating")
+
 	_, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &f.Name,
 		Publish:      aws.Bool(true),
@@ -159,6 +176,8 @@ func (f *Function) Update(zip []byte) error {
 
 // Create the function with the given `zip`.
 func (f *Function) Create(zip []byte) error {
+	f.log("creating")
+
 	_, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &f.Name,
 		Description:  &f.Description,
@@ -267,10 +286,18 @@ func (f *Function) Zip() (io.Reader, error) {
 
 // ZipBytes returns the generated zip as bytes.
 func (f *Function) ZipBytes() ([]byte, error) {
+	f.log("creating zip")
+
 	r, err := f.Zip()
 	if err != nil {
 		return nil, err
 	}
 
-	return ioutil.ReadAll(r)
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	f.log("created zip (%s)", humanize.Bytes(uint64(len(b))))
+	return b, nil
 }
