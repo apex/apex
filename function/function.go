@@ -152,6 +152,7 @@ func (f *Function) Deploy() error {
 // DeployConfig deploys changes to configuration.
 func (f *Function) DeployConfig() error {
 	f.log("deploying config")
+
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &f.Name,
 		MemorySize:   &f.Memory,
@@ -160,6 +161,7 @@ func (f *Function) DeployConfig() error {
 		Role:         aws.String(f.Role),
 		Handler:      aws.String(f.runtime.Handler()),
 	})
+
 	return err
 }
 
