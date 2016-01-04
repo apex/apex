@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDelete_Success(t *testing.T) {
+func TestFunction_Delete_success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
@@ -30,7 +30,7 @@ func TestDelete_Success(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestDelete_Failed(t *testing.T) {
+func TestFunction_Delete_failed(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
