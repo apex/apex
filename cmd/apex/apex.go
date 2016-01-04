@@ -7,10 +7,13 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/logs"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/segmentio/go-prompt"
 	"github.com/tj/docopt"
@@ -24,6 +27,7 @@ const usage = `
     apex delete [-C path] [-y] [-v]
     apex invoke [-C path] [--async] [-v]
     apex build [-C path] [-v]
+    apex logs
     apex -h | --help
     apex --version
 
@@ -51,12 +55,21 @@ const usage = `
 
     Output zip of a function in the current directory
     $ apex build > /tmp/out.zip
+
+    Tail Kinesis logs
+    $ apex logs
 `
 
 func main() {
 	args, err := docopt.Parse(usage, nil, true, version, false)
 	if err != nil {
 		log.Fatalf("error: %s", err)
+	}
+
+	switch {
+	case args["logs"].(bool):
+		tailLogs()
+		return
 	}
 
 	fn := &function.Function{
@@ -162,6 +175,26 @@ func build(fn *function.Function) {
 
 	_, err = io.Copy(os.Stdout, zip)
 	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
+
+// tail Kinesis logs for changes.
+// TODO(tj): parse json for display via apex/log
+func tailLogs() {
+	client := kinesis.New(session.New(aws.NewConfig()))
+
+	tailer := logs.Tailer{
+		Stream:       "logs",
+		Service:      client,
+		PollInterval: 500 * time.Millisecond,
+	}
+
+	for record := range tailer.Start() {
+		fmt.Printf("%s\n", record.Data)
+	}
+
+	if err := tailer.Err(); err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }
