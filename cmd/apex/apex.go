@@ -136,7 +136,11 @@ func deploy(fn *function.Function, env []string) {
 	}
 
 	if err := fn.Deploy(); err != nil && err != function.ErrUnchanged {
-		log.Fatalf("error: %s", err)
+		log.Fatalf("error deploying code: %s", err)
+	}
+
+	if err := fn.DeployConfig(); err != nil {
+		log.Fatalln("error deploying config: %s", err)
 	}
 
 	fn.Clean()
