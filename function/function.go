@@ -76,7 +76,14 @@ type Function struct {
 }
 
 // log output when verbose output is enabled.
-func (f *Function) log(msg string, v ...interface{}) {
+func (f *Function) log(msg string) {
+	if f.Verbose {
+		fmt.Fprintf(os.Stderr, "  [%s] %s\n", f.Name, msg)
+	}
+}
+
+// logf formats message and output when verbose output is enabled.
+func (f *Function) logf(msg string, v ...interface{}) {
 	if f.Verbose {
 		fmt.Fprintf(os.Stderr, "  [%s] %s\n", f.Name, fmt.Sprintf(msg, v...))
 	}
@@ -261,11 +268,12 @@ func (f *Function) Zip() (io.Reader, error) {
 	}
 
 	if f.env != nil {
-		if b, err := json.Marshal(f.env); err != nil {
+		b, err := json.Marshal(f.env)
+		if err != nil {
 			return nil, err
-		} else {
-			zip.AddBytes(".env.json", b)
 		}
+
+		zip.AddBytes(".env.json", b)
 	}
 
 	if f.runtime.Shimmed() {
@@ -298,6 +306,6 @@ func (f *Function) ZipBytes() ([]byte, error) {
 		return nil, err
 	}
 
-	f.log("created zip (%s)", humanize.Bytes(uint64(len(b))))
+	f.logf("created zip (%s)", humanize.Bytes(uint64(len(b))))
 	return b, nil
 }
