@@ -84,7 +84,7 @@ func TestFunction_Rollback_ListVersions_failed(t *testing.T) {
 	assert.EqualError(t, err, "API err")
 }
 
-func TestFunction_Rollback_not_enough_versions_deployed(t *testing.T) {
+func TestFunction_Rollback_fewVersions(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
@@ -103,7 +103,7 @@ func TestFunction_Rollback_not_enough_versions_deployed(t *testing.T) {
 	assert.EqualError(t, err, "Can't rollback. Only one version deployed.")
 }
 
-func TestFunction_Rollback_to_the_previous_version(t *testing.T) {
+func TestFunction_Rollback_previousVersion(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
@@ -132,7 +132,7 @@ func TestFunction_Rollback_to_the_previous_version(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestFunction_Rollback_to_the_latest_version(t *testing.T) {
+func TestFunction_Rollback_latestVersion(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
@@ -185,7 +185,7 @@ func TestFunction_Rollback_UpdateAlias_failed(t *testing.T) {
 	assert.EqualError(t, err, "API err")
 }
 
-func TestFunction_Rollback_to_the_same_version_failed(t *testing.T) {
+func TestFunction_Rollback_sameVersion(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
@@ -202,7 +202,7 @@ func TestFunction_Rollback_to_the_same_version_failed(t *testing.T) {
 	assert.EqualError(t, err, "Specified version currently deployed.")
 }
 
-func TestFunction_Rollback_to_the_specified_version(t *testing.T) {
+func TestFunction_Rollback_specifiedVersion(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
