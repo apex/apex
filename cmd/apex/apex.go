@@ -26,6 +26,7 @@ const usage = `
     apex deploy [-C path] [--env name=val]... [-v]
     apex delete [-C path] [-y] [-v]
     apex invoke [-C path] [--async] [-v]
+    apex rollback [-C path] [-v] [<version>]
     apex build [-C path] [-v]
     apex logs
     apex -h | --help
@@ -49,6 +50,12 @@ const usage = `
 
     Invoke a function in the current directory
     $ apex invoke < request.json
+
+    Rollback a function to the previous version (another call will go back to the latest version)
+    $ apex rollback
+
+    Rollback a function to the specified version (another call will go back to the latest version)
+    $ apex rollback 3
 
     Deploy a function in a different directory
     $ apex deploy -C functions/hello-world
@@ -97,6 +104,8 @@ func main() {
 		}
 	case args["invoke"].(bool):
 		invoke(fn, args["--verbose"].(bool), args["--async"].(bool))
+	case args["rollback"].(bool):
+		rollback(fn, args["<version>"])
 	case args["build"].(bool):
 		build(fn)
 	}
@@ -162,6 +171,19 @@ func deploy(fn *function.Function, env []string) {
 // delete the function.
 func delete(fn *function.Function) {
 	if err := fn.Delete(); err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
+
+// rollback the function.
+func rollback(fn *function.Function, version interface{}) {
+	var err error
+	if version == nil {
+		err = fn.Rollback()
+	} else {
+		err = fn.Rollback(version.(string))
+	}
+	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }
