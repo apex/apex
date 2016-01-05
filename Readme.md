@@ -112,6 +112,11 @@ Via ~/.aws configuration:
 
 - [Wiki](https://github.com/apex/apex/wiki)
 
+## Contributors
+
+- [TJ Holowaychuk](https://github.com/tj)
+- [Maciej Winnicki](https://github.com/mthenw)
+
 # License
 
 MIT
