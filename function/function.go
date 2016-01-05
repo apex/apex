@@ -39,6 +39,9 @@ const (
 	DryRun                         = "DryRun"
 )
 
+// Current alias name.
+const CurrentAlias = "current"
+
 // InvokeError records an error from an invocation.
 type InvokeError struct {
 	Message string   `json:"errorMessage"`
@@ -186,12 +189,20 @@ func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
 
 // Update the function with the given `zip`.
 func (f *Function) Update(zip []byte) error {
-	f.log("updating")
+	f.log("updating function")
 
-	_, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
+	updated, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &f.Name,
 		Publish:      aws.Bool(true),
 		ZipFile:      zip,
+	})
+
+	f.log("updating alias")
+
+	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &f.Name,
+		Name:            aws.String(CurrentAlias),
+		FunctionVersion: updated.Version,
 	})
 
 	return err
@@ -199,9 +210,9 @@ func (f *Function) Update(zip []byte) error {
 
 // Create the function with the given `zip`.
 func (f *Function) Create(zip []byte) error {
-	f.log("creating")
+	f.log("creating function")
 
-	_, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
+	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &f.Name,
 		Description:  &f.Description,
 		MemorySize:   &f.Memory,
@@ -213,6 +224,14 @@ func (f *Function) Create(zip []byte) error {
 		Code: &lambda.FunctionCode{
 			ZipFile: zip,
 		},
+	})
+
+	f.log("creating alias")
+
+	_, err = f.Service.CreateAlias(&lambda.CreateAliasInput{
+		FunctionName:    &f.Name,
+		FunctionVersion: created.Version,
+		Name:            aws.String(CurrentAlias),
 	})
 
 	return err
@@ -262,6 +281,63 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 	logs = base64.NewDecoder(base64.StdEncoding, strings.NewReader(*res.LogResult))
 	reply = bytes.NewReader(res.Payload)
 	return reply, logs, nil
+}
+
+// Rollback the function to the previous or specified version.
+func (f *Function) Rollback(version ...string) error {
+	f.log("rollbacking")
+
+	isVersionSpecified := len(version) > 0
+	var specifiedVersion string
+	if isVersionSpecified {
+		specifiedVersion = version[0]
+	}
+
+	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &f.Name,
+		Name:         aws.String(CurrentAlias),
+	})
+	if err != nil {
+		return err
+	}
+
+	f.logf("current version: %s", *alias.FunctionVersion)
+
+	if isVersionSpecified && specifiedVersion == *alias.FunctionVersion {
+		return errors.New("Specified version currently deployed.")
+	}
+
+	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
+		FunctionName: &f.Name,
+	})
+	if err != nil {
+		return err
+	}
+
+	versions := list.Versions
+	_, versions = versions[0], versions[1:] // remove $LATEST
+	if len(versions) < 2 {
+		return errors.New("Can't rollback. Only one version deployed.")
+	}
+	latestVersion := *versions[len(versions)-1].Version
+	prevVersion := *versions[len(versions)-2].Version
+
+	rollbackToVersion := latestVersion
+	if isVersionSpecified {
+		rollbackToVersion = specifiedVersion
+	} else if *alias.FunctionVersion == latestVersion {
+		rollbackToVersion = prevVersion
+	}
+
+	f.logf("rollback to version: %s", rollbackToVersion)
+
+	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &f.Name,
+		Name:            aws.String(CurrentAlias),
+		FunctionVersion: &rollbackToVersion,
+	})
+
+	return err
 }
 
 // Clean removes build artifacts from compiled runtimes.
