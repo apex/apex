@@ -102,8 +102,17 @@ func (f *Function) SetEnv(name, value string) {
 	f.env[name] = value
 }
 
-// Deploy generates a zip and creates or updates the function.
+// Deploy code and then configuration.
 func (f *Function) Deploy() error {
+	if err := f.DeployCode(); err != nil {
+		return err
+	}
+
+	return f.DeployConfig()
+}
+
+// DeployCode generates a zip and creates or updates the function.
+func (f *Function) DeployCode() error {
 	f.Log.Info("deploying")
 
 	zip, err := f.ZipBytes()

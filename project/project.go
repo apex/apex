@@ -11,6 +11,7 @@ import (
 	"github.com/apex/apex/function"
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
+	"github.com/tj/go-sync/semaphore"
 )
 
 // ErrNotFound is returned when a function cannot be found.
@@ -35,7 +36,7 @@ type Project struct {
 // Open the project.json file and prime the config.
 func (p *Project) Open() error {
 	if p.Concurrency == 0 {
-		p.Concurrency = 5
+		p.Concurrency = 3
 	}
 
 	f, err := os.Open(filepath.Join(p.Path, "project.json"))
@@ -63,18 +64,34 @@ func (p *Project) DeployAndClean(names []string) error {
 func (p *Project) Deploy(names []string) error {
 	p.Log.Debugf("deploying %d functions", len(names))
 
-	for _, name := range names {
-		fn, err := p.FunctionByName(name)
+	sem := make(semaphore.Semaphore, p.Concurrency)
+	errs := make(chan error)
 
+	go func() {
+		for _, name := range names {
+			name := name
+			sem.Acquire()
+
+			go func() {
+				defer sem.Release()
+				if fn, err := p.FunctionByName(name); err != nil {
+					errs <- err
+				} else {
+					errs <- fn.Deploy()
+				}
+			}()
+		}
+
+		sem.Wait()
+		close(errs)
+	}()
+
+	for err := range errs {
 		if err == ErrNotFound {
 			continue
 		}
 
-		if err := fn.Deploy(); err != nil {
-			return err
-		}
-
-		if err := fn.DeployConfig(); err != nil {
+		if err != nil {
 			return err
 		}
 	}
