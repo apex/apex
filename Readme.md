@@ -29,70 +29,85 @@ Currently supports:
 
 ## Example
 
-This example shows how you can use Apex to launch a simple Node.js echo function.
+Apex projects are made up of a project.json configuration file, and zero or more Lambda functions defined in the "functions" directory. Here's an example file structure:
 
-First create the function implementation in "index.js":
-
-```js
-exports.handle = function(e, ctx) {
-  ctx.succeed(e)
-}
+```
+functions
+├── bar
+│   ├── function.json
+│   └── index.js
+├── baz
+│   ├── function.json
+│   └── index.js
+└── foo
+    ├── function.json
+    └── index.js
+project.json
 ```
 
-Next create a "lambda.json" with the function name a configuration:
+The project.json file defines project level configuration that applies to all functions, and defines dependencies. For this simple example the following will do:
 
 ```json
 {
-  "name": "echo",
-  "description": "Echo request example",
-  "runtime": "nodejs",
-  "memory": 128,
-  "timeout": 5
+  "name": "example",
+  "description": "Example project"
 }
 ```
 
-Deploy the function:
+Each function uses a function.json configuration file to define function-specific properties such as the runtime, amount of memory allocated, and timeout. For example:
+
+```json
+{
+  "name": "bar",
+  "description": "Node.js example function",
+  "runtime": "nodejs",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::293503197324:role/lambda"
+}
+```
+
+Finally the source for the functions themselves look like this in Node.js:
+
+```js
+console.log('start bar')
+exports.handle = function(e, ctx) {
+  ctx.succeed({ hello: 'bar' })
+}
+```
+
+Or using the Golang Lambda package, Apex supports Golang out of the box with a Node.js shim:
+
+```js
+package main
+
+import (
+  "encoding/json"
+
+  "github.com/apex/apex"
+)
+
+type Message struct {
+  Hello string `json:"hello"`
+}
+
+func main() {
+  apex.HandleFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {
+    return &Message{"baz"}, nil
+  })
+}
+```
+
+Apex operates at the project level, but many commands allow you to specify specific functions. For example you may deploy the entire project with a single command:
 
 ```
 $ apex deploy
 ```
 
-Create a file with a sample request in "request.json":
-
-```js
-{
-  "event": {
-    "hello": "world"
-  },
-  "context": {
-    "user": "Tobi"
-  }
-}
-```
-
-Test out your new function:
+Or whitelist functions to deploy:
 
 ```
-$ apex invoke < request.json
-{"hello":"world"}
-```
-
-## Streaming input
-
-The `invoke` sub-command allows you to stream input over stdin:
-
-```
-$ apex invoke < request.json
-```
-
-This not only works for single requests, but for multiple, as shown in the following example using [phony(1)](https://github.com/yields/phony):
-
-```
-$ echo -n '{ "event": { "user": "{{name}}" } }' | phony | apex invoke
-{"user":"Delmer Malone"}
-{"user":"Jc Reeves"}
-{"user":"Luna Fletcher"}
-...
+$ apex deploy foo bar
 ```
 
 ## Credentials
@@ -111,6 +126,7 @@ Via ~/.aws configuration:
 ## Links
 
 - [Wiki](https://github.com/apex/apex/wiki)
+- [Examples](_examples)
 
 ## Contributors
 
