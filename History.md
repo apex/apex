@@ -1,4 +1,12 @@
 
+v0.2.0 / 2016-01-06
+===================
+
+  * add concurrent deploys
+  * add --log-level. Closes #42
+  * add multi-function and project level management
+  * add rollback support
+
 v0.1.0 / 2016-01-04
 ===================
 
