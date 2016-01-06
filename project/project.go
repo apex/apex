@@ -74,11 +74,7 @@ func (p *Project) Deploy(names []string) error {
 
 			go func() {
 				defer sem.Release()
-				if fn, err := p.FunctionByName(name); err != nil {
-					errs <- err
-				} else {
-					errs <- fn.Deploy()
-				}
+				errs <- p.deploy(name)
 			}()
 		}
 
@@ -97,6 +93,15 @@ func (p *Project) Deploy(names []string) error {
 	}
 
 	return nil
+}
+
+// deploy function by `name`.
+func (p *Project) deploy(name string) error {
+	if fn, err := p.FunctionByName(name); err != nil {
+		return err
+	} else {
+		return fn.Deploy()
+	}
 }
 
 // Clean up function build artifacts.
