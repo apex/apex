@@ -251,7 +251,7 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 		FunctionName:   aws.String(f.Name),
 		InvocationType: aws.String(string(kind)),
 		LogType:        aws.String("Tail"),
-		Qualifier:      aws.String("current"),
+		Qualifier:      aws.String(CurrentAlias),
 		Payload:        eventBytes,
 	})
 
