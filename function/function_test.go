@@ -6,11 +6,17 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/mock"
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/discard"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	log.SetHandler(discard.New())
+}
 
 func TestFunction_Delete_success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -24,6 +30,7 @@ func TestFunction_Delete_success(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Delete()
 
@@ -40,6 +47,7 @@ func TestFunction_Delete_failed(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Delete()
 
@@ -59,6 +67,7 @@ func TestFunction_Rollback_GetAlias_failed(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -78,6 +87,7 @@ func TestFunction_Rollback_ListVersions_failed(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -97,6 +107,7 @@ func TestFunction_Rollback_fewVersions(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -126,6 +137,7 @@ func TestFunction_Rollback_previousVersion(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -155,6 +167,7 @@ func TestFunction_Rollback_latestVersion(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -179,6 +192,7 @@ func TestFunction_Rollback_UpdateAlias_failed(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -196,6 +210,7 @@ func TestFunction_Rollback_sameVersion(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback("2")
 
@@ -226,6 +241,7 @@ func TestFunction_Rollback_specifiedVersion(t *testing.T) {
 	fn := &function.Function{
 		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback("1")
 
