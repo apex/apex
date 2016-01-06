@@ -167,7 +167,7 @@ func invoke(project *project.Project, name []string, verbose, async bool) {
 	}
 }
 
-// deploy changes.
+// deploy code and config changes.
 func deploy(project *project.Project, names []string) {
 	var err error
 
@@ -184,7 +184,7 @@ func deploy(project *project.Project, names []string) {
 	}
 }
 
-// delete the resources.
+// delete the functions.
 func delete(project *project.Project, names []string, force bool) {
 	var err error
 
@@ -213,7 +213,7 @@ func delete(project *project.Project, names []string, force bool) {
 	}
 }
 
-// rollback the function.
+// rollback the function with optional version.
 func rollback(project *project.Project, name []string, version interface{}) {
 	fn, err := project.FunctionByName(name[0])
 	if err != nil {
