@@ -22,10 +22,13 @@ Currently supports:
 
 ## Features
 
-- Supports languages Lambda does not natively support via shim
+- Supports languages Lambda does not natively support via shim, such as Go
 - Binary install (useful for continuous deployment in CI etc)
+- Project level function and resource management
 - Command-line function invocation with JSON streams
 - Transparently generates a zip for your deploy
+- Function rollback support
+- Concurrency for quick deploys
 
 ## Example
 
