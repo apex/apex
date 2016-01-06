@@ -4,16 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
-	"strings"
-	"time"
+
+	_ "github.com/apex/apex/runtime/golang"
+	_ "github.com/apex/apex/runtime/nodejs"
+	_ "github.com/apex/apex/runtime/python"
 
 	"github.com/apex/apex/function"
-	"github.com/apex/apex/logs"
+	"github.com/apex/apex/project"
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/text"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/kinesis"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/segmentio/go-prompt"
 	"github.com/tj/docopt"
@@ -23,48 +25,51 @@ var version = "0.1.0"
 
 const usage = `
   Usage:
-    apex deploy [-C path] [--env name=val]... [-v]
-    apex delete [-C path] [-y] [-v]
-    apex invoke [-C path] [--async] [-v]
-    apex rollback [-C path] [-v] [<version>]
-    apex build [-C path] [-v]
-    apex logs
+    apex deploy [options] [<name>...]
+    apex delete [options] [<name>...]
+    apex invoke [options] <name> [--async] [-v]
+    apex rollback [options] <name> [<version>]
+    apex build [options] <name>
+    apex list [options]
     apex -h | --help
     apex --version
 
   Options:
-    -e, --env name=val  Environment variable
-    -a, --async         Async invocation
-    -C, --chdir path    Working directory
-    -y, --yes           Automatic yes to prompts
-    -h, --help          Output help information
-    -v, --verbose       Output verbose logs
-    -V, --version       Output version
+    -l, --log-level level   Log severity level [default: info]
+    -a, --async             Async invocation
+    -C, --chdir path        Working directory
+    -y, --yes               Automatic yes to prompts
+    -h, --help              Output help information
+    -v, --verbose           Output verbose logs
+    -V, --version           Output version
 
   Examples:
-    Deploy a function in the current directory
+    Deploy all functions
     $ apex deploy
 
-    Delete a function in the current directory
+    Deploy specific functions
+    $ apex deploy foo bar
+
+    Delete all functions
     $ apex delete
 
-    Invoke a function in the current directory
-    $ apex invoke < request.json
+    Delete specified functions
+    $ apex delete foo bar
 
-    Rollback a function to the previous version (another call will go back to the latest version)
-    $ apex rollback
+    Invoke a function with input json
+    $ apex invoke foo < request.json
 
-    Rollback a function to the specified version (another call will go back to the latest version)
-    $ apex rollback 3
+    Rollback a function to the previous version
+    $ apex rollback foo
 
-    Deploy a function in a different directory
-    $ apex deploy -C functions/hello-world
+    Rollback a function to the specified version
+    $ apex rollback bar 3
 
-    Output zip of a function in the current directory
-    $ apex build > /tmp/out.zip
+    Deploy functions in a different project
+    $ apex deploy -C ~/dev/myapp
 
-    Tail Kinesis logs
-    $ apex logs
+    Build zip output for a function
+    $ apex build foo > /tmp/out.zip
 `
 
 func main() {
@@ -73,15 +78,15 @@ func main() {
 		log.Fatalf("error: %s", err)
 	}
 
-	switch {
-	case args["logs"].(bool):
-		tailLogs()
-		return
+	log.SetHandler(text.New(os.Stderr))
+
+	if l, err := log.ParseLevel(args["--log-level"].(string)); err == nil {
+		log.SetLevel(l)
 	}
 
-	fn := &function.Function{
+	project := &project.Project{
 		Service: lambda.New(session.New(aws.NewConfig())),
-		Verbose: args["--verbose"].(bool),
+		Log:     log.Log,
 		Path:    ".",
 	}
 
@@ -91,33 +96,48 @@ func main() {
 		}
 	}
 
-	if err := fn.Open(); err != nil {
-		log.Fatalf("error: %s", err)
+	if err := project.Open(); err != nil {
+		log.Fatalf("error opening project: %s", err)
 	}
 
 	switch {
+	case args["list"].(bool):
+		list(project)
 	case args["deploy"].(bool):
-		deploy(fn, args["--env"].([]string))
+		deploy(project, args["<name>"].([]string))
 	case args["delete"].(bool):
-		if args["--yes"].(bool) || prompt.Confirm("Are you sure? [yes/no]") {
-			delete(fn)
-		}
+		delete(project, args["<name>"].([]string), args["--yes"].(bool))
 	case args["invoke"].(bool):
-		invoke(fn, args["--verbose"].(bool), args["--async"].(bool))
+		invoke(project, args["<name>"].([]string), args["--verbose"].(bool), args["--async"].(bool))
 	case args["rollback"].(bool):
-		rollback(fn, args["<version>"])
+		rollback(project, args["<name>"].([]string), args["<version>"])
 	case args["build"].(bool):
-		build(fn)
+		build(project, args["<name>"].([]string))
 	}
 }
 
+// list functions.
+func list(project *project.Project) {
+	// TODO(tj): more informative output
+	fmt.Println()
+	for _, fn := range project.Functions {
+		fmt.Printf("  - %s (%s)\n", fn.Name, fn.Runtime)
+	}
+	fmt.Println()
+}
+
 // invoke reads request json from stdin and outputs the responses.
-func invoke(fn *function.Function, verbose, async bool) {
+func invoke(project *project.Project, name []string, verbose, async bool) {
 	dec := json.NewDecoder(os.Stdin)
 	kind := function.RequestResponse
 
 	if async {
 		kind = function.Event
+	}
+
+	fn, err := project.FunctionByName(name[0])
+	if err != nil {
+		log.Fatalf("error: %s", err)
 	}
 
 	for {
@@ -141,6 +161,7 @@ func invoke(fn *function.Function, verbose, async bool) {
 			log.Fatalf("error: %s", err)
 		}
 
+		// TODO(tj) rename flag to --with-logs or --logs
 		if verbose {
 			io.Copy(os.Stderr, logs)
 		}
@@ -150,46 +171,77 @@ func invoke(fn *function.Function, verbose, async bool) {
 	}
 }
 
-// deploy creates or updates the function.
-func deploy(fn *function.Function, env []string) {
-	for _, s := range env {
-		parts := strings.Split(s, "=")
-		fn.SetEnv(parts[0], parts[1])
+// deploy code and config changes.
+func deploy(project *project.Project, names []string) {
+	var err error
+
+	if len(names) == 0 {
+		names, err = project.FunctionNames()
 	}
 
-	if err := fn.Deploy(); err != nil && err != function.ErrUnchanged {
-		log.Fatalf("error deploying code: %s", err)
+	if err != nil {
+		log.Fatalf("error: %s", err)
 	}
 
-	if err := fn.DeployConfig(); err != nil {
-		log.Fatalln("error deploying config: %s", err)
-	}
-
-	fn.Clean()
-}
-
-// delete the function.
-func delete(fn *function.Function) {
-	if err := fn.Delete(); err != nil {
+	if err := project.DeployAndClean(names); err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }
 
-// rollback the function.
-func rollback(fn *function.Function, version interface{}) {
+// delete the functions.
+func delete(project *project.Project, names []string, force bool) {
 	var err error
+
+	if len(names) == 0 {
+		names, err = project.FunctionNames()
+	}
+
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+
+	if !force && len(names) > 1 {
+		fmt.Printf("The following will be deleted:\n\n")
+		for _, name := range names {
+			fmt.Printf("  - %s\n", name)
+		}
+		fmt.Printf("\n")
+	}
+
+	if !force && !prompt.Confirm("Are you sure? (yes/no)") {
+		return
+	}
+
+	if err := project.Delete(names); err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
+
+// rollback the function with optional version.
+func rollback(project *project.Project, name []string, version interface{}) {
+	fn, err := project.FunctionByName(name[0])
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+
 	if version == nil {
 		err = fn.Rollback()
 	} else {
 		err = fn.Rollback(version.(string))
 	}
+
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }
 
 // build outputs the generated archive to stdout.
-func build(fn *function.Function) {
+func build(project *project.Project, name []string) {
+	fn, err := project.FunctionByName(name[0])
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+
 	zip, err := fn.Zip()
 	if err != nil {
 		log.Fatalf("error: %s", err)
@@ -197,26 +249,6 @@ func build(fn *function.Function) {
 
 	_, err = io.Copy(os.Stdout, zip)
 	if err != nil {
-		log.Fatalf("error: %s", err)
-	}
-}
-
-// tail Kinesis logs for changes.
-// TODO(tj): parse json for display via apex/log
-func tailLogs() {
-	client := kinesis.New(session.New(aws.NewConfig()))
-
-	tailer := logs.Tailer{
-		Stream:       "logs",
-		Service:      client,
-		PollInterval: 500 * time.Millisecond,
-	}
-
-	for record := range tailer.Start() {
-		fmt.Printf("%s\n", record.Data)
-	}
-
-	if err := tailer.Err(); err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }

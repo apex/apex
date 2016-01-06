@@ -1,4 +1,4 @@
-// Package function implements higher-level functionality for dealing with Lambda functions.
+// Package function implements function-level operations.
 package function
 
 import (
@@ -16,17 +16,13 @@ import (
 	"github.com/apex/apex/runtime"
 	"github.com/apex/apex/shim"
 	"github.com/apex/apex/utils"
+	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/dustin/go-humanize"
 	"github.com/jpillora/archive"
-)
-
-// Errors.
-var (
-	ErrUnchanged = errors.New("function: unchanged")
 )
 
 // InvocationType determines how an invocation request is made.
@@ -63,7 +59,6 @@ type Config struct {
 	Memory      int64  `json:"memory"`
 	Timeout     int64  `json:"timeout"`
 	Role        string `json:"role"`
-	Main        string `json:"main"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -74,27 +69,14 @@ type Function struct {
 	Path    string
 	Verbose bool
 	Service lambdaiface.LambdaAPI
+	Log     log.Interface
 	runtime runtime.Runtime
 	env     map[string]string
 }
 
-// log output when verbose output is enabled.
-func (f *Function) log(msg string) {
-	if f.Verbose {
-		fmt.Fprintf(os.Stderr, "  [%s] %s\n", f.Name, msg)
-	}
-}
-
-// logf formats message and output when verbose output is enabled.
-func (f *Function) logf(msg string, v ...interface{}) {
-	if f.Verbose {
-		fmt.Fprintf(os.Stderr, "  [%s] %s\n", f.Name, fmt.Sprintf(msg, v...))
-	}
-}
-
-// Open the lambda.json file and prime the config.
+// Open the function.json file and prime the config.
 func (f *Function) Open() error {
-	p, err := os.Open(filepath.Join(f.Path, "lambda.json"))
+	p, err := os.Open(filepath.Join(f.Path, "function.json"))
 	if err != nil {
 		return err
 	}
@@ -120,9 +102,18 @@ func (f *Function) SetEnv(name, value string) {
 	f.env[name] = value
 }
 
-// Deploy generates a zip and creates or updates the function.
+// Deploy code and then configuration.
 func (f *Function) Deploy() error {
-	f.log("deploying")
+	if err := f.DeployCode(); err != nil {
+		return err
+	}
+
+	return f.DeployConfig()
+}
+
+// DeployCode generates a zip and creates or updates the function.
+func (f *Function) DeployCode() error {
+	f.Log.Info("deploying")
 
 	zip, err := f.ZipBytes()
 	if err != nil {
@@ -145,8 +136,8 @@ func (f *Function) Deploy() error {
 	localHash := utils.Sha256(zip)
 
 	if localHash == remoteHash {
-		f.log("unchanged")
-		return ErrUnchanged
+		f.Log.Info("unchanged")
+		return nil
 	}
 
 	return f.Update(zip)
@@ -154,7 +145,7 @@ func (f *Function) Deploy() error {
 
 // DeployConfig deploys changes to configuration.
 func (f *Function) DeployConfig() error {
-	f.log("deploying config")
+	f.Log.Info("deploying config")
 
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &f.Name,
@@ -170,18 +161,16 @@ func (f *Function) DeployConfig() error {
 
 // Delete the function including all its versions
 func (f *Function) Delete() error {
-	f.log("deleting")
-
+	f.Log.Info("deleting")
 	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
 		FunctionName: &f.Name,
 	})
-
 	return err
 }
 
 // Info returns the function information.
 func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
-	f.log("fetching config")
+	f.Log.Info("fetching config")
 	return f.Service.GetFunction(&lambda.GetFunctionInput{
 		FunctionName: &f.Name,
 	})
@@ -189,7 +178,7 @@ func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
 
 // Update the function with the given `zip`.
 func (f *Function) Update(zip []byte) error {
-	f.log("updating function")
+	f.Log.Info("updating function")
 
 	updated, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &f.Name,
@@ -197,7 +186,11 @@ func (f *Function) Update(zip []byte) error {
 		ZipFile:      zip,
 	})
 
-	f.log("updating alias")
+	if err != nil {
+		return err
+	}
+
+	f.Log.Info("updating alias")
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.Name,
@@ -210,7 +203,7 @@ func (f *Function) Update(zip []byte) error {
 
 // Create the function with the given `zip`.
 func (f *Function) Create(zip []byte) error {
-	f.log("creating function")
+	f.Log.Info("creating function")
 
 	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &f.Name,
@@ -226,7 +219,11 @@ func (f *Function) Create(zip []byte) error {
 		},
 	})
 
-	f.log("creating alias")
+	if err != nil {
+		return err
+	}
+
+	f.Log.Info("creating alias")
 
 	_, err = f.Service.CreateAlias(&lambda.CreateAliasInput{
 		FunctionName:    &f.Name,
@@ -254,7 +251,7 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 		FunctionName:   aws.String(f.Name),
 		InvocationType: aws.String(string(kind)),
 		LogType:        aws.String("Tail"),
-		Qualifier:      aws.String("$LATEST"),
+		Qualifier:      aws.String(CurrentAlias),
 		Payload:        eventBytes,
 	})
 
@@ -285,7 +282,7 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 
 // Rollback the function to the previous or specified version.
 func (f *Function) Rollback(version ...string) error {
-	f.log("rollbacking")
+	f.Log.Info("rolling back")
 
 	isVersionSpecified := len(version) > 0
 	var specifiedVersion string
@@ -297,11 +294,12 @@ func (f *Function) Rollback(version ...string) error {
 		FunctionName: &f.Name,
 		Name:         aws.String(CurrentAlias),
 	})
+
 	if err != nil {
 		return err
 	}
 
-	f.logf("current version: %s", *alias.FunctionVersion)
+	f.Log.Infof("current version: %s", *alias.FunctionVersion)
 
 	if isVersionSpecified && specifiedVersion == *alias.FunctionVersion {
 		return errors.New("Specified version currently deployed.")
@@ -310,6 +308,7 @@ func (f *Function) Rollback(version ...string) error {
 	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
 		FunctionName: &f.Name,
 	})
+
 	if err != nil {
 		return err
 	}
@@ -329,7 +328,7 @@ func (f *Function) Rollback(version ...string) error {
 		rollbackToVersion = prevVersion
 	}
 
-	f.logf("rollback to version: %s", rollbackToVersion)
+	f.Log.Infof("rollback to version: %s", rollbackToVersion)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.Name,
@@ -343,7 +342,7 @@ func (f *Function) Rollback(version ...string) error {
 // Clean removes build artifacts from compiled runtimes.
 func (f *Function) Clean() error {
 	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		return r.Clean()
+		return r.Clean(f.Path)
 	}
 	return nil
 }
@@ -354,12 +353,16 @@ func (f *Function) Zip() (io.Reader, error) {
 	zip := archive.NewZipWriter(buf)
 
 	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		if err := r.Build(f.Main); err != nil {
+		f.Log.Debugf("compiling")
+		if err := r.Build(f.Path); err != nil {
 			return nil, fmt.Errorf("compiling: %s", err)
 		}
 	}
 
+	// TODO(tj): remove or add --env flag back
 	if f.env != nil {
+		f.Log.Debugf("adding .env.json")
+
 		b, err := json.Marshal(f.env)
 		if err != nil {
 			return nil, err
@@ -369,6 +372,7 @@ func (f *Function) Zip() (io.Reader, error) {
 	}
 
 	if f.runtime.Shimmed() {
+		f.Log.Debugf("adding nodejs shim")
 		zip.AddBytes("index.js", shim.MustAsset("index.js"))
 		zip.AddBytes("byline.js", shim.MustAsset("byline.js"))
 	}
@@ -386,7 +390,7 @@ func (f *Function) Zip() (io.Reader, error) {
 
 // ZipBytes returns the generated zip as bytes.
 func (f *Function) ZipBytes() ([]byte, error) {
-	f.log("creating zip")
+	f.Log.Debugf("creating zip")
 
 	r, err := f.Zip()
 	if err != nil {
@@ -398,6 +402,6 @@ func (f *Function) ZipBytes() ([]byte, error) {
 		return nil, err
 	}
 
-	f.logf("created zip (%s)", humanize.Bytes(uint64(len(b))))
+	f.Log.Infof("created zip (%s)", humanize.Bytes(uint64(len(b))))
 	return b, nil
 }

@@ -4,11 +4,10 @@ package runtime
 
 import (
 	"errors"
-
-	"github.com/apex/apex/runtime/golang"
-	"github.com/apex/apex/runtime/nodejs"
-	"github.com/apex/apex/runtime/python"
 )
+
+// Registered runtimes.
+var runtimes = make(map[string]Runtime)
 
 // Runtime is a language runtime.
 type Runtime interface {
@@ -25,19 +24,17 @@ type Runtime interface {
 
 // CompiledRuntime is a language runtime requiring compilation.
 type CompiledRuntime interface {
-	// Build the given `target`, which should default to a language
-	// specific convention such as "main.go" when zero.
-	Build(target string) error
+	// Build performs a build using language-specific conventions
+	// such as "main.go" for the build target.
+	Build(dir string) error
 
 	// Clean removes the build artifacts after deployment.
-	Clean() error
+	Clean(dir string) error
 }
 
-// runtimes map by name.
-var runtimes = map[string]Runtime{
-	"nodejs": &nodejs.Runtime{},
-	"python": &python.Runtime{},
-	"golang": &golang.Runtime{},
+// Register runtime by `name`.
+func Register(name string, runtime Runtime) {
+	runtimes[name] = runtime
 }
 
 // ByName returns the runtime by `name`.

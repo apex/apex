@@ -1,7 +1,7 @@
 {
-  "name": "echo-go",
-  "description": "Echo request example",
-  "runtime": "golang",
+  "name": "baz",
+  "description": "Node.js example function",
+  "runtime": "nodejs",
   "memory": 128,
   "timeout": 5,
   "role": "arn:aws:iam::293503197324:role/lambda"

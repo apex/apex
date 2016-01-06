@@ -1,6 +1,6 @@
 {
-  "name": "echo-node",
-  "description": "Echo request example",
+  "name": "bar",
+  "description": "Node.js example function",
   "runtime": "nodejs",
   "memory": 128,
   "timeout": 5,
