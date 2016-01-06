@@ -24,7 +24,7 @@ type Runtime interface {
 
 // CompiledRuntime is a language runtime requiring compilation.
 type CompiledRuntime interface {
-	// Build performs a buid, using language-specific conventions
+	// Build performs a build using language-specific conventions
 	// such as "main.go" for the build target.
 	Build(dir string) error
 
