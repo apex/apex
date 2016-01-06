@@ -31,12 +31,13 @@ const usage = `
     apex --version
 
   Options:
-    -a, --async         Async invocation
-    -C, --chdir path    Working directory
-    -y, --yes           Automatic yes to prompts
-    -h, --help          Output help information
-    -v, --verbose       Output verbose logs
-    -V, --version       Output version
+    -l, --log-level level   Log severity level [default: info]
+    -a, --async             Async invocation
+    -C, --chdir path        Working directory
+    -y, --yes               Automatic yes to prompts
+    -h, --help              Output help information
+    -v, --verbose           Output verbose logs
+    -V, --version           Output version
 
   Examples:
     Deploy a function in the current directory
@@ -70,9 +71,11 @@ func main() {
 		log.Fatalf("error: %s", err)
 	}
 
-	// TODO(tj): configurable level
-	log.SetLevel(log.InfoLevel)
 	log.SetHandler(text.New(os.Stderr))
+
+	if l, err := log.ParseLevel(args["--log-level"].(string)); err == nil {
+		log.SetLevel(l)
+	}
 
 	project := &project.Project{
 		Service: lambda.New(session.New(aws.NewConfig())),
