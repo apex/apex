@@ -12,6 +12,6 @@ type Message struct {
 
 func main() {
 	apex.HandleFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {
-		return &Message{"world"}, nil
+		return &Message{"bar"}, nil
 	})
 }

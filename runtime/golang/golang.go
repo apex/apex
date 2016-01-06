@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 type Runtime struct{}
@@ -20,16 +21,13 @@ func (r *Runtime) Handler() string {
 	return "index.handle"
 }
 
-func (r *Runtime) Build(target string) error {
-	if target == "" {
-		target = "main.go"
-	}
-
-	cmd := exec.Command("sh", "-c", fmt.Sprintf(`GOOS=linux GOARCH=amd64 go build -o main %s`, target))
+func (r *Runtime) Build(dir string) error {
+	s := fmt.Sprintf("cd %s && GOOS=linux GOARCH=amd64 go build -o main main.go", dir)
+	cmd := exec.Command("sh", "-c", s)
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
 
-func (r *Runtime) Clean() error {
-	return os.Remove("main")
+func (r *Runtime) Clean(dir string) error {
+	return os.Remove(filepath.Join(dir, "main"))
 }

@@ -25,12 +25,12 @@ type Runtime interface {
 
 // CompiledRuntime is a language runtime requiring compilation.
 type CompiledRuntime interface {
-	// Build the given `target`, which should default to a language
-	// specific convention such as "main.go" when zero.
-	Build(target string) error
+	// Build performs a buid, using language-specific conventions
+	// such as "main.go" for the build target.
+	Build(dir string) error
 
 	// Clean removes the build artifacts after deployment.
-	Clean() error
+	Clean(dir string) error
 }
 
 // runtimes map by name.
