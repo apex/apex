@@ -1,4 +1,4 @@
-// Package function implements function-level opterations.
+// Package function implements function-level operations.
 package function
 
 import (
