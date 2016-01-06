@@ -5,7 +5,13 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/apex/apex/runtime"
 )
+
+func init() {
+	runtime.Register("golang", new(Runtime))
+}
 
 type Runtime struct{}
 

@@ -1,5 +1,13 @@
 package nodejs
 
+import (
+	"github.com/apex/apex/runtime"
+)
+
+func init() {
+	runtime.Register("nodejs", new(Runtime))
+}
+
 type Runtime struct{}
 
 func (r *Runtime) Name() string {

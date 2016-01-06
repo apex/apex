@@ -4,11 +4,10 @@ package runtime
 
 import (
 	"errors"
-
-	"github.com/apex/apex/runtime/golang"
-	"github.com/apex/apex/runtime/nodejs"
-	"github.com/apex/apex/runtime/python"
 )
+
+// Registered runtimes.
+var runtimes = make(map[string]Runtime)
 
 // Runtime is a language runtime.
 type Runtime interface {
@@ -33,11 +32,9 @@ type CompiledRuntime interface {
 	Clean(dir string) error
 }
 
-// runtimes map by name.
-var runtimes = map[string]Runtime{
-	"nodejs": &nodejs.Runtime{},
-	"python": &python.Runtime{},
-	"golang": &golang.Runtime{},
+// Register runtime by `name`.
+func Register(name string, runtime Runtime) {
+	runtimes[name] = runtime
 }
 
 // ByName returns the runtime by `name`.

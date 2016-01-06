@@ -6,6 +6,10 @@ import (
 	"io"
 	"os"
 
+	_ "github.com/apex/apex/runtime/golang"
+	_ "github.com/apex/apex/runtime/nodejs"
+	_ "github.com/apex/apex/runtime/python"
+
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/project"
 	"github.com/apex/log"
