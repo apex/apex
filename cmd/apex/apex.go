@@ -40,29 +40,32 @@ const usage = `
     -V, --version           Output version
 
   Examples:
-    Deploy a function in the current directory
+    Deploy all functions
     $ apex deploy
 
-    Delete a function in the current directory
+    Deploy specific functions
+    $ apex deploy foo bar
+
+    Delete all functions
     $ apex delete
 
-    Invoke a function in the current directory
-    $ apex invoke < request.json
+    Delete specified functions
+    $ apex delete foo bar
 
-    Rollback a function to the previous version (another call will go back to the latest version)
-    $ apex rollback
+    Invoke a function with input json
+    $ apex invoke foo < request.json
 
-    Rollback a function to the specified version (another call will go back to the latest version)
-    $ apex rollback 3
+    Rollback a function to the previous version
+    $ apex rollback foo
 
-    Deploy a function in a different directory
-    $ apex deploy -C functions/hello-world
+    Rollback a function to the specified version
+    $ apex rollback bar 3
 
-    Output zip of a function in the current directory
-    $ apex build > /tmp/out.zip
+    Deploy functions in a different project
+    $ apex deploy -C ~/dev/myapp
 
-    Tail Kinesis logs
-    $ apex logs
+    Build zip output for a function
+    $ apex build foo > /tmp/out.zip
 `
 
 func main() {
