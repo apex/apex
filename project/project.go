@@ -83,10 +83,6 @@ func (p *Project) Deploy(names []string) error {
 	}()
 
 	for err := range errs {
-		if err == ErrNotFound {
-			continue
-		}
-
 		if err != nil {
 			return err
 		}
@@ -97,11 +93,18 @@ func (p *Project) Deploy(names []string) error {
 
 // deploy function by `name`.
 func (p *Project) deploy(name string) error {
-	if fn, err := p.FunctionByName(name); err != nil {
-		return err
-	} else {
-		return fn.Deploy()
+	fn, err := p.FunctionByName(name)
+
+	if err == ErrNotFound {
+		p.Log.Warnf("function %q does not exist", name)
+		return nil
 	}
+
+	if err != nil {
+		return err
+	}
+
+	return fn.Deploy()
 }
 
 // Clean up function build artifacts.
