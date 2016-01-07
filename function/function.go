@@ -66,14 +66,13 @@ type Config struct {
 // against the function directory as the CWD, so os.Chdir() first.
 type Function struct {
 	Config
-	Path        string
-	ProjectName string
-	LambdaName  string
-	Verbose     bool
-	Service     lambdaiface.LambdaAPI
-	Log         log.Interface
-	runtime     runtime.Runtime
-	env         map[string]string
+	Path       string
+	LambdaName string
+	Verbose    bool
+	Service    lambdaiface.LambdaAPI
+	Log        log.Interface
+	runtime    runtime.Runtime
+	env        map[string]string
 }
 
 // Open the function.json file and prime the config.
