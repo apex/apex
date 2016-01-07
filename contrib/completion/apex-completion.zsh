@@ -128,7 +128,7 @@ _apex-list ()
 
     _arguments -C \
         ':command:->command' \
-
+        
 }
 
 _apex-build ()
