@@ -199,7 +199,27 @@ func TestFunction_Rollback_UpdateAlias_failed(t *testing.T) {
 	assert.EqualError(t, err, "API err")
 }
 
-func TestFunction_Rollback_sameVersion(t *testing.T) {
+func TestFunction_RollbackVersion_GetAlias_failed(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
+
+	serviceMock.EXPECT().GetAlias(&lambda.GetAliasInput{
+		FunctionName: aws.String("testfn"),
+		Name:         aws.String(function.CurrentAlias),
+	}).Return(nil, errors.New("API err"))
+
+	fn := &function.Function{
+		Config:  function.Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
+	}
+	err := fn.RollbackVersion("1")
+
+	assert.EqualError(t, err, "API err")
+}
+
+func TestFunction_RollbackVersion_sameVersion(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
@@ -208,34 +228,26 @@ func TestFunction_Rollback_sameVersion(t *testing.T) {
 	serviceMock.EXPECT().GetAlias(gomock.Any()).Return(&lambda.AliasConfiguration{FunctionVersion: currentVersion}, nil)
 
 	fn := &function.Function{
-		Config:  function.Config{Name: "testfn"},
 		Service: serviceMock,
 		Log:     log.Log,
 	}
-	err := fn.Rollback("2")
+	err := fn.RollbackVersion("2")
 
 	assert.EqualError(t, err, "Specified version currently deployed.")
 }
 
-func TestFunction_Rollback_specifiedVersion(t *testing.T) {
+func TestFunction_RollbackVersion_success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
 
-	deployedVersions := []*lambda.FunctionConfiguration{
-		&lambda.FunctionConfiguration{Version: aws.String("$LATEST")},
-		&lambda.FunctionConfiguration{Version: aws.String("1")},
-		&lambda.FunctionConfiguration{Version: aws.String("2")},
-		&lambda.FunctionConfiguration{Version: aws.String("3")},
-	}
-	currentVersion := aws.String("3")
-	afterRollbackVersion := aws.String("1")
-	serviceMock.EXPECT().GetAlias(gomock.Any()).Return(&lambda.AliasConfiguration{FunctionVersion: currentVersion}, nil)
-	serviceMock.EXPECT().ListVersionsByFunction(gomock.Any()).Return(&lambda.ListVersionsByFunctionOutput{Versions: deployedVersions}, nil)
+	specifiedVersion := "3"
+	currentVersion := "2"
+	serviceMock.EXPECT().GetAlias(gomock.Any()).Return(&lambda.AliasConfiguration{FunctionVersion: &currentVersion}, nil)
 	serviceMock.EXPECT().UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    aws.String("testfn"),
-		Name:            aws.String("current"),
-		FunctionVersion: afterRollbackVersion,
+		Name:            aws.String(function.CurrentAlias),
+		FunctionVersion: &specifiedVersion,
 	})
 
 	fn := &function.Function{
@@ -243,7 +255,7 @@ func TestFunction_Rollback_specifiedVersion(t *testing.T) {
 		Service: serviceMock,
 		Log:     log.Log,
 	}
-	err := fn.Rollback("1")
+	err := fn.RollbackVersion("3")
 
 	assert.Nil(t, err)
 }

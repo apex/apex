@@ -227,7 +227,7 @@ func rollback(project *project.Project, name []string, version interface{}) {
 	if version == nil {
 		err = fn.Rollback()
 	} else {
-		err = fn.Rollback(version.(string))
+		err = fn.RollbackVersion(version.(string))
 	}
 
 	if err != nil {

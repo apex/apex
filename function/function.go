@@ -280,35 +280,23 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 	return reply, logs, nil
 }
 
-// Rollback the function to the previous or specified version.
-func (f *Function) Rollback(version ...string) error {
+// Rollback the function to the previous.
+func (f *Function) Rollback() error {
 	f.Log.Info("rolling back")
-
-	isVersionSpecified := len(version) > 0
-	var specifiedVersion string
-	if isVersionSpecified {
-		specifiedVersion = version[0]
-	}
 
 	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
 		FunctionName: &f.Name,
 		Name:         aws.String(CurrentAlias),
 	})
-
 	if err != nil {
 		return err
 	}
 
 	f.Log.Infof("current version: %s", *alias.FunctionVersion)
 
-	if isVersionSpecified && specifiedVersion == *alias.FunctionVersion {
-		return errors.New("Specified version currently deployed.")
-	}
-
 	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
 		FunctionName: &f.Name,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -322,9 +310,7 @@ func (f *Function) Rollback(version ...string) error {
 	prevVersion := *versions[len(versions)-2].Version
 
 	rollbackToVersion := latestVersion
-	if isVersionSpecified {
-		rollbackToVersion = specifiedVersion
-	} else if *alias.FunctionVersion == latestVersion {
+	if *alias.FunctionVersion == latestVersion {
 		rollbackToVersion = prevVersion
 	}
 
@@ -334,6 +320,33 @@ func (f *Function) Rollback(version ...string) error {
 		FunctionName:    &f.Name,
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: &rollbackToVersion,
+	})
+
+	return err
+}
+
+// RollbackVersion the function to the specified version.
+func (f *Function) RollbackVersion(version string) error {
+	f.Log.Info("rolling back")
+
+	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &f.Name,
+		Name:         aws.String(CurrentAlias),
+	})
+	if err != nil {
+		return err
+	}
+
+	f.Log.Infof("current version: %s", *alias.FunctionVersion)
+
+	if version == *alias.FunctionVersion {
+		return errors.New("Specified version currently deployed.")
+	}
+
+	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &f.Name,
+		Name:            aws.String(CurrentAlias),
+		FunctionVersion: &version,
 	})
 
 	return err
