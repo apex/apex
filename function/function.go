@@ -66,7 +66,8 @@ type Config struct {
 // against the function directory as the CWD, so os.Chdir() first.
 type Function struct {
 	Config
-	Path       string
+	Path string
+	// LambdaName is used as a function name on AWS Lambda service side.
 	LambdaName string
 	Verbose    bool
 	Service    lambdaiface.LambdaAPI
@@ -86,7 +87,7 @@ func (f *Function) Open(projectName string) error {
 		return err
 	}
 
-	f.lambdaName(projectName)
+	f.setLambdaName(projectName)
 
 	r, err := runtime.ByName(f.Runtime)
 	if err != nil {
@@ -422,6 +423,7 @@ func (f *Function) ZipBytes() ([]byte, error) {
 	return b, nil
 }
 
-func (f *Function) lambdaName(projectName string) {
+// setLambdaName sets LambdaName field.
+func (f *Function) setLambdaName(projectName string) {
 	f.LambdaName = fmt.Sprintf("%s_%s", projectName, f.Name)
 }
