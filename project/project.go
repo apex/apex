@@ -214,7 +214,7 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 		Log:     p.Log.WithField("function", name),
 	}
 
-	if err := fn.Open(); err != nil {
+	if err := fn.Open(p.Name); err != nil {
 		return nil, err
 	}
 
