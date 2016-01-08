@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"gopkg.in/validator.v2"
+
 	"github.com/apex/apex/function"
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
@@ -19,7 +21,7 @@ var ErrNotFound = errors.New("project: no function found")
 
 // Config for project.
 type Config struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" validate:"nonzero"`
 	Description string `json:"description"`
 }
 
@@ -45,6 +47,10 @@ func (p *Project) Open() error {
 	}
 
 	if err := json.NewDecoder(f).Decode(&p.Config); err != nil {
+		return err
+	}
+
+	if err := validator.Validate(&p.Config); err != nil {
 		return err
 	}
 
