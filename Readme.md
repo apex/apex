@@ -28,6 +28,7 @@ Currently supports:
 - Command-line function invocation with JSON streams
 - Transparently generates a zip for your deploy
 - Function rollback support
+- Tail function CloudWatchLogs
 - Concurrency for quick deploys
 
 ## Example
