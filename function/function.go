@@ -71,7 +71,6 @@ type Function struct {
 	Path string
 	// LambdaName is used as a function name on AWS Lambda service side.
 	LambdaName string
-	Verbose    bool
 	Service    lambdaiface.LambdaAPI
 	Log        log.Interface
 	runtime    runtime.Runtime
