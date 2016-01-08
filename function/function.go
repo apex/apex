@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/validator.v2"
+
 	"github.com/apex/apex/runtime"
 	"github.com/apex/apex/shim"
 	"github.com/apex/apex/utils"
@@ -53,12 +55,12 @@ func (e *InvokeError) Error() string {
 
 // Config for a Lambda function.
 type Config struct {
-	Name        string `json:"name"`
+	Name        string `json:"name" validate:"nonzero"`
 	Description string `json:"description"`
-	Runtime     string `json:"runtime"`
-	Memory      int64  `json:"memory"`
-	Timeout     int64  `json:"timeout"`
-	Role        string `json:"role"`
+	Runtime     string `json:"runtime" validate:"nonzero"`
+	Memory      int64  `json:"memory" validate:"nonzero"`
+	Timeout     int64  `json:"timeout" validate:"nonzero"`
+	Role        string `json:"role" validate:"nonzero"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -83,6 +85,10 @@ func (f *Function) Open() error {
 
 	if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
 		return err
+	}
+
+	if err := validator.Validate(&f.Config); err != nil {
+		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
 	}
 
 	r, err := runtime.ByName(f.Runtime)
