@@ -68,17 +68,16 @@ type Config struct {
 // against the function directory as the CWD, so os.Chdir() first.
 type Function struct {
 	Config
-	Path string
-	// LambdaName is used as a function name on AWS Lambda service side.
-	LambdaName string
-	Service    lambdaiface.LambdaAPI
-	Log        log.Interface
-	runtime    runtime.Runtime
-	env        map[string]string
+	Path    string
+	Prefix  string
+	Service lambdaiface.LambdaAPI
+	Log     log.Interface
+	runtime runtime.Runtime
+	env     map[string]string
 }
 
 // Open the function.json file and prime the config.
-func (f *Function) Open(projectName string) error {
+func (f *Function) Open() error {
 	p, err := os.Open(filepath.Join(f.Path, "function.json"))
 	if err != nil {
 		return err
@@ -91,8 +90,6 @@ func (f *Function) Open(projectName string) error {
 	if err := validator.Validate(&f.Config); err != nil {
 		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
 	}
-
-	f.setLambdaName(projectName)
 
 	r, err := runtime.ByName(f.Runtime)
 	if err != nil {
@@ -157,7 +154,7 @@ func (f *Function) DeployConfig() error {
 	f.Log.Info("deploying config")
 
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
 		Description:  &f.Description,
@@ -172,7 +169,7 @@ func (f *Function) DeployConfig() error {
 func (f *Function) Delete() error {
 	f.Log.Info("deleting")
 	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 	})
 	return err
 }
@@ -181,7 +178,7 @@ func (f *Function) Delete() error {
 func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
 	f.Log.Info("fetching config")
 	return f.Service.GetFunction(&lambda.GetFunctionInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 	})
 }
 
@@ -190,7 +187,7 @@ func (f *Function) Update(zip []byte) error {
 	f.Log.Info("updating function")
 
 	updated, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 		Publish:      aws.Bool(true),
 		ZipFile:      zip,
 	})
@@ -202,7 +199,7 @@ func (f *Function) Update(zip []byte) error {
 	f.Log.Info("updating alias")
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.LambdaName,
+		FunctionName:    f.name(),
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: updated.Version,
 	})
@@ -215,7 +212,7 @@ func (f *Function) Create(zip []byte) error {
 	f.Log.Info("creating function")
 
 	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 		Description:  &f.Description,
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
@@ -235,7 +232,7 @@ func (f *Function) Create(zip []byte) error {
 	f.Log.Info("creating alias")
 
 	_, err = f.Service.CreateAlias(&lambda.CreateAliasInput{
-		FunctionName:    &f.LambdaName,
+		FunctionName:    f.name(),
 		FunctionVersion: created.Version,
 		Name:            aws.String(CurrentAlias),
 	})
@@ -257,7 +254,7 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 
 	res, err := f.Service.Invoke(&lambda.InvokeInput{
 		ClientContext:  aws.String(base64.StdEncoding.EncodeToString(contextBytes)),
-		FunctionName:   &f.LambdaName,
+		FunctionName:   f.name(),
 		InvocationType: aws.String(string(kind)),
 		LogType:        aws.String("Tail"),
 		Qualifier:      aws.String(CurrentAlias),
@@ -294,7 +291,7 @@ func (f *Function) Rollback() error {
 	f.Log.Info("rolling back")
 
 	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 		Name:         aws.String(CurrentAlias),
 	})
 	if err != nil {
@@ -304,7 +301,7 @@ func (f *Function) Rollback() error {
 	f.Log.Infof("current version: %s", *alias.FunctionVersion)
 
 	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 	})
 	if err != nil {
 		return err
@@ -326,7 +323,7 @@ func (f *Function) Rollback() error {
 	f.Log.Infof("rollback to version: %s", rollbackToVersion)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.LambdaName,
+		FunctionName:    f.name(),
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: &rollbackToVersion,
 	})
@@ -339,7 +336,7 @@ func (f *Function) RollbackVersion(version string) error {
 	f.Log.Info("rolling back")
 
 	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &f.LambdaName,
+		FunctionName: f.name(),
 		Name:         aws.String(CurrentAlias),
 	})
 	if err != nil {
@@ -353,7 +350,7 @@ func (f *Function) RollbackVersion(version string) error {
 	}
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.LambdaName,
+		FunctionName:    f.name(),
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: &version,
 	})
@@ -428,7 +425,13 @@ func (f *Function) ZipBytes() ([]byte, error) {
 	return b, nil
 }
 
-// setLambdaName sets LambdaName field.
-func (f *Function) setLambdaName(projectName string) {
-	f.LambdaName = fmt.Sprintf("%s_%s", projectName, f.Name)
+// name returns the canonical Lambda function name with optional prefix.
+// This is used to prevent collisions with multiple projects using the
+// same function names.
+func (f *Function) name() *string {
+	if f.Prefix == "" {
+		return aws.String(f.Name)
+	} else {
+		return aws.String(fmt.Sprintf("%s_%s", f.Prefix, f.Name))
+	}
 }

@@ -210,11 +210,12 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 
 	fn := &function.Function{
 		Path:    dir,
+		Prefix:  p.Name,
 		Service: p.Service,
 		Log:     p.Log.WithField("function", name),
 	}
 
-	if err := fn.Open(p.Name); err != nil {
+	if err := fn.Open(); err != nil {
 		return nil, err
 	}
 

@@ -1,10 +1,9 @@
-package function_test
+package function
 
 import (
 	"errors"
 	"testing"
 
-	"github.com/apex/apex/function"
 	"github.com/apex/apex/mock"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
@@ -19,41 +18,60 @@ func init() {
 }
 
 func TestFunction_Open_requireConfigValues(t *testing.T) {
-	fn := &function.Function{
+	fn := &Function{
 		Path: "../fixtures/function/invalidName",
 		Log:  log.Log,
 	}
-	nameErr := fn.Open("")
+	nameErr := fn.Open()
 
-	fn = &function.Function{
+	fn = &Function{
 		Path: "../fixtures/function/invalidRuntime",
 		Log:  log.Log,
 	}
-	runtimeErr := fn.Open("")
+	runtimeErr := fn.Open()
 
-	fn = &function.Function{
+	fn = &Function{
 		Path: "../fixtures/function/invalidMemory",
 		Log:  log.Log,
 	}
-	memoryErr := fn.Open("")
+	memoryErr := fn.Open()
 
-	fn = &function.Function{
+	fn = &Function{
 		Path: "../fixtures/function/invalidTimeout",
 		Log:  log.Log,
 	}
-	timeoutErr := fn.Open("")
+	timeoutErr := fn.Open()
 
-	fn = &function.Function{
+	fn = &Function{
 		Path: "../fixtures/function/invalidRole",
 		Log:  log.Log,
 	}
-	roleErr := fn.Open("")
+	roleErr := fn.Open()
 
 	assert.Contains(t, nameErr.Error(), "Name: zero value")
 	assert.Contains(t, runtimeErr.Error(), "Runtime: zero value")
 	assert.Contains(t, memoryErr.Error(), "Memory: zero value")
 	assert.Contains(t, timeoutErr.Error(), "Timeout: zero value")
 	assert.Contains(t, roleErr.Error(), "Role: zero value")
+}
+
+func TestFunction_name(t *testing.T) {
+	{
+		fn := &Function{
+			Config: Config{Name: "foo"},
+		}
+
+		assert.Equal(t, "foo", *fn.name())
+	}
+
+	{
+		fn := &Function{
+			Config: Config{Name: "foo"},
+			Prefix: "some",
+		}
+
+		assert.Equal(t, "some_foo", *fn.name())
+	}
 }
 
 func TestFunction_Delete_success(t *testing.T) {
@@ -65,10 +83,10 @@ func TestFunction_Delete_success(t *testing.T) {
 		FunctionName: aws.String("testfn"),
 	}).Return(&lambda.DeleteFunctionOutput{}, nil)
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Delete()
 
@@ -82,10 +100,10 @@ func TestFunction_Delete_failed(t *testing.T) {
 
 	serviceMock.EXPECT().DeleteFunction(gomock.Any()).Return(nil, errors.New("API err"))
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Delete()
 
@@ -102,10 +120,10 @@ func TestFunction_Rollback_GetAlias_failed(t *testing.T) {
 		Name:         aws.String("current"),
 	}).Return(nil, errors.New("API err"))
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -122,10 +140,10 @@ func TestFunction_Rollback_ListVersions_failed(t *testing.T) {
 		FunctionName: aws.String("testfn"),
 	}).Return(nil, errors.New("API err"))
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -142,10 +160,10 @@ func TestFunction_Rollback_fewVersions(t *testing.T) {
 		Versions: []*lambda.FunctionConfiguration{&lambda.FunctionConfiguration{Version: aws.String("$LATEST")}},
 	}, nil)
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -172,10 +190,10 @@ func TestFunction_Rollback_previousVersion(t *testing.T) {
 		FunctionVersion: afterRollbackVersion,
 	})
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -202,10 +220,10 @@ func TestFunction_Rollback_latestVersion(t *testing.T) {
 		FunctionVersion: afterRollbackVersion,
 	})
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -227,10 +245,10 @@ func TestFunction_Rollback_UpdateAlias_failed(t *testing.T) {
 	}, nil)
 	serviceMock.EXPECT().UpdateAlias(gomock.Any()).Return(nil, errors.New("API err"))
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.Rollback()
 
@@ -244,13 +262,13 @@ func TestFunction_RollbackVersion_GetAlias_failed(t *testing.T) {
 
 	serviceMock.EXPECT().GetAlias(&lambda.GetAliasInput{
 		FunctionName: aws.String("testfn"),
-		Name:         aws.String(function.CurrentAlias),
+		Name:         aws.String(CurrentAlias),
 	}).Return(nil, errors.New("API err"))
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.RollbackVersion("1")
 
@@ -265,7 +283,7 @@ func TestFunction_RollbackVersion_sameVersion(t *testing.T) {
 	currentVersion := aws.String("2")
 	serviceMock.EXPECT().GetAlias(gomock.Any()).Return(&lambda.AliasConfiguration{FunctionVersion: currentVersion}, nil)
 
-	fn := &function.Function{
+	fn := &Function{
 		Service: serviceMock,
 		Log:     log.Log,
 	}
@@ -284,14 +302,14 @@ func TestFunction_RollbackVersion_success(t *testing.T) {
 	serviceMock.EXPECT().GetAlias(gomock.Any()).Return(&lambda.AliasConfiguration{FunctionVersion: &currentVersion}, nil)
 	serviceMock.EXPECT().UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    aws.String("testfn"),
-		Name:            aws.String(function.CurrentAlias),
+		Name:            aws.String(CurrentAlias),
 		FunctionVersion: &specifiedVersion,
 	})
 
-	fn := &function.Function{
-		LambdaName: "testfn",
-		Service:    serviceMock,
-		Log:        log.Log,
+	fn := &Function{
+		Config:  Config{Name: "testfn"},
+		Service: serviceMock,
+		Log:     log.Log,
 	}
 	err := fn.RollbackVersion("3")
 
