@@ -11,11 +11,13 @@ import (
 	_ "github.com/apex/apex/runtime/python"
 
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/logs"
 	"github.com/apex/apex/project"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/text"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/segmentio/go-prompt"
 	"github.com/tj/docopt"
@@ -29,12 +31,14 @@ const usage = `
     apex delete [options] [<name>...]
     apex invoke [options] <name> [--async] [-v]
     apex rollback [options] <name> [<version>]
+    apex logs [options] <name> [--filter pattern]
     apex build [options] <name>
     apex list [options]
     apex -h | --help
     apex --version
 
   Options:
+    -F, --filter pattern    Filter logs with pattern [default: ]
     -l, --log-level level   Log severity level [default: info]
     -a, --async             Async invocation
     -C, --chdir path        Working directory
@@ -113,6 +117,8 @@ func main() {
 		rollback(project, args["<name>"].([]string), args["<version>"])
 	case args["build"].(bool):
 		build(project, args["<name>"].([]string))
+	case args["logs"].(bool):
+		tail(project, args["<name>"].([]string), args["--filter"].(string))
 	}
 }
 
@@ -249,6 +255,28 @@ func build(project *project.Project, name []string) {
 
 	_, err = io.Copy(os.Stdout, zip)
 	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
+
+// tail outputs logs with optional filter pattern.
+func tail(project *project.Project, name []string, filter string) {
+	service := cloudwatchlogs.New(session.New(aws.NewConfig()))
+
+	group := fmt.Sprintf("/aws/lambda/%s_%s", project.Name, name[0])
+
+	l := logs.Logs{
+		LogGroupName:  group,
+		FilterPattern: filter,
+		Service:       service,
+		Log:           log.Log,
+	}
+
+	for event := range l.Tail() {
+		fmt.Printf("%s", *event.Message)
+	}
+
+	if err := l.Err(); err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }
