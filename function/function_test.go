@@ -23,31 +23,31 @@ func TestFunction_Open_requireConfigValues(t *testing.T) {
 		Path: "../fixtures/function/invalidName",
 		Log:  log.Log,
 	}
-	nameErr := fn.Open()
+	nameErr := fn.Open("")
 
 	fn = &function.Function{
 		Path: "../fixtures/function/invalidRuntime",
 		Log:  log.Log,
 	}
-	runtimeErr := fn.Open()
+	runtimeErr := fn.Open("")
 
 	fn = &function.Function{
 		Path: "../fixtures/function/invalidMemory",
 		Log:  log.Log,
 	}
-	memoryErr := fn.Open()
+	memoryErr := fn.Open("")
 
 	fn = &function.Function{
 		Path: "../fixtures/function/invalidTimeout",
 		Log:  log.Log,
 	}
-	timeoutErr := fn.Open()
+	timeoutErr := fn.Open("")
 
 	fn = &function.Function{
 		Path: "../fixtures/function/invalidRole",
 		Log:  log.Log,
 	}
-	roleErr := fn.Open()
+	roleErr := fn.Open("")
 
 	assert.Contains(t, nameErr.Error(), "Name: zero value")
 	assert.Contains(t, runtimeErr.Error(), "Runtime: zero value")
