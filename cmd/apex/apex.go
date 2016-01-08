@@ -263,6 +263,8 @@ func build(project *project.Project, name []string) {
 func tail(project *project.Project, name []string, filter string) {
 	service := cloudwatchlogs.New(session.New(aws.NewConfig()))
 
+	// TODO(tj): refactor logs.Logs to take Project so this hack
+	// can be removed, it'll also make multi-function tailing easier
 	group := fmt.Sprintf("/aws/lambda/%s_%s", project.Name, name[0])
 
 	l := logs.Logs{
