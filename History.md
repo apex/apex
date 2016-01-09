@@ -1,4 +1,13 @@
 
+v0.3.0 / 2016-01-09
+===================
+
+  * add Project.Name function prefixes to prevent collisions
+  * add Function.Prefix support
+  * add initial log tailing
+  * add basic config validation
+  * remove old Function.Verbose field
+
 v0.2.0 / 2016-01-06
 ===================
 
