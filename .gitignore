@@ -2,3 +2,4 @@ main
 *.zip
 .DS_Store
 examples/go/main
+cov.out
