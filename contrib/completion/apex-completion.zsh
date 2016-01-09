@@ -37,6 +37,7 @@ _apex ()
             local -a subcommands
             subcommands=(
 				'rollback'
+				'logs'
 				'invoke'
 				'deploy'
 				'list'
@@ -50,6 +51,9 @@ _apex ()
             case $line[1] in
                 rollback)
                     _apex-rollback
+                ;;
+                logs)
+                    _apex-logs
                 ;;
                 invoke)
                     _apex-invoke
@@ -83,6 +87,23 @@ _apex-rollback ()
 
     else
         myargs=('<name>' '<version>')
+        _message_next_arg
+    fi
+}
+
+_apex-logs ()
+{
+    local context state state_descr line
+    typeset -A opt_args
+
+    if [[ $words[$CURRENT] == -* ]] ; then
+        _arguments -C \
+        ':command:->command' \
+		'(-F=-)-F=-' \
+		'(--filter=-)--filter=-' \
+
+    else
+        myargs=('<name>')
         _message_next_arg
     fi
 }

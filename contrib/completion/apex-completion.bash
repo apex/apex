@@ -5,11 +5,14 @@ _apex()
     cur="${COMP_WORDS[COMP_CWORD]}"
 
     if [ $COMP_CWORD -eq 1 ]; then
-        COMPREPLY=( $( compgen -W '-h --help -h --help -V --version rollback invoke deploy list build delete' -- $cur) )
+        COMPREPLY=( $( compgen -W '-h --help -h --help -V --version rollback logs invoke deploy list build delete' -- $cur) )
     else
         case ${COMP_WORDS[1]} in
             rollback)
             _apex_rollback
+        ;;
+            logs)
+            _apex_logs
         ;;
             invoke)
             _apex_invoke
@@ -38,6 +41,16 @@ _apex_rollback()
 
     if [ $COMP_CWORD -ge 2 ]; then
         COMPREPLY=( $( compgen -fW ' ' -- $cur) )
+    fi
+}
+
+_apex_logs()
+{
+    local cur
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    if [ $COMP_CWORD -ge 2 ]; then
+        COMPREPLY=( $( compgen -fW '-F= --filter= ' -- $cur) )
     fi
 }
 
