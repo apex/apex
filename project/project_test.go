@@ -15,7 +15,7 @@ func init() {
 
 func TestProject_Open_requireConfigValues(t *testing.T) {
 	p := &project.Project{
-		Path: "../fixtures/project/invalidName",
+		Path: "_fixtures/invalidName",
 		Log:  log.Log,
 	}
 	nameErr := p.Open()

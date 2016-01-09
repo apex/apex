@@ -19,31 +19,31 @@ func init() {
 
 func TestFunction_Open_requireConfigValues(t *testing.T) {
 	fn := &Function{
-		Path: "../fixtures/function/invalidName",
+		Path: "_fixtures/invalidName",
 		Log:  log.Log,
 	}
 	nameErr := fn.Open()
 
 	fn = &Function{
-		Path: "../fixtures/function/invalidRuntime",
+		Path: "_fixtures/invalidRuntime",
 		Log:  log.Log,
 	}
 	runtimeErr := fn.Open()
 
 	fn = &Function{
-		Path: "../fixtures/function/invalidMemory",
+		Path: "_fixtures/invalidMemory",
 		Log:  log.Log,
 	}
 	memoryErr := fn.Open()
 
 	fn = &Function{
-		Path: "../fixtures/function/invalidTimeout",
+		Path: "_fixtures/invalidTimeout",
 		Log:  log.Log,
 	}
 	timeoutErr := fn.Open()
 
 	fn = &Function{
-		Path: "../fixtures/function/invalidRole",
+		Path: "_fixtures/invalidRole",
 		Log:  log.Log,
 	}
 	roleErr := fn.Open()
