@@ -294,6 +294,7 @@ func (f *Function) Rollback() error {
 		FunctionName: f.name(),
 		Name:         aws.String(CurrentAlias),
 	})
+
 	if err != nil {
 		return err
 	}
@@ -303,29 +304,30 @@ func (f *Function) Rollback() error {
 	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
 		FunctionName: f.name(),
 	})
+
 	if err != nil {
 		return err
 	}
 
-	versions := list.Versions
-	_, versions = versions[0], versions[1:] // remove $LATEST
+	versions := list.Versions[1:] // remove $LATEST
 	if len(versions) < 2 {
 		return errors.New("Can't rollback. Only one version deployed.")
 	}
-	latestVersion := *versions[len(versions)-1].Version
-	prevVersion := *versions[len(versions)-2].Version
 
-	rollbackToVersion := latestVersion
-	if *alias.FunctionVersion == latestVersion {
-		rollbackToVersion = prevVersion
+	latest := *versions[len(versions)-1].Version
+	prev := *versions[len(versions)-2].Version
+	rollback := latest
+
+	if *alias.FunctionVersion == latest {
+		rollback = prev
 	}
 
-	f.Log.Infof("rollback to version: %s", rollbackToVersion)
+	f.Log.Infof("rollback to version: %s", rollback)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    f.name(),
 		Name:            aws.String(CurrentAlias),
-		FunctionVersion: &rollbackToVersion,
+		FunctionVersion: &rollback,
 	})
 
 	return err
@@ -339,6 +341,7 @@ func (f *Function) RollbackVersion(version string) error {
 		FunctionName: f.name(),
 		Name:         aws.String(CurrentAlias),
 	})
+
 	if err != nil {
 		return err
 	}
