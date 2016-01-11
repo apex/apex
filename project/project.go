@@ -16,6 +16,13 @@ import (
 	"github.com/tj/go-sync/semaphore"
 )
 
+const (
+	// Memory defines default memory value for every function in a project
+	Memory = 128
+	// Timeout defines default timeout value for every function in a project
+	Timeout = 3
+)
+
 // ErrNotFound is returned when a function cannot be found.
 var ErrNotFound = errors.New("project: no function found")
 
@@ -41,6 +48,9 @@ type Project struct {
 
 // Open the project.json file and prime the config.
 func (p *Project) Open() error {
+	p.Config.Memory = Memory
+	p.Config.Timeout = Timeout
+
 	if p.Concurrency == 0 {
 		p.Concurrency = 3
 	}
