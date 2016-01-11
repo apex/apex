@@ -17,10 +17,10 @@ import (
 )
 
 const (
-	// Memory defines default memory value for every function in a project
-	Memory = 128
-	// Timeout defines default timeout value for every function in a project
-	Timeout = 3
+	// DefaultMemory defines default memory value (MB) for every function in a project
+	DefaultMemory = 128
+	// DefaultTimeout defines default timeout value (s) for every function in a project
+	DefaultTimeout = 3
 )
 
 // ErrNotFound is returned when a function cannot be found.
@@ -48,8 +48,8 @@ type Project struct {
 
 // Open the project.json file and prime the config.
 func (p *Project) Open() error {
-	p.Config.Memory = Memory
-	p.Config.Timeout = Timeout
+	p.Config.Memory = DefaultMemory
+	p.Config.Timeout = DefaultTimeout
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 3
