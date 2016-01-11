@@ -16,6 +16,13 @@ import (
 	"github.com/tj/go-sync/semaphore"
 )
 
+const (
+	// DefaultMemory defines default memory value (MB) for every function in a project
+	DefaultMemory = 128
+	// DefaultTimeout defines default timeout value (s) for every function in a project
+	DefaultTimeout = 3
+)
+
 // ErrNotFound is returned when a function cannot be found.
 var ErrNotFound = errors.New("project: no function found")
 
@@ -23,6 +30,10 @@ var ErrNotFound = errors.New("project: no function found")
 type Config struct {
 	Name        string `json:"name" validate:"nonzero"`
 	Description string `json:"description"`
+	Runtime     string `json:"runtime"`
+	Memory      int64  `json:"memory"`
+	Timeout     int64  `json:"timeout"`
+	Role        string `json:"role"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -37,6 +48,9 @@ type Project struct {
 
 // Open the project.json file and prime the config.
 func (p *Project) Open() error {
+	p.Config.Memory = DefaultMemory
+	p.Config.Timeout = DefaultTimeout
+
 	if p.Concurrency == 0 {
 		p.Concurrency = 3
 	}
@@ -209,6 +223,12 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 	p.Log.Debugf("loading function %s", dir)
 
 	fn := &function.Function{
+		Config: function.Config{
+			Runtime: p.Config.Runtime,
+			Memory:  p.Config.Memory,
+			Timeout: p.Config.Timeout,
+			Role:    p.Config.Role,
+		},
 		Path:    dir,
 		Prefix:  p.Name,
 		Service: p.Service,
