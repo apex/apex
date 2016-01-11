@@ -23,6 +23,10 @@ var ErrNotFound = errors.New("project: no function found")
 type Config struct {
 	Name        string `json:"name" validate:"nonzero"`
 	Description string `json:"description"`
+	Runtime     string `json:"runtime"`
+	Memory      int64  `json:"memory"`
+	Timeout     int64  `json:"timeout"`
+	Role        string `json:"role"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -209,6 +213,12 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 	p.Log.Debugf("loading function %s", dir)
 
 	fn := &function.Function{
+		Config: function.Config{
+			Runtime: p.Config.Runtime,
+			Memory:  p.Config.Memory,
+			Timeout: p.Config.Timeout,
+			Role:    p.Config.Role,
+		},
 		Path:    dir,
 		Prefix:  p.Name,
 		Service: p.Service,
