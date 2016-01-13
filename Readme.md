@@ -30,6 +30,7 @@ Currently supports:
 - Function rollback support
 - Tail function CloudWatchLogs
 - Concurrency for quick deploys
+- Dry-run to preview changes
 
 ## Example
 

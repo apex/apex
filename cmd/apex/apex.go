@@ -10,6 +10,7 @@ import (
 	_ "github.com/apex/apex/runtime/nodejs"
 	_ "github.com/apex/apex/runtime/python"
 
+	"github.com/apex/apex/dryrun"
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/logs"
 	"github.com/apex/apex/project"
@@ -38,6 +39,7 @@ const usage = `
     apex --version
 
   Options:
+    -D, --dry-run           Perform a dry-run
     -F, --filter pattern    Filter logs with pattern [default: ]
     -l, --log-level level   Log severity level [default: info]
     -a, --async             Async invocation
@@ -88,10 +90,19 @@ func main() {
 		log.SetLevel(l)
 	}
 
+	session := session.New(aws.NewConfig())
+
 	project := &project.Project{
-		Service: lambda.New(session.New(aws.NewConfig())),
-		Log:     log.Log,
-		Path:    ".",
+		Log:  log.Log,
+		Path: ".",
+	}
+
+	if args["--dry-run"].(bool) {
+		log.SetLevel(log.WarnLevel)
+		project.Service = dryrun.New(session)
+		project.Concurrency = 1
+	} else {
+		project.Service = lambda.New(session)
 	}
 
 	if dir, ok := args["--chdir"].(string); ok {

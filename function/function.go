@@ -182,7 +182,7 @@ func (f *Function) Delete() error {
 
 // Info returns the function information.
 func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
-	f.Log.Info("fetching config")
+	f.Log.Debug("fetching config")
 	return f.Service.GetFunction(&lambda.GetFunctionInput{
 		FunctionName: f.name(),
 	})

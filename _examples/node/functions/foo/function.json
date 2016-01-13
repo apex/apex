@@ -1,4 +1,6 @@
 {
-  "name": "foobar",
-  "description": "Node.js example function"
+  "name": "foo",
+  "description": "Node.js example function",
+  "timeout": 10,
+  "memory": 128
 }
