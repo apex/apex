@@ -1,6 +1,6 @@
 {
   "name": "foo",
   "description": "Node.js example function",
-  "timeout": 5,
-  "memory": 512
+  "timeout": 10,
+  "memory": 128
 }

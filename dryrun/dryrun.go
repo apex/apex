@@ -21,14 +21,7 @@ const (
 	gray   = 37
 )
 
-type change struct {
-	Name string
-	From interface{}
-	To   interface{}
-}
-
 // TODO(tj): sync so concurrent writes don't race
-// TODO(tj): spend more time on nicer output
 
 // Lambda is a partially implemented Lambda API implementation used to perform a dry-run.
 type Lambda struct {
@@ -37,6 +30,7 @@ type Lambda struct {
 
 // New dry-run Lambda service for the given session.
 func New(session *session.Session) *Lambda {
+	fmt.Printf("\n")
 	return &Lambda{
 		Lambda: lambda.New(session),
 	}
@@ -44,7 +38,12 @@ func New(session *session.Session) *Lambda {
 
 // CreateFunction stub.
 func (l *Lambda) CreateFunction(in *lambda.CreateFunctionInput) (*lambda.FunctionConfiguration, error) {
-	l.createf("function", *in.FunctionName, "runtime=%s memory=%d timeout=%d handler=%s", *in.Runtime, *in.MemorySize, *in.Timeout, *in.Handler)
+	l.create("function", *in.FunctionName, map[string]interface{}{
+		"runtime": *in.Runtime,
+		"memory":  *in.MemorySize,
+		"timeout": *in.Timeout,
+		"handler": *in.Handler,
+	})
 
 	out := &lambda.FunctionConfiguration{
 		Version: aws.String("1"),
@@ -69,7 +68,9 @@ func (l *Lambda) UpdateFunctionCode(in *lambda.UpdateFunctionCodeInput) (*lambda
 	remoteSize := uint64(*res.Configuration.CodeSize)
 
 	if checksum != remoteChecksum {
-		l.updatef("function", *in.FunctionName, "%s -> %s", humanize.Bytes(size), humanize.Bytes(remoteSize))
+		l.create("function", *in.FunctionName, map[string]interface{}{
+			"size": fmt.Sprintf("%s -> %s", humanize.Bytes(remoteSize), humanize.Bytes(size)),
+		})
 	}
 
 	out := &lambda.FunctionConfiguration{
@@ -95,58 +96,30 @@ func (l *Lambda) UpdateFunctionConfiguration(in *lambda.UpdateFunctionConfigurat
 		return nil, err
 	}
 
-	var changes []change
+	m := make(map[string]interface{})
 
 	if *in.Description != *res.Description {
-		changes = append(changes, change{
-			Name: "description",
-			From: *res.Description,
-			To:   *in.Description,
-		})
+		m["description"] = fmt.Sprintf("%q -> %q", *res.Description, *in.Description)
 	}
 
 	if *in.Handler != *res.Handler {
-		changes = append(changes, change{
-			Name: "handler",
-			From: *res.Handler,
-			To:   *in.Handler,
-		})
+		m["handler"] = fmt.Sprintf("%s -> %s", *res.Handler, *in.Handler)
 	}
 
 	if *in.MemorySize != *res.MemorySize {
-		changes = append(changes, change{
-			Name: "memory",
-			From: *res.MemorySize,
-			To:   *in.MemorySize,
-		})
+		m["memory"] = fmt.Sprintf("%v -> %v", *res.MemorySize, *in.MemorySize)
 	}
 
 	if *in.Role != *res.Role {
-		changes = append(changes, change{
-			Name: "role",
-			From: *res.Role,
-			To:   *in.Role,
-		})
+		m["role"] = fmt.Sprintf("%v -> %v", *res.Role, *in.Role)
 	}
 
 	if *in.Timeout != *res.Timeout {
-		changes = append(changes, change{
-			Name: "timeout",
-			From: *res.Timeout,
-			To:   *in.Timeout,
-		})
+		m["timeout"] = fmt.Sprintf("%v -> %v", *res.Timeout, *in.Timeout)
 	}
 
-	if len(changes) > 0 {
-		l.updatef("config", *in.FunctionName, "")
-		for _, change := range changes {
-			switch change.From.(type) {
-			case string:
-				l.updatef("config", change.Name, "%q -> %q", change.From, change.To)
-			default:
-				l.updatef("config", change.Name, "%v -> %v", change.From, change.To)
-			}
-		}
+	if len(m) > 0 {
+		l.update("config", *in.FunctionName, m)
 	}
 
 	return nil, nil
@@ -154,33 +127,47 @@ func (l *Lambda) UpdateFunctionConfiguration(in *lambda.UpdateFunctionConfigurat
 
 // DeleteFunction stub.
 func (l *Lambda) DeleteFunction(in *lambda.DeleteFunctionInput) (*lambda.DeleteFunctionOutput, error) {
-	l.removef("function", *in.FunctionName, "")
+	l.remove("function", *in.FunctionName, nil)
 	return nil, nil
 }
 
 // CreateAlias stub.
 func (l *Lambda) CreateAlias(in *lambda.CreateAliasInput) (*lambda.AliasConfiguration, error) {
-	l.createf("alias", *in.FunctionName, "%s -> %s", *in.Name, *in.FunctionVersion)
+	l.create("alias", *in.FunctionName, map[string]interface{}{
+		"alias":   *in.Name,
+		"version": *in.FunctionVersion,
+	})
 	return nil, nil
 }
 
 // UpdateAlias stub.
 func (l *Lambda) UpdateAlias(in *lambda.UpdateAliasInput) (*lambda.AliasConfiguration, error) {
-	l.updatef("alias", *in.FunctionName, "%s -> %s", *in.Name, *in.FunctionVersion)
+	l.update("alias", *in.FunctionName, map[string]interface{}{
+		"alias":   *in.Name,
+		"version": *in.FunctionVersion,
+	})
 	return nil, nil
 }
 
+func (l *Lambda) log(kind, name string, m map[string]interface{}, symbol rune, color int) {
+	fmt.Printf("  \033[%dm%c %s\033[0m \033[%dm%s\033[0m\n", color, symbol, kind, blue, name)
+	for k, v := range m {
+		fmt.Printf("    \033[%dm%s\033[0m: %v\n", color, k, v)
+	}
+	fmt.Printf("\n")
+}
+
 // create message.
-func (l *Lambda) createf(key, name, msg string, args ...interface{}) {
-	fmt.Printf("  \033[%dm+ %-10s\033[0m \033[%dm%-13s\033[0m %s\n", green, key, blue, name, fmt.Sprintf(msg, args...))
+func (l *Lambda) create(kind, name string, m map[string]interface{}) {
+	l.log(kind, name, m, '+', green)
 }
 
 // update message.
-func (l *Lambda) updatef(key, name, msg string, args ...interface{}) {
-	fmt.Printf("  \033[%dm~ %-10s\033[0m \033[%dm%-13s\033[0m %s\n", yellow, key, blue, name, fmt.Sprintf(msg, args...))
+func (l *Lambda) update(kind, name string, m map[string]interface{}) {
+	l.log(kind, name, m, '~', yellow)
 }
 
 // remove message.
-func (l *Lambda) removef(key, name, msg string, args ...interface{}) {
-	fmt.Printf("  \033[%dm- %-10s\033[0m \033[%dm%-13s\033[0m %s\n", red, key, blue, name, fmt.Sprintf(msg, args...))
+func (l *Lambda) remove(kind, name string, m map[string]interface{}) {
+	l.log(kind, name, m, '-', red)
 }

@@ -1,6 +1,6 @@
 {
   "name": "bar",
   "description": "Node.js example function",
-  "timeout": 2,
-  "memory": 256
+  "timeout": 1,
+  "memory": 512
 }
