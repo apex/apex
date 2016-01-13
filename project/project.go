@@ -177,8 +177,8 @@ func (p *Project) FunctionByName(name string) (*function.Function, error) {
 	return nil, ErrNotFound
 }
 
-// FunctionNames returns a list of function names sans-directory.
-func (p *Project) FunctionNames() (list []string, err error) {
+// FunctionDirNames returns a list of function directory names.
+func (p *Project) FunctionDirNames() (list []string, err error) {
 	dir := filepath.Join(p.Path, "functions")
 
 	files, err := ioutil.ReadDir(dir)
@@ -195,12 +195,21 @@ func (p *Project) FunctionNames() (list []string, err error) {
 	return list, nil
 }
 
+// FunctionNames returns a list of function names sans-directory.
+func (p *Project) FunctionNames() (list []string) {
+	for _, fn := range p.Functions {
+		list = append(list, fn.Config.Name)
+	}
+
+	return list
+}
+
 // loadFunctions reads the ./functions directory, populating the Functions field.
 func (p *Project) loadFunctions() error {
 	dir := filepath.Join(p.Path, "functions")
 	p.Log.Debugf("loading functions in %s", dir)
 
-	names, err := p.FunctionNames()
+	names, err := p.FunctionDirNames()
 	if err != nil {
 		return err
 	}
@@ -217,13 +226,14 @@ func (p *Project) loadFunctions() error {
 	return nil
 }
 
-// loadFunction returns the function in the ./functions/<name> directory.
-func (p *Project) loadFunction(name string) (*function.Function, error) {
-	dir := filepath.Join(p.Path, "functions", name)
-	p.Log.Debugf("loading function %s", dir)
+// loadFunction returns the function in the ./functions/<dirname> directory.
+func (p *Project) loadFunction(dirname string) (*function.Function, error) {
+	dir := filepath.Join(p.Path, "functions", dirname)
+	p.Log.Debugf("loading function in %s", dir)
 
 	fn := &function.Function{
 		Config: function.Config{
+			Name:    dirname,
 			Runtime: p.Config.Runtime,
 			Memory:  p.Config.Memory,
 			Timeout: p.Config.Timeout,
@@ -232,7 +242,7 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 		Path:    dir,
 		Prefix:  p.Name,
 		Service: p.Service,
-		Log:     p.Log.WithField("function", name),
+		Log:     p.Log,
 	}
 
 	if err := fn.Open(); err != nil {

@@ -1,4 +1,4 @@
 {
-  "name": "baz",
-  "description": "Go example function"
+  "description": "Go example function",
+  "timeout": 10
 }

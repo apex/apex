@@ -179,14 +179,8 @@ func invoke(project *project.Project, name []string, verbose, async bool) {
 
 // deploy code and config changes.
 func deploy(project *project.Project, names []string) {
-	var err error
-
 	if len(names) == 0 {
-		names, err = project.FunctionNames()
-	}
-
-	if err != nil {
-		log.Fatalf("error: %s", err)
+		names = project.FunctionNames()
 	}
 
 	if err := project.DeployAndClean(names); err != nil {
@@ -196,14 +190,8 @@ func deploy(project *project.Project, names []string) {
 
 // delete the functions.
 func delete(project *project.Project, names []string, force bool) {
-	var err error
-
 	if len(names) == 0 {
-		names, err = project.FunctionNames()
-	}
-
-	if err != nil {
-		log.Fatalf("error: %s", err)
+		names = project.FunctionNames()
 	}
 
 	if !force && len(names) > 1 {

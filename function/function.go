@@ -101,6 +101,8 @@ func (f *Function) Open() error {
 	}
 	f.runtime = r
 
+	f.Log = f.Log.WithField("function", f.Name)
+
 	return nil
 }
 

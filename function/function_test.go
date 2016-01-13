@@ -66,6 +66,7 @@ func TestFunction_Open_detectRuntime(t *testing.T) {
 			Role:    "iamrole",
 		},
 		Path: "_fixtures/nodejsDefaultFile",
+		Log:  log.Log,
 	}
 
 	assert.Nil(t, fn.Open())
