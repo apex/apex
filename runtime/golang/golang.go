@@ -37,3 +37,7 @@ func (r *Runtime) Build(dir string) error {
 func (r *Runtime) Clean(dir string) error {
 	return os.Remove(filepath.Join(dir, "main"))
 }
+
+func (r *Runtime) DefaultFile() string {
+	return "main.go"
+}

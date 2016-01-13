@@ -21,3 +21,7 @@ func (r *Runtime) Handler() string {
 func (r *Runtime) Shimmed() bool {
 	return false
 }
+
+func (r *Runtime) DefaultFile() string {
+	return "index.js"
+}

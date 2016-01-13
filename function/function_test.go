@@ -4,6 +4,8 @@ import (
 	"errors"
 	"testing"
 
+	_ "github.com/apex/apex/runtime/nodejs"
+
 	"github.com/apex/apex/mock"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
@@ -53,6 +55,20 @@ func TestFunction_Open_requireConfigValues(t *testing.T) {
 	assert.Contains(t, memoryErr.Error(), "Memory: zero value")
 	assert.Contains(t, timeoutErr.Error(), "Timeout: zero value")
 	assert.Contains(t, roleErr.Error(), "Role: zero value")
+}
+
+func TestFunction_Open_detectRuntime(t *testing.T) {
+	fn := &Function{
+		Config: Config{
+			Name:    "foo",
+			Memory:  128,
+			Timeout: 3,
+			Role:    "iamrole",
+		},
+		Path: "_fixtures/nodejsDefaultFile",
+	}
+
+	assert.Nil(t, fn.Open())
 }
 
 func TestFunction_name(t *testing.T) {

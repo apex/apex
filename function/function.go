@@ -79,12 +79,16 @@ type Function struct {
 // Open the function.json file and prime the config.
 func (f *Function) Open() error {
 	p, err := os.Open(filepath.Join(f.Path, "function.json"))
-	if err != nil {
-		return err
+	if err == nil {
+		if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
+			return err
+		}
 	}
 
-	if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
-		return err
+	if f.Runtime == "" {
+		if runtimeName, err := runtime.Detect(f.Path); err == nil {
+			f.Runtime = runtimeName
+		}
 	}
 
 	if err := validator.Validate(&f.Config); err != nil {

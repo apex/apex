@@ -4,6 +4,8 @@ package runtime
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
 )
 
 // Registered runtimes.
@@ -20,6 +22,9 @@ type Runtime interface {
 
 	// Shimmed returns true if the program should be shimmed.
 	Shimmed() bool
+
+	// DefaultFile returns default name for a file with handler
+	DefaultFile() string
 }
 
 // CompiledRuntime is a language runtime requiring compilation.
@@ -46,4 +51,16 @@ func ByName(name string) (Runtime, error) {
 	}
 
 	return v, nil
+}
+
+// Detect returns the name of runtime based on DefaultFile. Function iterates over all runtimes and checks if
+// DefaultFile exists in specified directory.
+func Detect(path string) (string, error) {
+	for name, r := range runtimes {
+		if _, err := os.Stat(filepath.Join(path, r.DefaultFile())); err == nil {
+			return name, nil
+		}
+	}
+
+	return "", errors.New("runtime not detected")
 }
