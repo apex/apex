@@ -21,8 +21,6 @@ const (
 	gray   = 37
 )
 
-// TODO(tj): sync so concurrent writes don't race
-
 // Lambda is a partially implemented Lambda API implementation used to perform a dry-run.
 type Lambda struct {
 	*lambda.Lambda

@@ -100,6 +100,7 @@ func main() {
 	if args["--dry-run"].(bool) {
 		log.SetLevel(log.WarnLevel)
 		project.Service = dryrun.New(session)
+		project.Concurrency = 1
 	} else {
 		project.Service = lambda.New(session)
 	}
