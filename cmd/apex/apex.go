@@ -15,7 +15,7 @@ import (
 	"github.com/apex/apex/logs"
 	"github.com/apex/apex/project"
 	"github.com/apex/log"
-	"github.com/apex/log/handlers/text"
+	"github.com/apex/log/handlers/cli"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
@@ -84,7 +84,7 @@ func main() {
 		log.Fatalf("error: %s", err)
 	}
 
-	log.SetHandler(text.New(os.Stderr))
+	log.SetHandler(cli.Default)
 
 	if l, err := log.ParseLevel(args["--log-level"].(string)); err == nil {
 		log.SetLevel(l)
