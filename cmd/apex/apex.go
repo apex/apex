@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	_ "github.com/apex/apex/runtime/golang"
 	_ "github.com/apex/apex/runtime/nodejs"
@@ -28,7 +29,7 @@ var version = "0.3.0"
 
 const usage = `
   Usage:
-    apex deploy [options] [<name>...]
+    apex deploy [options] [<name>...] [--env name=val]...
     apex delete [options] [<name>...]
     apex invoke [options] <name> [--async] [-v]
     apex rollback [options] <name> [<version>]
@@ -39,6 +40,7 @@ const usage = `
     apex --version
 
   Options:
+    -e, --env name=val      Environment variable
     -D, --dry-run           Perform a dry-run
     -F, --filter pattern    Filter logs with pattern [default: ]
     -l, --log-level level   Log severity level [default: info]
@@ -119,7 +121,7 @@ func main() {
 	case args["list"].(bool):
 		list(project)
 	case args["deploy"].(bool):
-		deploy(project, args["<name>"].([]string))
+		deploy(project, args["<name>"].([]string), args["--env"].([]string))
 	case args["delete"].(bool):
 		delete(project, args["<name>"].([]string), args["--yes"].(bool))
 	case args["invoke"].(bool):
@@ -189,7 +191,12 @@ func invoke(project *project.Project, name []string, verbose, async bool) {
 }
 
 // deploy code and config changes.
-func deploy(project *project.Project, names []string) {
+func deploy(project *project.Project, names []string, env []string) {
+	for _, s := range env {
+		parts := strings.Split(s, "=")
+		project.SetEnv(parts[0], parts[1])
+	}
+
 	if len(names) == 0 {
 		names = project.FunctionNames()
 	}
