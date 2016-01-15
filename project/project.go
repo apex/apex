@@ -204,6 +204,13 @@ func (p *Project) FunctionNames() (list []string) {
 	return list
 }
 
+// SetEnv sets environment variable `name` to `value` on every function in project.
+func (p *Project) SetEnv(name, value string) {
+	for _, fn := range p.Functions {
+		fn.SetEnv(name, value)
+	}
+}
+
 // loadFunctions reads the ./functions directory, populating the Functions field.
 func (p *Project) loadFunctions() error {
 	dir := filepath.Join(p.Path, "functions")

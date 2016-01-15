@@ -387,7 +387,6 @@ func (f *Function) Zip() (io.Reader, error) {
 		}
 	}
 
-	// TODO(tj): remove or add --env flag back
 	if f.env != nil {
 		f.Log.Debugf("adding .env.json")
 
@@ -440,7 +439,7 @@ func (f *Function) ZipBytes() ([]byte, error) {
 func (f *Function) name() *string {
 	if f.Prefix == "" {
 		return aws.String(f.Name)
-	} else {
-		return aws.String(fmt.Sprintf("%s_%s", f.Prefix, f.Name))
 	}
+
+	return aws.String(fmt.Sprintf("%s_%s", f.Prefix, f.Name))
 }
