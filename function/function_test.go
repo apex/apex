@@ -72,25 +72,6 @@ func TestFunction_Open_detectRuntime(t *testing.T) {
 	assert.Nil(t, fn.Open())
 }
 
-func TestFunction_name(t *testing.T) {
-	{
-		fn := &Function{
-			Config: Config{Name: "foo"},
-		}
-
-		assert.Equal(t, "foo", *fn.name())
-	}
-
-	{
-		fn := &Function{
-			Config: Config{Name: "foo"},
-			Prefix: "some",
-		}
-
-		assert.Equal(t, "some_foo", *fn.name())
-	}
-}
-
 func TestFunction_Delete_success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
