@@ -172,12 +172,12 @@ func invoke(project *project.Project, name []string, verbose, async bool) {
 		}
 
 		if err != nil {
-			log.Fatalf("error: %s", err)
+			log.Fatalf("error parsing response: %s", err)
 		}
 
 		reply, logs, err := fn.Invoke(v.Event, v.Context, kind)
 		if err != nil {
-			log.Fatalf("error: %s", err)
+			log.Fatalf("error response: %s", err)
 		}
 
 		// TODO(tj) rename flag to --with-logs or --logs
