@@ -3,12 +3,6 @@ test:
 	@go test -cover ./...
 .PHONY: test
 
-cov:
-	@go test -covermode=count -coverprofile=cov.out ./$(PKG)
-	@go tool cover -html=cov.out
-	@rm cov.out
-.PHONY: cov
-
 build:
 	@gox -os="linux darwin windows" ./...
 .PHONY: build
