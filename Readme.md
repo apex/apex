@@ -133,8 +133,7 @@ Via ~/.aws configuration:
 ## Links
 
 - [Wiki](https://github.com/apex/apex/wiki)
-- [Project Examples](_examples)
-- [CLI Examples](https://github.com/apex/apex/blob/master/cmd/apex/apex.go#L46)
+- [Project Examples](_examples) with source
 
 ## Contributors
 
