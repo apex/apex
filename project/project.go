@@ -270,15 +270,7 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 		Log:     p.Log,
 	}
 
-	data := struct {
-		Project  *Project
-		Function *function.Function
-	}{
-		Project:  p,
-		Function: fn,
-	}
-
-	if name, err := render(p.nameTemplate, data); err == nil {
+	if name, err := p.name(fn); err == nil {
 		fn.Name = name
 	} else {
 		return nil, err
@@ -289,6 +281,24 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 	}
 
 	return fn, nil
+}
+
+// name returns the computed name for `fn`, using the nameTemplate.
+func (p *Project) name(fn *function.Function) (string, error) {
+	data := struct {
+		Project  *Project
+		Function *function.Function
+	}{
+		Project:  p,
+		Function: fn,
+	}
+
+	name, err := render(p.nameTemplate, data)
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
 }
 
 // render returns a string by executing template `t` against the given value `v`.
