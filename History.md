@@ -1,4 +1,17 @@
 
+v0.4.0 / 2016-01-17
+===================
+
+  * add help command, pulling data from wiki. Closes #74
+  * add project nameTemplate support. Closes #73
+  * add python example
+  * add --env flag back
+  * add --dry-run. Closes #47
+  * add function name inference
+  * add runtime inference
+  * add function config inheritance from project config
+  * change logger to use cli handler
+
 v0.3.0 / 2016-01-09
 ===================
 
