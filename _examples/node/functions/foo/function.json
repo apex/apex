@@ -1,5 +1,4 @@
 {
-  "name": "foo",
   "description": "Node.js example function",
   "timeout": 10,
   "memory": 128
