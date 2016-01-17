@@ -21,12 +21,6 @@ func init() {
 
 func TestFunction_Open_requireConfigValues(t *testing.T) {
 	fn := &Function{
-		Path: "_fixtures/invalidName",
-		Log:  log.Log,
-	}
-	nameErr := fn.Open()
-
-	fn = &Function{
 		Path: "_fixtures/invalidRuntime",
 		Log:  log.Log,
 	}
@@ -50,7 +44,6 @@ func TestFunction_Open_requireConfigValues(t *testing.T) {
 	}
 	roleErr := fn.Open()
 
-	assert.Contains(t, nameErr.Error(), "Name: zero value")
 	assert.Contains(t, runtimeErr.Error(), "Runtime: zero value")
 	assert.Contains(t, memoryErr.Error(), "Memory: zero value")
 	assert.Contains(t, timeoutErr.Error(), "Timeout: zero value")
@@ -60,12 +53,12 @@ func TestFunction_Open_requireConfigValues(t *testing.T) {
 func TestFunction_Open_detectRuntime(t *testing.T) {
 	fn := &Function{
 		Config: Config{
-			Name:    "foo",
 			Memory:  128,
 			Timeout: 3,
 			Role:    "iamrole",
 		},
 		Path: "_fixtures/nodejsDefaultFile",
+		Name: "foo",
 		Log:  log.Log,
 	}
 
@@ -82,9 +75,9 @@ func TestFunction_Delete_success(t *testing.T) {
 	}).Return(&lambda.DeleteFunctionOutput{}, nil)
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Delete()
 
@@ -99,9 +92,9 @@ func TestFunction_Delete_failed(t *testing.T) {
 	serviceMock.EXPECT().DeleteFunction(gomock.Any()).Return(nil, errors.New("API err"))
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Delete()
 
@@ -119,9 +112,9 @@ func TestFunction_Rollback_GetAlias_failed(t *testing.T) {
 	}).Return(nil, errors.New("API err"))
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Rollback()
 
@@ -139,9 +132,9 @@ func TestFunction_Rollback_ListVersions_failed(t *testing.T) {
 	}).Return(nil, errors.New("API err"))
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Rollback()
 
@@ -159,9 +152,9 @@ func TestFunction_Rollback_fewVersions(t *testing.T) {
 	}, nil)
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Rollback()
 
@@ -189,9 +182,9 @@ func TestFunction_Rollback_previousVersion(t *testing.T) {
 	})
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Rollback()
 
@@ -219,9 +212,9 @@ func TestFunction_Rollback_latestVersion(t *testing.T) {
 	})
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Rollback()
 
@@ -244,9 +237,9 @@ func TestFunction_Rollback_UpdateAlias_failed(t *testing.T) {
 	serviceMock.EXPECT().UpdateAlias(gomock.Any()).Return(nil, errors.New("API err"))
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.Rollback()
 
@@ -264,9 +257,9 @@ func TestFunction_RollbackVersion_GetAlias_failed(t *testing.T) {
 	}).Return(nil, errors.New("API err"))
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.RollbackVersion("1")
 
@@ -305,9 +298,9 @@ func TestFunction_RollbackVersion_success(t *testing.T) {
 	})
 
 	fn := &Function{
-		Config:  Config{Name: "testfn"},
-		Service: serviceMock,
-		Log:     log.Log,
+		FunctionName: "testfn",
+		Service:      serviceMock,
+		Log:          log.Log,
 	}
 	err := fn.RollbackVersion("3")
 

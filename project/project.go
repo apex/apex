@@ -60,7 +60,7 @@ func (p *Project) defaults() {
 	}
 
 	if p.NameTemplate == "" {
-		p.NameTemplate = "{{.Project.Name}}_{{.Function.Dir}}"
+		p.NameTemplate = "{{.Project.Name}}_{{.Function.Name}}"
 	}
 }
 
@@ -214,10 +214,10 @@ func (p *Project) FunctionDirNames() (list []string, err error) {
 	return list, nil
 }
 
-// FunctionNames returns a list of function names sans-directory.
+// FunctionNames returns a list of function names.
 func (p *Project) FunctionNames() (list []string) {
 	for _, fn := range p.Functions {
-		list = append(list, fn.Config.Name)
+		list = append(list, fn.Name)
 	}
 
 	return list
@@ -259,19 +259,19 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 
 	fn := &function.Function{
 		Config: function.Config{
-			Name:    name,
 			Runtime: p.Config.Runtime,
 			Memory:  p.Config.Memory,
 			Timeout: p.Config.Timeout,
 			Role:    p.Config.Role,
 		},
+		Name:    name,
 		Path:    dir,
 		Service: p.Service,
 		Log:     p.Log,
 	}
 
 	if name, err := p.name(fn); err == nil {
-		fn.Name = name
+		fn.FunctionName = name
 	} else {
 		return nil, err
 	}

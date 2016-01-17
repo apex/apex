@@ -55,7 +55,6 @@ func (e *InvokeError) Error() string {
 
 // Config for a Lambda function.
 type Config struct {
-	Name        string `json:"name" validate:"nonzero"`
 	Description string `json:"description"`
 	Runtime     string `json:"runtime" validate:"nonzero"`
 	Memory      int64  `json:"memory" validate:"nonzero"`
@@ -68,16 +67,13 @@ type Config struct {
 // against the function directory as the CWD, so os.Chdir() first.
 type Function struct {
 	Config
-	Path    string
-	Service lambdaiface.LambdaAPI
-	Log     log.Interface
-	runtime runtime.Runtime
-	env     map[string]string
-}
-
-// Dir returns the function's directory name.
-func (f *Function) Dir() string {
-	return filepath.Base(f.Path)
+	Name         string
+	FunctionName string
+	Path         string
+	Service      lambdaiface.LambdaAPI
+	Log          log.Interface
+	runtime      runtime.Runtime
+	env          map[string]string
 }
 
 // Open the function.json file and prime the config.
@@ -164,7 +160,7 @@ func (f *Function) DeployConfig() error {
 	f.Log.Info("deploying config")
 
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
 		Description:  &f.Description,
@@ -179,7 +175,7 @@ func (f *Function) DeployConfig() error {
 func (f *Function) Delete() error {
 	f.Log.Info("deleting")
 	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 	})
 	return err
 }
@@ -188,7 +184,7 @@ func (f *Function) Delete() error {
 func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
 	f.Log.Debug("fetching config")
 	return f.Service.GetFunction(&lambda.GetFunctionInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 	})
 }
 
@@ -197,7 +193,7 @@ func (f *Function) Update(zip []byte) error {
 	f.Log.Info("updating function")
 
 	updated, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 		Publish:      aws.Bool(true),
 		ZipFile:      zip,
 	})
@@ -209,7 +205,7 @@ func (f *Function) Update(zip []byte) error {
 	f.Log.Info("updating alias")
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.Name,
+		FunctionName:    &f.FunctionName,
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: updated.Version,
 	})
@@ -222,7 +218,7 @@ func (f *Function) Create(zip []byte) error {
 	f.Log.Info("creating function")
 
 	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 		Description:  &f.Description,
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
@@ -242,7 +238,7 @@ func (f *Function) Create(zip []byte) error {
 	f.Log.Info("creating alias")
 
 	_, err = f.Service.CreateAlias(&lambda.CreateAliasInput{
-		FunctionName:    &f.Name,
+		FunctionName:    &f.FunctionName,
 		FunctionVersion: created.Version,
 		Name:            aws.String(CurrentAlias),
 	})
@@ -264,7 +260,7 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 
 	res, err := f.Service.Invoke(&lambda.InvokeInput{
 		ClientContext:  aws.String(base64.StdEncoding.EncodeToString(contextBytes)),
-		FunctionName:   &f.Name,
+		FunctionName:   &f.FunctionName,
 		InvocationType: aws.String(string(kind)),
 		LogType:        aws.String("Tail"),
 		Qualifier:      aws.String(CurrentAlias),
@@ -301,7 +297,7 @@ func (f *Function) Rollback() error {
 	f.Log.Info("rolling back")
 
 	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 		Name:         aws.String(CurrentAlias),
 	})
 
@@ -312,7 +308,7 @@ func (f *Function) Rollback() error {
 	f.Log.Infof("current version: %s", *alias.FunctionVersion)
 
 	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 	})
 
 	if err != nil {
@@ -335,7 +331,7 @@ func (f *Function) Rollback() error {
 	f.Log.Infof("rollback to version: %s", rollback)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.Name,
+		FunctionName:    &f.FunctionName,
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: &rollback,
 	})
@@ -348,7 +344,7 @@ func (f *Function) RollbackVersion(version string) error {
 	f.Log.Info("rolling back")
 
 	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &f.Name,
+		FunctionName: &f.FunctionName,
 		Name:         aws.String(CurrentAlias),
 	})
 
@@ -363,7 +359,7 @@ func (f *Function) RollbackVersion(version string) error {
 	}
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.Name,
+		FunctionName:    &f.FunctionName,
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: &version,
 	})
