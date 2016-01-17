@@ -13,6 +13,7 @@ import (
 
 	"github.com/apex/apex/dryrun"
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/help"
 	"github.com/apex/apex/logs"
 	"github.com/apex/apex/project"
 	"github.com/apex/log"
@@ -36,6 +37,7 @@ const usage = `
     apex logs [options] <name> [--filter pattern]
     apex build [options] <name>
     apex list [options]
+    apex help [<topic>]
     apex -h | --help
     apex --version
 
@@ -78,6 +80,12 @@ const usage = `
 
     Build zip output for a function
     $ apex build foo > /tmp/out.zip
+
+    Output help topics
+    $ apex help
+
+    Output help for a topic
+    # apex help project.json
 `
 
 func main() {
@@ -90,6 +98,11 @@ func main() {
 
 	if l, err := log.ParseLevel(args["--log-level"].(string)); err == nil {
 		log.SetLevel(l)
+	}
+
+	if args["help"].(bool) {
+		showHelp(args["<topic>"])
+		return
 	}
 
 	session := session.New(aws.NewConfig())
@@ -285,6 +298,21 @@ func tail(project *project.Project, name []string, filter string) {
 	}
 
 	if err := l.Err(); err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
+
+// showHelp outputs help pulled from the GitHub wiki.
+func showHelp(topic interface{}) {
+	var err error
+
+	if s, ok := topic.(string); ok {
+		err = help.HelpTopic(s, os.Stdout)
+	} else {
+		err = help.HelpTopics(os.Stdout)
+	}
+
+	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }
