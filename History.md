@@ -1,4 +1,10 @@
 
+v0.4.1 / 2016-01-17
+===================
+
+  * add Project.name(fn) to compute nameTemplate
+  * remove Function Config.Name support, fixing name reference bug. Closes #81
+
 v0.4.0 / 2016-01-17
 ===================
 
