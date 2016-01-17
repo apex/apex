@@ -2,11 +2,13 @@
 package project
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"gopkg.in/validator.v2"
 
@@ -28,32 +30,43 @@ var ErrNotFound = errors.New("project: no function found")
 
 // Config for project.
 type Config struct {
-	Name        string `json:"name" validate:"nonzero"`
-	Description string `json:"description"`
-	Runtime     string `json:"runtime"`
-	Memory      int64  `json:"memory"`
-	Timeout     int64  `json:"timeout"`
-	Role        string `json:"role"`
+	Name         string `json:"name" validate:"nonzero"`
+	Description  string `json:"description"`
+	Runtime      string `json:"runtime"`
+	Memory       int64  `json:"memory"`
+	Timeout      int64  `json:"timeout"`
+	Role         string `json:"role"`
+	NameTemplate string `json:"nameTemplate"`
 }
 
 // Project represents zero or more Lambda functions.
 type Project struct {
 	Config
-	Path        string
-	Concurrency int
-	Log         log.Interface
-	Service     lambdaiface.LambdaAPI
-	Functions   []*function.Function
+	Path         string
+	Concurrency  int
+	Log          log.Interface
+	Service      lambdaiface.LambdaAPI
+	Functions    []*function.Function
+	nameTemplate *template.Template
 }
 
-// Open the project.json file and prime the config.
-func (p *Project) Open() error {
-	p.Config.Memory = DefaultMemory
-	p.Config.Timeout = DefaultTimeout
+// defaults applies configuration defaults.
+func (p *Project) defaults() {
+	p.Memory = DefaultMemory
+	p.Timeout = DefaultTimeout
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 3
 	}
+
+	if p.NameTemplate == "" {
+		p.NameTemplate = "{{.Project.Name}}_{{.Function.Dir}}"
+	}
+}
+
+// Open the project.json file and prime the config.
+func (p *Project) Open() error {
+	p.defaults()
 
 	f, err := os.Open(filepath.Join(p.Path, "project.json"))
 	if err != nil {
@@ -67,6 +80,12 @@ func (p *Project) Open() error {
 	if err := validator.Validate(&p.Config); err != nil {
 		return err
 	}
+
+	t, err := template.New("nameTemplate").Parse(p.NameTemplate)
+	if err != nil {
+		return err
+	}
+	p.nameTemplate = t
 
 	return p.loadFunctions()
 }
@@ -233,23 +252,36 @@ func (p *Project) loadFunctions() error {
 	return nil
 }
 
-// loadFunction returns the function in the ./functions/<dirname> directory.
-func (p *Project) loadFunction(dirname string) (*function.Function, error) {
-	dir := filepath.Join(p.Path, "functions", dirname)
+// loadFunction returns the function in the ./functions/<name> directory.
+func (p *Project) loadFunction(name string) (*function.Function, error) {
+	dir := filepath.Join(p.Path, "functions", name)
 	p.Log.Debugf("loading function in %s", dir)
 
 	fn := &function.Function{
 		Config: function.Config{
-			Name:    dirname,
+			Name:    name,
 			Runtime: p.Config.Runtime,
 			Memory:  p.Config.Memory,
 			Timeout: p.Config.Timeout,
 			Role:    p.Config.Role,
 		},
 		Path:    dir,
-		Prefix:  p.Name,
 		Service: p.Service,
 		Log:     p.Log,
+	}
+
+	data := struct {
+		Project  *Project
+		Function *function.Function
+	}{
+		Project:  p,
+		Function: fn,
+	}
+
+	if name, err := render(p.nameTemplate, data); err == nil {
+		fn.Name = name
+	} else {
+		return nil, err
 	}
 
 	if err := fn.Open(); err != nil {
@@ -257,4 +289,15 @@ func (p *Project) loadFunction(dirname string) (*function.Function, error) {
 	}
 
 	return fn, nil
+}
+
+// render returns a string by executing template `t` against the given value `v`.
+func render(t *template.Template, v interface{}) (string, error) {
+	buf := new(bytes.Buffer)
+
+	if err := t.Execute(buf, v); err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }

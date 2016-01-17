@@ -24,6 +24,7 @@ Currently supports:
 - Supports languages Lambda does not natively support via shim, such as Go
 - Binary install (useful for continuous deployment in CI etc)
 - Project level function and resource management
+- Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
 - Transparently generates a zip for your deploy
 - Function rollback support
@@ -58,7 +59,7 @@ The project.json file defines project level configuration that applies to all fu
 }
 ```
 
-Each function uses a function.json configuration file to define function-specific properties such as the runtime, amount of memory allocated, and timeout. For example:
+Each function uses a function.json configuration file to define function-specific properties such as the runtime, amount of memory allocated, and timeout. This file is completely optional, as you can specify defaults in your project.json file. For example:
 
 ```json
 {
@@ -113,6 +114,8 @@ Or whitelist functions to deploy:
 ```
 $ apex deploy foo bar
 ```
+
+See the [Wiki](https://github.com/apex/apex/wiki) for more information.
 
 ## Credentials
 
