@@ -56,7 +56,7 @@ func (p *Project) defaults() {
 	p.Timeout = DefaultTimeout
 
 	if p.Concurrency == 0 {
-		p.Concurrency = 3
+		p.Concurrency = 5
 	}
 
 	if p.NameTemplate == "" {
