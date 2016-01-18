@@ -23,6 +23,30 @@ type Logs struct {
 	err error
 }
 
+// Fetch log events.
+func (l *Logs) Fetch() ([]*cloudwatchlogs.FilteredLogEvent, error) {
+	group, err := l.logGroupName()
+	if err != nil {
+		return nil, err
+	}
+
+	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
+
+	l.Log.Debugf("fetching %q with filter %q", group, l.FilterPattern)
+
+	res, err := l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
+		LogGroupName:  &group,
+		FilterPattern: &l.FilterPattern,
+		StartTime:     &start,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Events, nil
+}
+
 // Tail logs, make sure to check Err() after the returned channel closes.
 func (l *Logs) Tail() <-chan *cloudwatchlogs.FilteredLogEvent {
 	ch := make(chan *cloudwatchlogs.FilteredLogEvent)

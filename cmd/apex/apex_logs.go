@@ -12,6 +12,7 @@ import (
 
 type LogsCmdLocalValues struct {
 	Filter string
+	Follow bool
 
 	name string
 }
@@ -34,6 +35,7 @@ func init() {
 	f := logsCmd.Flags()
 
 	f.StringVarP(&lv.Filter, "filter", "F", "", "Filter logs with pattern")
+	f.BoolVarP(&lv.Follow, "follow", "f", false, "Tail logs")
 }
 
 func logsCmdPreRun(c *cobra.Command, args []string) {
@@ -57,11 +59,20 @@ func logsCmdRun(c *cobra.Command, args []string) {
 		FilterPattern: lv.Filter,
 	}
 
-	for event := range l.Tail() {
-		fmt.Printf("%s", *event.Message)
-	}
-
-	if err := l.Err(); err != nil {
-		log.Fatalf("error: %s", err)
+	if lv.Follow {
+		for event := range l.Tail() {
+			fmt.Printf("%s", *event.Message)
+		}
+		if err := l.Err(); err != nil {
+			log.Fatalf("error: %s", err)
+		}
+	} else {
+		events, err := l.Fetch()
+		if err != nil {
+			log.Fatalf("error: %s", err)
+		}
+		for _, event := range events {
+			fmt.Printf("%s", *event.Message)
+		}
 	}
 }
