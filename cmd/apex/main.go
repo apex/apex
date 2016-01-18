@@ -19,6 +19,6 @@ func main() {
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Errorf("%s\n", err.Error())
-		os.Exit(-1)
+		os.Exit(1)
 	}
 }
