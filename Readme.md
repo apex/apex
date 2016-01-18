@@ -37,6 +37,7 @@ Currently supports:
 Apex projects are made up of a project.json configuration file, and zero or more Lambda functions defined in the "functions" directory. Here's an example file structure:
 
 ```
+project.json
 functions
 ├── bar
 │   ├── function.json
@@ -47,7 +48,6 @@ functions
 └── foo
     ├── function.json
     └── index.js
-project.json
 ```
 
 The project.json file defines project level configuration that applies to all functions, and defines dependencies. For this simple example the following will do:
@@ -70,6 +70,19 @@ Each function uses a function.json configuration file to define function-specifi
   "timeout": 5,
   "role": "arn:aws:iam::293503197324:role/lambda"
 }
+```
+
+Now the directory structure for your project would be:
+
+```
+project.json
+functions
+├── bar
+│   └── index.js
+├── baz
+│   └── index.js
+└── foo
+    └── index.js
 ```
 
 Finally the source for the functions themselves look like this in Node.js:
