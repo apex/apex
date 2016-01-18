@@ -43,9 +43,9 @@ func wikiCmdRun(c *cobra.Command, args []string) {
 	var err error
 
 	if lv.topic != "" {
-		err = wiki.WikiTopic(lv.topic, os.Stdout)
+		err = wiki.Topic(lv.topic, os.Stdout)
 	} else {
-		err = wiki.WikiTopics(os.Stdout)
+		err = wiki.Topics(os.Stdout)
 	}
 
 	if err != nil {

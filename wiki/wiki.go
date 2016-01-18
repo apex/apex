@@ -28,8 +28,8 @@ const (
 // Endpoint used to lookup wiki information.
 var Endpoint = "https://github.com/apex/apex/wiki"
 
-// WikiTopics outputs topic categories.
-func WikiTopics(w io.Writer) error {
+// Topics outputs topic categories from the wiki index page.
+func Topics(w io.Writer) error {
 	doc, err := goquery.NewDocument(Endpoint)
 	if err != nil {
 		return err
@@ -48,8 +48,8 @@ func WikiTopics(w io.Writer) error {
 	return nil
 }
 
-// WikiTopic outputs topic for the given `topic`.
-func WikiTopic(topic string, w io.Writer) error {
+// Topic outputs documentation for the given `topic`'s page.
+func Topic(topic string, w io.Writer) error {
 	doc, err := goquery.NewDocument(fmt.Sprintf("%s/%s", Endpoint, topic))
 	if err != nil {
 		return err
