@@ -210,7 +210,12 @@ func (f *Function) Update(zip []byte) error {
 		FunctionVersion: updated.Version,
 	})
 
-	return err
+	if err != nil {
+		return nil
+	}
+
+	f.Log.WithField("version", *updated.Version).Info("deployed")
+	return nil
 }
 
 // Create the function with the given `zip`.
@@ -243,7 +248,12 @@ func (f *Function) Create(zip []byte) error {
 		Name:            aws.String(CurrentAlias),
 	})
 
-	return err
+	if err != nil {
+		return nil
+	}
+
+	f.Log.WithField("version", *created.Version).Info("deployed")
+	return nil
 }
 
 // Invoke the remote Lambda function, returning the response and logs, if any.
