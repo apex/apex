@@ -49,15 +49,12 @@ func logsCmdRun(c *cobra.Command, args []string) {
 	lv := &logsCmdLocalValues
 	service := cloudwatchlogs.New(pv.session)
 
-	// TODO(tj): refactor logs.Logs to take Project so this hack
-	// can be removed, it'll also make multi-function tailing easier
-	group := fmt.Sprintf("/aws/lambda/%s_%s", pv.project.Name, lv.name)
-
 	l := logs.Logs{
-		LogGroupName:  group,
-		FilterPattern: lv.Filter,
 		Service:       service,
 		Log:           log.Log,
+		Project:       pv.project,
+		FunctionName:  lv.name,
+		FilterPattern: lv.Filter,
 	}
 
 	for event := range l.Tail() {

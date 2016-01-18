@@ -2,20 +2,25 @@
 package logs
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
+
+	"github.com/apex/apex/project"
+	"github.com/apex/log"
 )
 
 // Logs implements log tailing for CloudWatchLogs.
 type Logs struct {
 	Service       cloudwatchlogsiface.CloudWatchLogsAPI
 	Log           log.Interface
-	LogGroupName  string
+	Project       *project.Project
+	FunctionName  string
 	FilterPattern string
-	err           error
+
+	err error
 }
 
 // Tail logs, make sure to check Err() after the returned channel closes.
@@ -32,7 +37,13 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 	var nextToken *string
 	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
 
-	l.Log.Debugf("tailing %q with filter %q", l.LogGroupName, l.FilterPattern)
+	group, err := l.logGroupName()
+	if err != nil {
+		l.err = err
+		return
+	}
+
+	l.Log.Debugf("tailing %q with filter %q", group, l.FilterPattern)
 
 	for {
 		l.Log.Debugf("tailing from %d", start)
@@ -41,7 +52,7 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 		var err error
 
 		res, err = l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
-			LogGroupName:  &l.LogGroupName,
+			LogGroupName:  &group,
 			FilterPattern: &l.FilterPattern,
 			StartTime:     &start,
 			NextToken:     nextToken,
@@ -66,4 +77,17 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 // Err returns the first error, if any, during processing.
 func (l *Logs) Err() error {
 	return l.err
+}
+
+// logGroupName returns CloudWatch log group name.
+func (l *Logs) logGroupName() (string, error) {
+	fn, err := l.Project.FunctionByName(l.FunctionName)
+	if err != nil {
+		return "", err
+	}
+	fnName, err := l.Project.RenderFunctionName(fn)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("/aws/lambda/%s", fnName), nil
 }
