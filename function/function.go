@@ -132,7 +132,7 @@ func (f *Function) DeployCode() error {
 		return err
 	}
 
-	info, err := f.Info()
+	config, err := f.GetConfig()
 
 	if e, ok := err.(awserr.Error); ok {
 		if e.Code() == "ResourceNotFoundException" {
@@ -144,7 +144,7 @@ func (f *Function) DeployCode() error {
 		return err
 	}
 
-	remoteHash := *info.Configuration.CodeSha256
+	remoteHash := *config.Configuration.CodeSha256
 	localHash := utils.Sha256(zip)
 
 	if localHash == remoteHash {
@@ -180,8 +180,8 @@ func (f *Function) Delete() error {
 	return err
 }
 
-// Info returns the function information.
-func (f *Function) Info() (*lambda.GetFunctionOutput, error) {
+// GetConfig returns the function configuration.
+func (f *Function) GetConfig() (*lambda.GetFunctionOutput, error) {
 	f.Log.Debug("fetching config")
 	return f.Service.GetFunction(&lambda.GetFunctionInput{
 		FunctionName: &f.FunctionName,

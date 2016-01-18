@@ -14,6 +14,7 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/log"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/tj/go-sync/semaphore"
 )
@@ -173,8 +174,16 @@ func (p *Project) Delete(names []string) error {
 		fn, err := p.FunctionByName(name)
 
 		if err == ErrNotFound {
-			p.Log.Warnf("function %q does not exist", name)
+			p.Log.Warnf("function %q does not exist in project", name)
 			continue
+		}
+
+		if _, err := fn.GetConfig(); err != nil {
+			if awserr, ok := err.(awserr.Error); ok && awserr.Code() == "ResourceNotFoundException" {
+				p.Log.Infof("function %q hasn't been deployed yet or has been deleted manually on AWS Lambda", name)
+				continue
+			}
+			return err
 		}
 
 		if err := fn.Delete(); err != nil {
