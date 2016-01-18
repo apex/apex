@@ -18,7 +18,7 @@ func main() {
 	log.SetHandler(cli.Default)
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Errorf("%s\n", err.Error())
-		os.Exit(-1)
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		os.Exit(1)
 	}
 }
