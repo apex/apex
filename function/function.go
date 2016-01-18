@@ -214,7 +214,11 @@ func (f *Function) Update(zip []byte) error {
 		return nil
 	}
 
-	f.Log.WithField("version", *updated.Version).Info("deployed")
+	f.Log.WithFields(log.Fields{
+		"version": *updated.Version,
+		"name":    f.FunctionName,
+	}).Info("deployed")
+
 	return nil
 }
 
@@ -252,7 +256,11 @@ func (f *Function) Create(zip []byte) error {
 		return nil
 	}
 
-	f.Log.WithField("version", *created.Version).Info("deployed")
+	f.Log.WithFields(log.Fields{
+		"version": *created.Version,
+		"name":    f.FunctionName,
+	}).Info("deployed")
+
 	return nil
 }
 
