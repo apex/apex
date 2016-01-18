@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/apex/apex/help"
+	"github.com/apex/apex/wiki"
 	"github.com/apex/log"
 )
 
@@ -21,7 +21,7 @@ const wikiCmdExample = `  Output wiki topics
 
 var wikiCmd = &cobra.Command{
 	Use:     "wiki",
-	Short:   "Output help page pulled from the GitHub wiki",
+	Short:   "Output wiki page pulled from the GitHub wiki",
 	Example: wikiCmdExample,
 	PreRun:  wikiCmdPreRun,
 	Run:     wikiCmdRun,
@@ -43,9 +43,9 @@ func wikiCmdRun(c *cobra.Command, args []string) {
 	var err error
 
 	if lv.topic != "" {
-		err = help.HelpTopic(lv.topic, os.Stdout)
+		err = wiki.WikiTopic(lv.topic, os.Stdout)
 	} else {
-		err = help.HelpTopics(os.Stdout)
+		err = wiki.WikiTopics(os.Stdout)
 	}
 
 	if err != nil {
