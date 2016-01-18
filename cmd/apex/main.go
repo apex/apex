@@ -1,0 +1,24 @@
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/apex/log"
+	"github.com/apex/log/handlers/cli"
+
+	_ "github.com/apex/apex/runtime/golang"
+	_ "github.com/apex/apex/runtime/nodejs"
+	_ "github.com/apex/apex/runtime/python"
+)
+
+var version = "0.4.1"
+
+func main() {
+	log.SetHandler(cli.Default)
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Errorf("%s\n", err.Error())
+		os.Exit(-1)
+	}
+}
