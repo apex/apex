@@ -1,5 +1,5 @@
-// Package help implements a simple GitHub wiki miner and output formatter.
-package help
+// Package wiki implements a simple GitHub wiki miner and output formatter.
+package wiki
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 // TODO: handle invalid page
-// TODO: HelpTopics could be interactive
+// TODO: WikiTopics could be interactive
 // TODO: ~/.apex.json user config, use here for color mapping etc
 
 // colors.
@@ -25,11 +25,11 @@ const (
 	gray   = 37
 )
 
-// Endpoint used to lookup help information.
+// Endpoint used to lookup wiki information.
 var Endpoint = "https://github.com/apex/apex/wiki"
 
-// Help outputs topic categories.
-func HelpTopics(w io.Writer) error {
+// WikiTopics outputs topic categories.
+func WikiTopics(w io.Writer) error {
 	doc, err := goquery.NewDocument(Endpoint)
 	if err != nil {
 		return err
@@ -43,13 +43,13 @@ func HelpTopics(w io.Writer) error {
 		fmt.Fprintf(w, "  \033[%dm%s\033[0m: %s \n", blue, strs[0], strs[1])
 	})
 
-	fmt.Fprintf(w, "\n  Use `apex help <topic>` to view a topic.\n")
+	fmt.Fprintf(w, "\n  Use `apex wiki <topic>` to view a topic.\n")
 
 	return nil
 }
 
-// HelpTopic outputs topic for the given `topic`.
-func HelpTopic(topic string, w io.Writer) error {
+// WikiTopic outputs topic for the given `topic`.
+func WikiTopic(topic string, w io.Writer) error {
 	doc, err := goquery.NewDocument(fmt.Sprintf("%s/%s", Endpoint, topic))
 	if err != nil {
 		return err
