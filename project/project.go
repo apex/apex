@@ -232,6 +232,24 @@ func (p *Project) FunctionNames() (list []string) {
 	return list
 }
 
+// RenderFunctionName returns the computed name for `fn`, using the nameTemplate.
+func (p *Project) RenderFunctionName(fn *function.Function) (string, error) {
+	data := struct {
+		Project  *Project
+		Function *function.Function
+	}{
+		Project:  p,
+		Function: fn,
+	}
+
+	name, err := render(p.nameTemplate, data)
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
+}
+
 // SetEnv sets environment variable `name` to `value` on every function in project.
 func (p *Project) SetEnv(name, value string) {
 	for _, fn := range p.Functions {
@@ -279,7 +297,7 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 		Log:     p.Log,
 	}
 
-	if name, err := p.name(fn); err == nil {
+	if name, err := p.RenderFunctionName(fn); err == nil {
 		fn.FunctionName = name
 	} else {
 		return nil, err
@@ -290,24 +308,6 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 	}
 
 	return fn, nil
-}
-
-// name returns the computed name for `fn`, using the nameTemplate.
-func (p *Project) name(fn *function.Function) (string, error) {
-	data := struct {
-		Project  *Project
-		Function *function.Function
-	}{
-		Project:  p,
-		Function: fn,
-	}
-
-	name, err := render(p.nameTemplate, data)
-	if err != nil {
-		return "", err
-	}
-
-	return name, nil
 }
 
 // render returns a string by executing template `t` against the given value `v`.
