@@ -2,13 +2,11 @@
 package logs
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
 
-	"github.com/apex/apex/project"
 	"github.com/apex/log"
 )
 
@@ -16,8 +14,7 @@ import (
 type Logs struct {
 	Service       cloudwatchlogsiface.CloudWatchLogsAPI
 	Log           log.Interface
-	Project       *project.Project
-	FunctionName  string
+	GroupName     string
 	FilterPattern string
 
 	err error
@@ -25,17 +22,12 @@ type Logs struct {
 
 // Fetch log events.
 func (l *Logs) Fetch() ([]*cloudwatchlogs.FilteredLogEvent, error) {
-	group, err := l.logGroupName()
-	if err != nil {
-		return nil, err
-	}
-
 	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
 
-	l.Log.Debugf("fetching %q with filter %q", group, l.FilterPattern)
+	l.Log.Debugf("fetching %q with filter %q", l.GroupName, l.FilterPattern)
 
 	res, err := l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
-		LogGroupName:  &group,
+		LogGroupName:  &l.GroupName,
 		FilterPattern: &l.FilterPattern,
 		StartTime:     &start,
 	})
@@ -61,13 +53,7 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 	var nextToken *string
 	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
 
-	group, err := l.logGroupName()
-	if err != nil {
-		l.err = err
-		return
-	}
-
-	l.Log.Debugf("tailing %q with filter %q", group, l.FilterPattern)
+	l.Log.Debugf("tailing %q with filter %q", l.GroupName, l.FilterPattern)
 
 	for {
 		l.Log.Debugf("tailing from %d", start)
@@ -76,7 +62,7 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 		var err error
 
 		res, err = l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
-			LogGroupName:  &group,
+			LogGroupName:  &l.GroupName,
 			FilterPattern: &l.FilterPattern,
 			StartTime:     &start,
 			NextToken:     nextToken,
@@ -101,17 +87,4 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 // Err returns the first error, if any, during processing.
 func (l *Logs) Err() error {
 	return l.err
-}
-
-// logGroupName returns CloudWatch log group name.
-func (l *Logs) logGroupName() (string, error) {
-	fn, err := l.Project.FunctionByName(l.FunctionName)
-	if err != nil {
-		return "", err
-	}
-	fnName, err := l.Project.RenderFunctionName(fn)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("/aws/lambda/%s", fnName), nil
 }

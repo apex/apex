@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/spf13/cobra"
 
-	"github.com/apex/apex/logs"
 	"github.com/apex/log"
 )
 
@@ -49,14 +47,10 @@ func logsCmdPreRun(c *cobra.Command, args []string) {
 
 func logsCmdRun(c *cobra.Command, args []string) {
 	lv := &logsCmdLocalValues
-	service := cloudwatchlogs.New(pv.session)
 
-	l := logs.Logs{
-		Service:       service,
-		Log:           log.Log,
-		Project:       pv.project,
-		FunctionName:  lv.name,
-		FilterPattern: lv.Filter,
+	l, err := pv.project.Logs(pv.session, lv.name, lv.Filter)
+	if err != nil {
+		log.Fatalf("error: %s", err)
 	}
 
 	if lv.Follow {
