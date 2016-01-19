@@ -1,7 +1,6 @@
 package golang
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -28,9 +27,12 @@ func (r *Runtime) Handler() string {
 }
 
 func (r *Runtime) Build(dir string) error {
-	s := fmt.Sprintf("cd %s && GOOS=linux GOARCH=amd64 go build -o main main.go", dir)
-	cmd := exec.Command("sh", "-c", s)
+	cmd := exec.Command("go", "build", "-o", "main", "main.go")
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, "GOOS=linux")
+	cmd.Env = append(cmd.Env, "GOARCH=amd64")
 	cmd.Stderr = os.Stderr
+	cmd.Dir = dir
 	return cmd.Run()
 }
 
