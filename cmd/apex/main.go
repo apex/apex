@@ -12,7 +12,7 @@ import (
 	_ "github.com/apex/apex/runtime/python"
 )
 
-var version = "0.4.1"
+const version = "0.4.1"
 
 func main() {
 	log.SetHandler(cli.Default)
