@@ -5,10 +5,17 @@ Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.
 
 ## Installation
 
-Download [binaries](https://github.com/apex/apex/releases) or:
+Download [binaries](https://github.com/apex/apex/releases):
 
 ```
-$ go get github.com/apex/apex/cmd/apex
+curl -sL https://github.com/apex/apex/releases/download/v0.4.1/apex_darwin_amd64 -o /usr/local/bin/apex
+chmod +x $_
+```
+
+Or from master:
+
+```
+go get github.com/apex/apex/cmd/apex
 ```
 
 ## Runtimes
