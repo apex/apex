@@ -27,6 +27,10 @@ type PersistentValues struct {
 }
 
 func (pv *PersistentValues) PreRun(c *cobra.Command, args []string) {
+	if c.Name() == "version" || c.Name() == "wiki" {
+		return
+	}
+
 	if l, err := log.ParseLevel(pv.LogLevel); err == nil {
 		log.SetLevel(l)
 	}
