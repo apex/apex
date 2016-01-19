@@ -20,7 +20,7 @@ const wikiCmdExample = `  Output wiki topics
   # apex wiki project.json`
 
 var wikiCmd = &cobra.Command{
-	Use:     "wiki",
+	Use:     "wiki [<topic>]",
 	Short:   "Output wiki page pulled from the GitHub wiki",
 	Example: wikiCmdExample,
 	PreRun:  wikiCmdPreRun,
