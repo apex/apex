@@ -28,9 +28,7 @@ func (r *Runtime) Handler() string {
 
 func (r *Runtime) Build(dir string) error {
 	cmd := exec.Command("go", "build", "-o", "main", "main.go")
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, "GOOS=linux")
-	cmd.Env = append(cmd.Env, "GOARCH=amd64")
+	cmd.Env = append(os.Environ(), "GOOS=linux", "GOARCH=amd64")
 	cmd.Stderr = os.Stderr
 	cmd.Dir = dir
 	return cmd.Run()
