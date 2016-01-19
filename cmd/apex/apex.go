@@ -6,7 +6,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:              "apex",
-	PersistentPreRun: pv.PreRun,
+	PersistentPreRun: pv.preRun,
 }
 
 func init() {
