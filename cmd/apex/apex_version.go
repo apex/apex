@@ -7,9 +7,10 @@ import (
 )
 
 var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print version of Apex",
-	Run:   versionCmdRun,
+	Use:              "version",
+	Short:            "Print version of Apex",
+	PersistentPreRun: pv.noopRun,
+	Run:              versionCmdRun,
 }
 
 func versionCmdRun(c *cobra.Command, args []string) {

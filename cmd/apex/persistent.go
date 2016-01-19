@@ -25,9 +25,7 @@ type PersistentValues struct {
 	project *project.Project
 }
 
-	if c.Name() == "version" || c.Name() == "wiki" {
-		return
-	}
+func (*PersistentValues) noopRun(*cobra.Command, []string) {}
 
 func (pv *PersistentValues) preRun(c *cobra.Command, args []string) {
 	if l, err := log.ParseLevel(pv.LogLevel); err == nil {
