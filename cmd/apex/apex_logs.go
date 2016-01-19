@@ -57,16 +57,19 @@ func logsCmdRun(c *cobra.Command, args []string) {
 		for event := range l.Tail() {
 			fmt.Printf("%s", *event.Message)
 		}
+
 		if err := l.Err(); err != nil {
 			log.Fatalf("error: %s", err)
 		}
-	} else {
-		events, err := l.Fetch()
-		if err != nil {
-			log.Fatalf("error: %s", err)
-		}
-		for _, event := range events {
-			fmt.Printf("%s", *event.Message)
-		}
 	}
+
+	events, err := l.Fetch()
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+
+	for _, event := range events {
+		fmt.Printf("%s", *event.Message)
+	}
+
 }
