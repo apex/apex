@@ -3,15 +3,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/spf13/cobra"
 
-	"github.com/apex/apex/logs"
 	"github.com/apex/log"
 )
 
 type LogsCmdLocalValues struct {
 	Filter string
+	Follow bool
 
 	name string
 }
@@ -34,6 +33,7 @@ func init() {
 	f := logsCmd.Flags()
 
 	f.StringVarP(&lv.Filter, "filter", "F", "", "Filter logs with pattern")
+	f.BoolVarP(&lv.Follow, "follow", "f", false, "Tail logs")
 }
 
 func logsCmdPreRun(c *cobra.Command, args []string) {
@@ -47,24 +47,26 @@ func logsCmdPreRun(c *cobra.Command, args []string) {
 
 func logsCmdRun(c *cobra.Command, args []string) {
 	lv := &logsCmdLocalValues
-	service := cloudwatchlogs.New(pv.session)
 
-	// TODO(tj): refactor logs.Logs to take Project so this hack
-	// can be removed, it'll also make multi-function tailing easier
-	group := fmt.Sprintf("/aws/lambda/%s_%s", pv.project.Name, lv.name)
-
-	l := logs.Logs{
-		LogGroupName:  group,
-		FilterPattern: lv.Filter,
-		Service:       service,
-		Log:           log.Log,
-	}
-
-	for event := range l.Tail() {
-		fmt.Printf("%s", *event.Message)
-	}
-
-	if err := l.Err(); err != nil {
+	l, err := pv.project.Logs(pv.session, lv.name, lv.Filter)
+	if err != nil {
 		log.Fatalf("error: %s", err)
+	}
+
+	if lv.Follow {
+		for event := range l.Tail() {
+			fmt.Printf("%s", *event.Message)
+		}
+		if err := l.Err(); err != nil {
+			log.Fatalf("error: %s", err)
+		}
+	} else {
+		events, err := l.Fetch()
+		if err != nil {
+			log.Fatalf("error: %s", err)
+		}
+		for _, event := range events {
+			fmt.Printf("%s", *event.Message)
+		}
 	}
 }

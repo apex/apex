@@ -4,18 +4,39 @@ package logs
 import (
 	"time"
 
-	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
+
+	"github.com/apex/log"
 )
 
 // Logs implements log tailing for CloudWatchLogs.
 type Logs struct {
 	Service       cloudwatchlogsiface.CloudWatchLogsAPI
 	Log           log.Interface
-	LogGroupName  string
+	GroupName     string
 	FilterPattern string
-	err           error
+
+	err error
+}
+
+// Fetch log events.
+func (l *Logs) Fetch() ([]*cloudwatchlogs.FilteredLogEvent, error) {
+	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
+
+	l.Log.Debugf("fetching %q with filter %q", l.GroupName, l.FilterPattern)
+
+	res, err := l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
+		LogGroupName:  &l.GroupName,
+		FilterPattern: &l.FilterPattern,
+		StartTime:     &start,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Events, nil
 }
 
 // Tail logs, make sure to check Err() after the returned channel closes.
@@ -32,7 +53,7 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 	var nextToken *string
 	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
 
-	l.Log.Debugf("tailing %q with filter %q", l.LogGroupName, l.FilterPattern)
+	l.Log.Debugf("tailing %q with filter %q", l.GroupName, l.FilterPattern)
 
 	for {
 		l.Log.Debugf("tailing from %d", start)
@@ -41,7 +62,7 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 		var err error
 
 		res, err = l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
-			LogGroupName:  &l.LogGroupName,
+			LogGroupName:  &l.GroupName,
 			FilterPattern: &l.FilterPattern,
 			StartTime:     &start,
 			NextToken:     nextToken,

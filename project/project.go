@@ -5,18 +5,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"text/template"
 
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
+	"github.com/tj/go-sync/semaphore"
 	"gopkg.in/validator.v2"
 
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/logs"
 	"github.com/apex/log"
-	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
-	"github.com/tj/go-sync/semaphore"
 )
 
 const (
@@ -230,6 +234,25 @@ func (p *Project) FunctionNames() (list []string) {
 	}
 
 	return list
+}
+
+// Logs returns logs.
+func (p *Project) Logs(s *session.Session, name string, filter string) (*logs.Logs, error) {
+	fn, err := p.FunctionByName(name)
+	if err != nil {
+		return nil, err
+	}
+	fnName, err := p.name(fn)
+	if err != nil {
+		return nil, err
+	}
+	l := &logs.Logs{
+		Service:       cloudwatchlogs.New(s),
+		Log:           log.Log,
+		GroupName:     fmt.Sprintf("/aws/lambda/%s", fnName),
+		FilterPattern: filter,
+	}
+	return l, nil
 }
 
 // SetEnv sets environment variable `name` to `value` on every function in project.
