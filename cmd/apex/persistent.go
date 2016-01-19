@@ -19,7 +19,6 @@ type PersistentValues struct {
 	Env      []string
 	LogLevel string
 	Verbose  bool
-	Version  bool
 	Yes      bool
 
 	session *session.Session

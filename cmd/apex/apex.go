@@ -17,7 +17,6 @@ func init() {
 	pf.StringSliceVarP(&pv.Env, "env", "e", nil, "Environment variable")
 	pf.StringVarP(&pv.LogLevel, "log-level", "l", "info", "Log severity level")
 	pf.BoolVarP(&pv.Verbose, "verbose", "v", false, "Output verbose logs")
-	pf.BoolVarP(&pv.Version, "version", "V", false, "Output version")
 	pf.BoolVarP(&pv.Yes, "yes", "y", false, "Automatic yes to prompts")
 
 	rootCmd.AddCommand(deployCmd)
@@ -28,6 +27,7 @@ func init() {
 	rootCmd.AddCommand(buildCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(wikiCmd)
+	rootCmd.AddCommand(versionCmd)
 
 	// Add a newline at the top of each help message
 	rootCmd.SetHelpTemplate("\n" + rootCmd.HelpTemplate())
