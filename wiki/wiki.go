@@ -91,6 +91,8 @@ func node(i int, s *goquery.Selection) string {
 		return fmt.Sprintf("  • %s\n", contents(s))
 	case node.Data == "ul":
 		return fmt.Sprintf("%s\n", nodes(s))
+	case node.Data == "code":
+		return fmt.Sprintf("\033[1m%s\033[0m ", s.Text())
 	case node.Type == html.TextNode:
 		return strings.TrimSpace(node.Data)
 	default:
