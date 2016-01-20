@@ -21,6 +21,7 @@ func init() {
 	rootCmd.AddCommand(buildCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(wikiCmd)
+	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(versionCmd)
 
 	pf.StringVarP(&pv.Chdir, "chdir", "C", "", "Working directory")
