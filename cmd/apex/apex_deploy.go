@@ -9,7 +9,8 @@ import (
 )
 
 type DeployCmdLocalValues struct {
-	names []string
+	concurrency int
+	names       []string
 }
 
 const deployCmdExample = `  Deploy all functions
@@ -31,6 +32,13 @@ var deployCmd = &cobra.Command{
 
 var deployCmdLocalValues = DeployCmdLocalValues{}
 
+func init() {
+	lv := &deployCmdLocalValues
+	f := deployCmd.Flags()
+
+	f.IntVarP(&lv.concurrency, "concurrency", "c", 5, "Concurrent deploys")
+}
+
 func deployCmdPreRun(c *cobra.Command, args []string) {
 	lv := &deployCmdLocalValues
 
@@ -43,6 +51,8 @@ func deployCmdPreRun(c *cobra.Command, args []string) {
 
 func deployCmdRun(c *cobra.Command, args []string) {
 	lv := &deployCmdLocalValues
+
+	pv.project.Concurrency = lv.concurrency
 
 	for _, s := range pv.Env {
 		parts := strings.Split(s, "=")
