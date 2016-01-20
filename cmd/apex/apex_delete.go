@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/segmentio/go-prompt"
 	"github.com/spf13/cobra"
+	"github.com/tj/go-prompt"
 
 	"github.com/apex/log"
 )
