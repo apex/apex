@@ -84,7 +84,7 @@ func node(i int, s *goquery.Selection) string {
 	case node.Data == "p":
 		return fmt.Sprintf("\033[%dm%s\033[0m\n\n", none, indent(text(s), 1))
 	case node.Data == "pre" || s.HasClass("highlight"):
-		return fmt.Sprintf("\033[%dm%s\033[0m\n\n", gray, indent(text(s), 2))
+		return fmt.Sprintf("\033[1m%s\033[0m\n\n", indent(text(s), 2))
 	case node.Data == "a":
 		return fmt.Sprintf("%s (%s) ", s.Text(), s.AttrOr("href", "missing link"))
 	case node.Data == "li":
