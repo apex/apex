@@ -48,8 +48,8 @@ func Upgrade(version string) error {
 	}
 
 	// download binary
-	log.Infof("downloading %s", *asset.BrowserDownloadUrl)
-	res, err := http.Get(*asset.BrowserDownloadUrl)
+	log.Infof("downloading %s", *asset.BrowserDownloadURL)
+	res, err := http.Get(*asset.BrowserDownloadURL)
 	if err != nil {
 		return err
 	}
