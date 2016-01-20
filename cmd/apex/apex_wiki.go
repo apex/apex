@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -17,7 +18,7 @@ const wikiCmdExample = `  Output wiki topics
   $ apex wiki
 
   Output wiki for a topic
-  # apex wiki project.json`
+  $ apex wiki project.json`
 
 var wikiCmd = &cobra.Command{
 	Use:              "wiki [<topic>]",
@@ -34,7 +35,7 @@ func wikiCmdPreRun(c *cobra.Command, args []string) {
 	lv := &wikiCmdLocalValues
 
 	if len(args) >= 1 {
-		lv.topic = args[0]
+		lv.topic = strings.Join(args, " ")
 	}
 }
 
