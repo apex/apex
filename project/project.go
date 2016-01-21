@@ -27,6 +27,7 @@ import (
 const (
 	// DefaultMemory defines default memory value (MB) for every function in a project
 	DefaultMemory = 128
+
 	// DefaultTimeout defines default timeout value (s) for every function in a project
 	DefaultTimeout = 3
 )
@@ -53,8 +54,8 @@ type Project struct {
 	Log             log.Interface
 	Service         lambdaiface.LambdaAPI
 	Functions       []*function.Function
-	nameTemplate    *template.Template
 	IgnoredPatterns []string
+	nameTemplate    *template.Template
 }
 
 // defaults applies configuration defaults.
