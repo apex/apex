@@ -22,7 +22,8 @@ func LoadFiles(root string, ignoredPatterns []string) (map[string]*os.File, erro
 			return err
 		}
 
-		if !info.Mode().IsRegular() {
+		mode := info.Mode()
+		if !(mode.IsRegular() || mode&os.ModeSymlink == os.ModeSymlink) {
 			return nil
 		}
 
