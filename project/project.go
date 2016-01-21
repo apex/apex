@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/logs"
+	"github.com/apex/apex/utils"
 	"github.com/apex/log"
 )
 
@@ -95,12 +95,10 @@ func (p *Project) Open() error {
 	}
 	p.nameTemplate = t
 
-	ignorePath := filepath.Join(p.Path, ".apexignore")
-	i, err := ioutil.ReadFile(ignorePath)
-	if err != nil && !os.IsNotExist(err) {
+	p.IgnoredPatterns, err = utils.ReadIgnoreFile(p.Path)
+	if err != nil {
 		return err
 	}
-	p.IgnoredPatterns = strings.Split(string(i), "\n")
 
 	return p.loadFunctions()
 }

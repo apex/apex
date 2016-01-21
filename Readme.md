@@ -34,6 +34,7 @@ Currently supports:
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
 - Transparently generates a zip for your deploy
+- Ignore deploying files with .apexignore
 - Function rollback support
 - Tail function CloudWatchLogs
 - Concurrency for quick deploys
