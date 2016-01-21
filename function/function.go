@@ -67,13 +67,15 @@ type Config struct {
 // against the function directory as the CWD, so os.Chdir() first.
 type Function struct {
 	Config
-	Name         string
-	FunctionName string
-	Path         string
-	Service      lambdaiface.LambdaAPI
-	Log          log.Interface
-	runtime      runtime.Runtime
-	env          map[string]string
+	Name            string
+	FunctionName    string
+	Path            string
+	Service         lambdaiface.LambdaAPI
+	Log             log.Interface
+	IgnoredPatterns []string
+	runtime         runtime.Runtime
+	env             map[string]string
+	files           map[string]*os.File
 }
 
 // Open the function.json file and prime the config.
@@ -100,6 +102,18 @@ func (f *Function) Open() error {
 		return err
 	}
 	f.runtime = r
+
+	ignorePath := filepath.Join(f.Path, ".apexignore")
+	i, err := ioutil.ReadFile(ignorePath)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	f.IgnoredPatterns = append(f.IgnoredPatterns, strings.Split(string(i), "\n")...)
+
+	f.files, err = utils.LoadFiles(f.Path, f.IgnoredPatterns)
+	if err != nil {
+		return err
+	}
 
 	f.Log = f.Log.WithField("function", f.Name)
 
@@ -422,8 +436,11 @@ func (f *Function) Zip() (io.Reader, error) {
 		zip.AddBytes("byline.js", shim.MustAsset("byline.js"))
 	}
 
-	if err := zip.AddDir(f.Path); err != nil {
-		return nil, err
+	for path, file := range f.files {
+		if err := zip.AddFile(path, file); err != nil {
+			return nil, err
+		}
+		defer file.Close()
 	}
 
 	if err := zip.Close(); err != nil {

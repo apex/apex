@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -47,12 +48,13 @@ type Config struct {
 // Project represents zero or more Lambda functions.
 type Project struct {
 	Config
-	Path         string
-	Concurrency  int
-	Log          log.Interface
-	Service      lambdaiface.LambdaAPI
-	Functions    []*function.Function
-	nameTemplate *template.Template
+	Path            string
+	Concurrency     int
+	Log             log.Interface
+	Service         lambdaiface.LambdaAPI
+	Functions       []*function.Function
+	nameTemplate    *template.Template
+	IgnoredPatterns []string
 }
 
 // defaults applies configuration defaults.
@@ -91,6 +93,13 @@ func (p *Project) Open() error {
 		return err
 	}
 	p.nameTemplate = t
+
+	ignorePath := filepath.Join(p.Path, ".apexignore")
+	i, err := ioutil.ReadFile(ignorePath)
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	p.IgnoredPatterns = strings.Split(string(i), "\n")
 
 	return p.loadFunctions()
 }
@@ -296,10 +305,11 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 			Timeout: p.Config.Timeout,
 			Role:    p.Config.Role,
 		},
-		Name:    name,
-		Path:    dir,
-		Service: p.Service,
-		Log:     p.Log,
+		Name:            name,
+		Path:            dir,
+		Service:         p.Service,
+		Log:             p.Log,
+		IgnoredPatterns: p.IgnoredPatterns,
 	}
 
 	if name, err := p.name(fn); err == nil {
