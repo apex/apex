@@ -1,8 +1,0 @@
-{
-  "event": {
-    "hello": "world"
-  },
-  "context": {
-    "user": "Tobi"
-  }
-}

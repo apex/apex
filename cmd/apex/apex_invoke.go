@@ -65,11 +65,7 @@ func invokeCmdRun(c *cobra.Command, args []string) {
 	}
 
 	for {
-		var v struct {
-			Event   interface{}
-			Context interface{}
-		}
-
+		var v map[string]interface{}
 		err := dec.Decode(&v)
 
 		if err == io.EOF {
@@ -80,7 +76,14 @@ func invokeCmdRun(c *cobra.Command, args []string) {
 			log.Fatalf("error parsing response: %s", err)
 		}
 
-		reply, logs, err := fn.Invoke(v.Event, v.Context, kind)
+		var reply, logs io.Reader
+
+		if e, ok := v["event"].(map[string]interface{}); ok {
+			reply, logs, err = fn.Invoke(e, v["context"], kind)
+		} else {
+			reply, logs, err = fn.Invoke(v, nil, kind)
+		}
+
 		if err != nil {
 			log.Fatalf("error response: %s", err)
 		}
