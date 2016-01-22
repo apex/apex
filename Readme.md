@@ -160,6 +160,7 @@ Via ~/.aws configuration:
 - [TJ Holowaychuk](https://github.com/tj)
 - [Maciej Winnicki](https://github.com/mthenw)
 - [Pilwon Huh](https://github.com/pilwon)
+- [Faraz Fazli](https://github.com/farazfazli)
 
 ## Badges
 
