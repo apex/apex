@@ -13,18 +13,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gopkg.in/validator.v2"
-
-	"github.com/apex/apex/runtime"
-	"github.com/apex/apex/shim"
-	"github.com/apex/apex/utils"
-	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/dustin/go-humanize"
 	"github.com/jpillora/archive"
+	"gopkg.in/validator.v2"
+
+	"github.com/apex/apex/runtime"
+	"github.com/apex/apex/shim"
+	"github.com/apex/apex/utils"
+	"github.com/apex/log"
 )
 
 // InvocationType determines how an invocation request is made.
@@ -103,12 +103,11 @@ func (f *Function) Open() error {
 	}
 	f.runtime = r
 
-	ignorePath := filepath.Join(f.Path, ".apexignore")
-	i, err := ioutil.ReadFile(ignorePath)
-	if err != nil && !os.IsNotExist(err) {
+	patterns, err := utils.ReadIgnoreFile(f.Path)
+	if err != nil {
 		return err
 	}
-	f.IgnoredPatterns = append(f.IgnoredPatterns, strings.Split(string(i), "\n")...)
+	f.IgnoredPatterns = append(f.IgnoredPatterns, patterns...)
 
 	f.files, err = utils.LoadFiles(f.Path, f.IgnoredPatterns)
 	if err != nil {

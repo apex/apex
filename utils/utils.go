@@ -3,8 +3,10 @@ package utils
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // Sha256 returns a base64 encoded SHA256 hash of `b`.
@@ -54,4 +56,21 @@ func LoadFiles(root string, ignoredPatterns []string) (map[string]*os.File, erro
 	})
 
 	return files, err
+}
+
+// ReadIgnoreFile reads .apexignore in `dir` when present and returns a list of patterns.
+func ReadIgnoreFile(dir string) ([]string, error) {
+	path := filepath.Join(dir, ".apexignore")
+
+	b, err := ioutil.ReadFile(path)
+
+	if os.IsNotExist(err) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return strings.Split(string(b), "\n"), nil
 }
