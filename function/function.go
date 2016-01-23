@@ -456,7 +456,10 @@ func (f *Function) Build() (io.Reader, error) {
 		if err := zip.AddFile(path, file); err != nil {
 			return nil, err
 		}
-		defer file.Close()
+
+		if err := file.Close(); err != nil {
+			return nil, err
+		}
 	}
 
 	if err := zip.Close(); err != nil {
