@@ -20,7 +20,7 @@ func init() {
 	rootCmd.AddCommand(logsCmd)
 	rootCmd.AddCommand(buildCmd)
 	rootCmd.AddCommand(listCmd)
-	rootCmd.AddCommand(wikiCmd)
+	rootCmd.AddCommand(docsCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(versionCmd)
 

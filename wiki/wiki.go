@@ -43,7 +43,7 @@ func Topics(w io.Writer) error {
 		fmt.Fprintf(w, "  \033[%dm%s\033[0m: %s \n", blue, strs[0], strs[1])
 	})
 
-	fmt.Fprintf(w, "\n  Use `apex wiki <topic>` to view a topic.\n")
+	fmt.Fprintf(w, "\n  Use `apex docs <topic>` to view a topic.\n")
 
 	return nil
 }
