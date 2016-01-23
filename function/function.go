@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -21,6 +22,7 @@ import (
 	"github.com/jpillora/archive"
 	"gopkg.in/validator.v2"
 
+	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/runtime"
 	"github.com/apex/apex/shim"
 	"github.com/apex/apex/utils"
@@ -55,11 +57,12 @@ func (e *InvokeError) Error() string {
 
 // Config for a Lambda function.
 type Config struct {
-	Description string `json:"description"`
-	Runtime     string `json:"runtime" validate:"nonzero"`
-	Memory      int64  `json:"memory" validate:"nonzero"`
-	Timeout     int64  `json:"timeout" validate:"nonzero"`
-	Role        string `json:"role" validate:"nonzero"`
+	Description string      `json:"description"`
+	Runtime     string      `json:"runtime" validate:"nonzero"`
+	Memory      int64       `json:"memory" validate:"nonzero"`
+	Timeout     int64       `json:"timeout" validate:"nonzero"`
+	Role        string      `json:"role" validate:"nonzero"`
+	Hooks       hooks.Hooks `json:"hooks"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -75,7 +78,6 @@ type Function struct {
 	IgnoredPatterns []string
 	runtime         runtime.Runtime
 	env             map[string]string
-	files           map[string]*os.File
 }
 
 // Open the function.json file and prime the config.
@@ -109,11 +111,6 @@ func (f *Function) Open() error {
 	}
 	f.IgnoredPatterns = append(f.IgnoredPatterns, patterns...)
 
-	f.files, err = utils.LoadFiles(f.Path, f.IgnoredPatterns)
-	if err != nil {
-		return err
-	}
-
 	f.Log = f.Log.WithField("function", f.Name)
 
 	return nil
@@ -140,7 +137,7 @@ func (f *Function) Deploy() error {
 func (f *Function) DeployCode() error {
 	f.Log.Info("deploying")
 
-	zip, err := f.ZipBytes()
+	zip, err := f.BuildBytes()
 	if err != nil {
 		return err
 	}
@@ -398,16 +395,30 @@ func (f *Function) RollbackVersion(version string) error {
 	return err
 }
 
-// Clean removes build artifacts from compiled runtimes.
-func (f *Function) Clean() error {
-	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		return r.Clean(f.Path)
+// BuildBytes returns the generated zip as bytes.
+func (f *Function) BuildBytes() ([]byte, error) {
+	r, err := f.Build()
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	f.Log.Infof("created build (%s)", humanize.Bytes(uint64(len(b))))
+	return b, nil
 }
 
-// Zip returns the zipped contents of the function.
-func (f *Function) Zip() (io.Reader, error) {
+// Build returns the zipped contents of the function.
+func (f *Function) Build() (io.Reader, error) {
+	f.Log.Debugf("creating build")
+
+	if err := f.RunHook("build"); err != nil {
+		return nil, err
+	}
+
 	buf := new(bytes.Buffer)
 	zip := archive.NewZipWriter(buf)
 
@@ -435,7 +446,13 @@ func (f *Function) Zip() (io.Reader, error) {
 		zip.AddBytes("byline.js", shim.MustAsset("byline.js"))
 	}
 
-	for path, file := range f.files {
+	files, err := utils.LoadFiles(f.Path, f.IgnoredPatterns)
+	if err != nil {
+		return nil, err
+	}
+
+	for path, file := range files {
+		f.Log.WithField("file", path).Debug("add file")
 		if err := zip.AddFile(path, file); err != nil {
 			return nil, err
 		}
@@ -449,20 +466,64 @@ func (f *Function) Zip() (io.Reader, error) {
 	return buf, nil
 }
 
-// ZipBytes returns the generated zip as bytes.
-func (f *Function) ZipBytes() ([]byte, error) {
-	f.Log.Debugf("creating zip")
-
-	r, err := f.Zip()
-	if err != nil {
-		return nil, err
+// Clean removes build artifacts from compiled runtimes.
+func (f *Function) Clean() error {
+	if err := f.RunHook("clean"); err != nil {
+		return err
 	}
 
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
+	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
+		return r.Clean(f.Path)
 	}
 
-	f.Log.Infof("created zip (%s)", humanize.Bytes(uint64(len(b))))
-	return b, nil
+	return nil
+}
+
+// A HookError represents a failed hook command.
+type HookError struct {
+	Name    string
+	Command string
+	Output  string
+}
+
+// Error string.
+func (e *HookError) Error() string {
+	return fmt.Sprintf("hook %q: %s", e.Name, e.Output)
+}
+
+// RunHook executes hook `name` in the function's directory.
+func (f *Function) RunHook(name string) error {
+	var command string
+
+	switch name {
+	case "clean":
+		command = f.Hooks.Clean
+	case "build":
+		command = f.Hooks.Build
+	}
+
+	if command == "" {
+		return nil
+	}
+
+	f.Log.WithFields(log.Fields{
+		"hook":    name,
+		"command": command,
+	}).Debug("hook")
+
+	cmd := exec.Command("sh", "-c", command)
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, fmt.Sprintf("FUNCTION=%s", f.Name))
+	cmd.Dir = f.Path
+
+	b, err := cmd.CombinedOutput()
+	if err != nil {
+		return &HookError{
+			Name:    name,
+			Command: command,
+			Output:  string(b),
+		}
+	}
+
+	return nil
 }
