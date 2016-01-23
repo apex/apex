@@ -137,6 +137,13 @@ Or whitelist functions to deploy:
 $ apex deploy foo bar
 ```
 
+Invoke it!
+
+```
+$ echo '{ "some": "data" }' | apex invoke foo
+{ "hello": "foo" }
+```
+
 See the [Wiki](https://github.com/apex/apex/wiki) for more information.
 
 ## Credentials
