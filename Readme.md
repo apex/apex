@@ -104,7 +104,7 @@ exports.handle = function(e, ctx) {
 
 Or using the Golang Lambda package, Apex supports Golang out of the box with a Node.js shim:
 
-```js
+```go
 package main
 
 import (
