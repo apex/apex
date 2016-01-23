@@ -44,7 +44,7 @@ func buildCmdRun(c *cobra.Command, args []string) {
 		log.Fatalf("error: %s", err)
 	}
 
-	zip, err := fn.Zip()
+	zip, err := fn.Build()
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}

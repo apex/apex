@@ -19,6 +19,7 @@ import (
 	"gopkg.in/validator.v2"
 
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/logs"
 	"github.com/apex/apex/utils"
 	"github.com/apex/log"
@@ -37,13 +38,14 @@ var ErrNotFound = errors.New("project: no function found")
 
 // Config for project.
 type Config struct {
-	Name         string `json:"name" validate:"nonzero"`
-	Description  string `json:"description"`
-	Runtime      string `json:"runtime"`
-	Memory       int64  `json:"memory"`
-	Timeout      int64  `json:"timeout"`
-	Role         string `json:"role"`
-	NameTemplate string `json:"nameTemplate"`
+	Name         string      `json:"name" validate:"nonzero"`
+	Description  string      `json:"description"`
+	Runtime      string      `json:"runtime"`
+	Memory       int64       `json:"memory"`
+	Timeout      int64       `json:"timeout"`
+	Role         string      `json:"role"`
+	NameTemplate string      `json:"nameTemplate"`
+	Hooks        hooks.Hooks `json:"hooks"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -299,10 +301,11 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 
 	fn := &function.Function{
 		Config: function.Config{
-			Runtime: p.Config.Runtime,
-			Memory:  p.Config.Memory,
-			Timeout: p.Config.Timeout,
-			Role:    p.Config.Role,
+			Runtime: p.Runtime,
+			Memory:  p.Memory,
+			Timeout: p.Timeout,
+			Role:    p.Role,
+			Hooks:   p.Hooks,
 		},
 		Name:            name,
 		Path:            dir,

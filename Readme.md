@@ -30,6 +30,7 @@ Currently supports:
 
 - Supports languages Lambda does not natively support via shim, such as Go
 - Binary install (useful for continuous deployment in CI etc)
+- Hook support for running commands (transpile code, lint, etc)
 - Project level function and resource management
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
