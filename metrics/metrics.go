@@ -46,12 +46,10 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 		go func() {
 			defer wg.Done()
 
-			m := &Metric{Name: name}
-
 			params := &cloudwatch.GetMetricStatisticsInput{
 				StartTime:  aws.Time(mc.StartDate),
 				EndTime:    aws.Time(mc.EndDate),
-				MetricName: aws.String(m.Name),
+				MetricName: aws.String(name),
 				Namespace:  aws.String("AWS/Lambda"),
 				Period:     aws.Int64(int64(period(mc.StartDate, mc.EndDate).Seconds())),
 				Statistics: []*string{
@@ -66,7 +64,7 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 				Unit: aws.String(unit(name)),
 			}
 
-			resp, err := mc.Service.GetMetricStatistics(params)
+			res, err := mc.Service.GetMetricStatistics(params)
 
 			if err != nil {
 				// TODO: refactor so that errors are reported in cmd
@@ -74,9 +72,10 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 				return
 			}
 
-			m.Value = resp.Datapoints
-
-			out <- *m
+			out <- Metric{
+				Name:  name,
+				Value: res.Datapoints,
+			}
 		}()
 	}
 
