@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"text/tabwriter"
 	"time"
 
 	"github.com/apex/apex/metrics"
@@ -103,23 +101,22 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 		EndDate:      e,
 	}
 
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 0, 9, 0, '\t', 0)
 	collMetrics := make(map[string]aggregatedMetric)
 
 	for n := range mc.Collect() {
 		collMetrics[n.Name] = aggregatedMetric{n.Name, aggregate(n.Value)}
 	}
 
+	println()
+	defer println()
+
 	for _, m := range mc.Metrics {
 		mm := collMetrics[m]
-		switch {
-		case m == "Duration":
-			fmt.Fprintf(w, "\033[%dm%s:\033[0m\t%vms\n", 37, mm.Name, mm.Count)
+		switch m {
+		case "Duration":
+			fmt.Printf("  \033[34m%11s:\033[0m %vms\n", mm.Name, mm.Count)
 		default:
-			fmt.Fprintf(w, "\033[%dm%s:\033[0m\t%v\n", 37, mm.Name, mm.Count)
+			fmt.Printf("  \033[34m%11s:\033[0m %v\n", mm.Name, mm.Count)
 		}
 	}
-	w.Flush()
-
 }
