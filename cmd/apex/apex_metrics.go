@@ -97,22 +97,21 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 		EndDate:      e,
 	}
 
-	collMetrics := make(map[string]aggregatedMetric)
+	aggregated := make(map[string]aggregatedMetric)
 
 	for n := range mc.Collect() {
-		collMetrics[n.Name] = aggregatedMetric{n.Name, aggregate(n.Value)}
+		aggregated[n.Name] = aggregatedMetric{n.Name, aggregate(n.Value)}
 	}
 
 	println()
 	defer println()
 
-	for _, m := range mc.Metrics {
-		mm := collMetrics[m]
-		switch m {
+	for _, m := range aggregated {
+		switch m.Name {
 		case "Duration":
-			fmt.Printf("  \033[34m%11s:\033[0m %vms\n", mm.Name, mm.Count)
+			fmt.Printf("  \033[34m%11s:\033[0m %vms\n", m.Name, m.Count)
 		default:
-			fmt.Printf("  \033[34m%11s:\033[0m %v\n", mm.Name, mm.Count)
+			fmt.Printf("  \033[34m%11s:\033[0m %v\n", m.Name, m.Count)
 		}
 	}
 }
