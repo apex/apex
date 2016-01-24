@@ -13,21 +13,28 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 )
 
+const timeFormat = "02/01/2006 15:04"
+
+type aggregatedMetric struct {
+	Name  string
+	Count int
+}
+
 type MetricsCmdLocalValues struct {
 	Start string
 	End   string
 	name  string
 }
 
-const metricsCmdExample = `  Retrieves the CloudWatch metrics for a function for the last 24 hours time range
-  $ apex metrics foo 
+const metricsCmdExample = `  Output the CloudWatch metrics for a function for the last 24 hours time range
+  $ apex metrics foo
 
-  Retrieves the CloudWatch metrics for a function for a customized time range
+  Output the CloudWatch metrics for a function for a customized time range
   $ apex metrics foo --start "18/01/2016 10:00" --end "19/01/2016 22:00"`
 
 var metricsCmd = &cobra.Command{
 	Use:     "metrics <name> [--start <startDate>] [--end <endDate>]",
-	Short:   "Retrieves the CloudWatch metrics for a function",
+	Short:   "Output the CloudWatch metrics for a function",
 	Example: metricsCmdExample,
 	PreRun:  metricsCmdPreRun,
 	Run:     metricsCmdRun,
@@ -71,18 +78,21 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 
 	var sd string
 	var ed string
+
 	if lv.Start == "" {
-		sd = time.Now().AddDate(0, 0, -1).Format(metrics.TIME_FORMAT)
+		sd = time.Now().AddDate(0, 0, -1).Format(timeFormat)
 	} else {
 		sd = lv.Start
 	}
+
 	if lv.End == "" {
-		ed = time.Now().Format(metrics.TIME_FORMAT)
+		ed = time.Now().Format(timeFormat)
 	} else {
 		ed = lv.End
 	}
-	s, _ := time.Parse(metrics.TIME_FORMAT, sd)
-	e, _ := time.Parse(metrics.TIME_FORMAT, ed)
+
+	s, _ := time.Parse(timeFormat, sd)
+	e, _ := time.Parse(timeFormat, ed)
 
 	mc := &metrics.MetricCollector{
 		Metrics:      []string{"Invocations", "Errors", "Duration", "Throttles"},
@@ -95,10 +105,10 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 9, 0, '\t', 0)
-	collMetrics := make(map[string]metrics.AggregatedMetric)
+	collMetrics := make(map[string]aggregatedMetric)
 
 	for n := range mc.Collect() {
-		collMetrics[n.Name] = metrics.AggregatedMetric{n.Name, aggregate(n.Value)}
+		collMetrics[n.Name] = aggregatedMetric{n.Name, aggregate(n.Value)}
 	}
 
 	for _, m := range mc.Metrics {

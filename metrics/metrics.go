@@ -1,4 +1,6 @@
 //go:generate mockgen -destination mock/cloudwatchiface.go github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface CloudWatchAPI
+
+// Package metrics fetches CloudWatch metrics for a function.
 package metrics
 
 import (
@@ -10,8 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 )
-
-const TIME_FORMAT = "02/01/2006 15:04"
 
 // MetricCollector a wrapper all metrics for a specific function.
 type MetricCollector struct {
@@ -27,11 +27,6 @@ type MetricCollector struct {
 type Metric struct {
 	Name  string
 	Value []*cloudwatch.Datapoint
-}
-
-type AggregatedMetric struct {
-	Name  string
-	Count int
 }
 
 // getCloudWatchMetrics starts the CloudWatch metrics collection.
