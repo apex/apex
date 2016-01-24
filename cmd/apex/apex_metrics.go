@@ -74,23 +74,19 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 		log.Fatalf("error: %s", err)
 	}
 
-	var sd string
-	var ed string
+	start := lv.Start
+	end := lv.End
 
-	if lv.Start == "" {
-		sd = time.Now().AddDate(0, 0, -1).Format(timeFormat)
-	} else {
-		sd = lv.Start
+	if start == "" {
+		start = time.Now().AddDate(0, 0, -1).Format(timeFormat)
 	}
 
-	if lv.End == "" {
-		ed = time.Now().Format(timeFormat)
-	} else {
-		ed = lv.End
+	if end == "" {
+		end = time.Now().Format(timeFormat)
 	}
 
-	s, _ := time.Parse(timeFormat, sd)
-	e, _ := time.Parse(timeFormat, ed)
+	s, _ := time.Parse(timeFormat, start)
+	e, _ := time.Parse(timeFormat, end)
 
 	mc := &metrics.MetricCollector{
 		Metrics:      []string{"Invocations", "Errors", "Duration", "Throttles"},
