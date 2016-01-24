@@ -11,27 +11,26 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 )
 
-const timeFormat = "02/01/2006 15:04"
-
 type aggregatedMetric struct {
 	Name  string
 	Count int
 }
 
 type MetricsCmdLocalValues struct {
-	Start string
-	End   string
-	name  string
+	Start    string
+	End      string
+	name     string
+	duration string
 }
 
-const metricsCmdExample = `  Output the CloudWatch metrics for a function for the last 24 hours time range
+const metricsCmdExample = `  Output the last day of metrics for a function
   $ apex metrics foo
 
-  Output the CloudWatch metrics for a function for a customized time range
-  $ apex metrics foo --start "18/01/2016 10:00" --end "19/01/2016 22:00"`
+  Output the last three days of metrics for a function
+  $ apex metrics foo 72d`
 
 var metricsCmd = &cobra.Command{
-	Use:     "metrics <name> [--start <startDate>] [--end <endDate>]",
+	Use:     "metrics <name> [<duration>]",
 	Short:   "Output the CloudWatch metrics for a function",
 	Example: metricsCmdExample,
 	PreRun:  metricsCmdPreRun,
@@ -54,7 +53,14 @@ func metricsCmdPreRun(c *cobra.Command, args []string) {
 	if len(args) < 1 {
 		log.Fatal("Missing name argument")
 	}
+
 	lv.name = args[0]
+
+	if len(args) > 1 {
+		lv.duration = args[1]
+	} else {
+		lv.duration = "24h"
+	}
 }
 
 // aggregate accumulates the datapoints.
@@ -74,27 +80,21 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 		log.Fatalf("error: %s", err)
 	}
 
-	start := lv.Start
-	end := lv.End
-
-	if start == "" {
-		start = time.Now().UTC().AddDate(0, 0, -1).Format(timeFormat)
+	d, err := time.ParseDuration(lv.duration)
+	if err != nil {
+		log.Fatalf("error: %s", err)
 	}
 
-	if end == "" {
-		end = time.Now().UTC().Format(timeFormat)
-	}
-
-	s, _ := time.Parse(timeFormat, start)
-	e, _ := time.Parse(timeFormat, end)
+	start := time.Now().UTC().Add(-d)
+	end := time.Now().UTC()
 
 	mc := &metrics.MetricCollector{
 		Metrics:      []string{"Invocations", "Errors", "Duration", "Throttles"},
 		Collected:    0,
 		FunctionName: fn.FunctionName,
 		Service:      cloudwatch.New(pv.session),
-		StartDate:    s,
-		EndDate:      e,
+		StartDate:    start,
+		EndDate:      end,
 	}
 
 	aggregated := make(map[string]aggregatedMetric)
