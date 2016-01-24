@@ -41,3 +41,31 @@ func TestPlugin_Run_buildHook(t *testing.T) {
 
 	assert.Equal(t, result, string(b))
 }
+
+func TestPlugin_Run_cleanHook(t *testing.T) {
+	p := &Plugin{}
+
+	f := &function.Function{
+		Log:  log.Log,
+		Path: os.TempDir(),
+		Config: function.Config{
+			Environment: map[string]string{
+				"foo": "bar",
+				"bar": "baz",
+			},
+		},
+	}
+
+	{
+		err := p.Run(function.BuildHook, f)
+		assert.NoError(t, err)
+	}
+
+	{
+		err := p.Run(function.CleanHook, f)
+		assert.NoError(t, err)
+	}
+
+	_, err := os.Stat(filepath.Join(os.TempDir(), ".env.json"))
+	assert.Error(t, err)
+}
