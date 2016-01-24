@@ -45,7 +45,7 @@ type Plugin interface {
 // Registered plugins.
 var plugins = make(map[string]Plugin)
 
-// Register plugin by `name`.
+// RegisterPlugin registers `plugin` by `name`.
 func RegisterPlugin(name string, plugin Plugin) {
 	plugins[name] = plugin
 }
@@ -54,9 +54,9 @@ func RegisterPlugin(name string, plugin Plugin) {
 func ByName(name string) (Plugin, error) {
 	if v, ok := plugins[name]; ok {
 		return v, nil
-	} else {
-		return nil, fmt.Errorf("invalid plugin %q", name)
 	}
+
+	return nil, fmt.Errorf("invalid plugin %q", name)
 }
 
 // hook runs the default plugins, and those defined by Plugins in sequence.
