@@ -18,6 +18,7 @@ func init() {
 	rootCmd.AddCommand(invokeCmd)
 	rootCmd.AddCommand(rollbackCmd)
 	rootCmd.AddCommand(logsCmd)
+	rootCmd.AddCommand(metricsCmd)
 	rootCmd.AddCommand(buildCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(docsCmd)
