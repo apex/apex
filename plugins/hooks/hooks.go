@@ -38,6 +38,8 @@ func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
 		command = fn.Hooks.Clean
 	case function.BuildHook:
 		command = fn.Hooks.Build
+	case function.DeployHook:
+		command = fn.Hooks.Deploy
 	}
 
 	if command == "" {
