@@ -238,7 +238,7 @@ func (f *Function) Create(zip []byte) error {
 		Timeout:      &f.Timeout,
 		Runtime:      &f.Runtime,
 		Handler:      &f.Handler,
-		Role:         aws.String(f.Role),
+		Role:         &f.Role,
 		Publish:      aws.Bool(true),
 		Code: &lambda.FunctionCode{
 			ZipFile: zip,
