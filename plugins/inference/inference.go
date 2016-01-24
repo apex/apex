@@ -1,0 +1,43 @@
+// Package inference adds file-based inference to detect runtimes when they are not explicitly specified.
+package inference
+
+import (
+	"os"
+	"path/filepath"
+
+	"github.com/apex/apex/function"
+)
+
+func init() {
+	function.RegisterPlugin("inference", &Plugin{
+		Files: map[string]string{
+			"main.py":  "python",
+			"index.js": "nodejs",
+			"main.go":  "golang",
+		},
+	})
+}
+
+// Plugin implementation.
+type Plugin struct {
+	Files map[string]string
+}
+
+// Run checks for files in the function directory to infer its runtime.
+func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
+	if hook != function.OpenHook || fn.Runtime != "" {
+		return nil
+	}
+
+	fn.Log.Debug("inferring runtime")
+
+	for name, runtime := range p.Files {
+		if _, err := os.Stat(filepath.Join(fn.Path, name)); err == nil {
+			fn.Log.WithField("runtime", runtime).Debug("inferred runtime")
+			fn.Runtime = runtime
+			return nil
+		}
+	}
+
+	return nil
+}

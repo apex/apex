@@ -38,14 +38,17 @@ var ErrNotFound = errors.New("project: no function found")
 
 // Config for project.
 type Config struct {
-	Name         string      `json:"name" validate:"nonzero"`
-	Description  string      `json:"description"`
-	Runtime      string      `json:"runtime"`
-	Memory       int64       `json:"memory"`
-	Timeout      int64       `json:"timeout"`
-	Role         string      `json:"role"`
-	NameTemplate string      `json:"nameTemplate"`
-	Hooks        hooks.Hooks `json:"hooks"`
+	Name         string            `json:"name" validate:"nonzero"`
+	Description  string            `json:"description"`
+	Runtime      string            `json:"runtime"`
+	Memory       int64             `json:"memory"`
+	Timeout      int64             `json:"timeout"`
+	Role         string            `json:"role"`
+	Handler      string            `json:"handler"`
+	Shim         bool              `json:"shim"`
+	NameTemplate string            `json:"nameTemplate"`
+	Environment  map[string]string `json:"environment"`
+	Hooks        hooks.Hooks       `json:"hooks"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -67,6 +70,10 @@ func (p *Project) defaults() {
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 5
+	}
+
+	if p.Environment == nil {
+		p.Environment = make(map[string]string)
 	}
 
 	if p.NameTemplate == "" {
@@ -252,24 +259,25 @@ func (p *Project) Logs(s *session.Session, name string, filter string) (*logs.Lo
 	if err != nil {
 		return nil, err
 	}
+
 	fnName, err := p.name(fn)
 	if err != nil {
 		return nil, err
 	}
+
 	l := &logs.Logs{
 		Service:       cloudwatchlogs.New(s),
 		Log:           log.Log,
 		GroupName:     fmt.Sprintf("/aws/lambda/%s", fnName),
 		FilterPattern: filter,
 	}
+
 	return l, nil
 }
 
-// SetEnv sets environment variable `name` to `value` on every function in project.
-func (p *Project) SetEnv(name, value string) {
-	for _, fn := range p.Functions {
-		fn.SetEnv(name, value)
-	}
+// Setenv sets environment variable `name` to `value` on every function in project.
+func (p *Project) Setenv(name, value string) {
+	p.Environment[name] = value
 }
 
 // loadFunctions reads the ./functions directory, populating the Functions field.
@@ -301,11 +309,14 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 
 	fn := &function.Function{
 		Config: function.Config{
-			Runtime: p.Runtime,
-			Memory:  p.Memory,
-			Timeout: p.Timeout,
-			Role:    p.Role,
-			Hooks:   p.Hooks,
+			Runtime:     p.Runtime,
+			Memory:      p.Memory,
+			Timeout:     p.Timeout,
+			Role:        p.Role,
+			Handler:     p.Handler,
+			Shim:        p.Shim,
+			Hooks:       p.Hooks,
+			Environment: copyStringMap(p.Environment),
 		},
 		Name:            name,
 		Path:            dir,
@@ -354,4 +365,13 @@ func render(t *template.Template, v interface{}) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+// copyStringMap returns a copy of `in`.
+func copyStringMap(in map[string]string) map[string]string {
+	out := make(map[string]string)
+	for k, v := range in {
+		out[k] = v
+	}
+	return out
 }
