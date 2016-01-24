@@ -7,4 +7,7 @@ type Hooks struct {
 
 	// Clean command is run after creating the zip file.
 	Clean string `json:"clean"`
+
+	// Deploy command is run after builds and before deploys.
+	Deploy string `json:"deploy"`
 }

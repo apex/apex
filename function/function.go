@@ -132,6 +132,10 @@ func (f *Function) DeployCode() error {
 		return err
 	}
 
+	if err := f.hook(DeployHook); err != nil {
+		return err
+	}
+
 	config, err := f.GetConfig()
 
 	if e, ok := err.(awserr.Error); ok {

@@ -30,6 +30,9 @@ const (
 
 	// CleanHook is called when a build is complete.
 	CleanHook = "clean"
+
+	// DeployHook is called after build and before a deploy.
+	DeployHook = "deploy"
 )
 
 // A Plugin is a chunk of isolated(ish) logic which reacts to various
