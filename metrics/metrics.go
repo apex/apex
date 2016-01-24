@@ -48,22 +48,12 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 
 			m := &Metric{Name: name}
 
-			var duration int
-			switch x := mc.EndDate.Sub(mc.StartDate).Hours(); {
-			case x > 24:
-				duration = 24 // daily
-			default:
-				duration = 1 // hourly
-			}
-
-			period := time.Duration(duration) * time.Hour
-
 			params := &cloudwatch.GetMetricStatisticsInput{
+				StartTime:  aws.Time(mc.StartDate),
 				EndTime:    aws.Time(mc.EndDate),
 				MetricName: aws.String(m.Name),
 				Namespace:  aws.String("AWS/Lambda"),
-				Period:     aws.Int64(int64(period.Seconds())),
-				StartTime:  aws.Time(mc.StartDate),
+				Period:     aws.Int64(int64(period(mc.StartDate, mc.EndDate).Seconds())),
 				Statistics: []*string{
 					aws.String("Sum"),
 				},
@@ -106,6 +96,16 @@ func (mc *MetricCollector) gen() <-chan string {
 	}
 	close(out)
 	return out
+}
+
+// period returns the resolution of metrics.
+func period(start, end time.Time) time.Duration {
+	switch n := end.Sub(start).Hours(); {
+	case n > 24:
+		return time.Hour * 24
+	default:
+		return time.Hour
+	}
 }
 
 // unit for metric name.
