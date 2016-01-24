@@ -45,7 +45,6 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 
 		go func() {
 			defer wg.Done()
-
 			params := &cloudwatch.GetMetricStatisticsInput{
 				StartTime:  aws.Time(mc.StartDate),
 				EndTime:    aws.Time(mc.EndDate),

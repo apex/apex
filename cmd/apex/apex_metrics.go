@@ -78,11 +78,11 @@ func metricsCmdRun(c *cobra.Command, args []string) {
 	end := lv.End
 
 	if start == "" {
-		start = time.Now().AddDate(0, 0, -1).Format(timeFormat)
+		start = time.Now().UTC().AddDate(0, 0, -1).Format(timeFormat)
 	}
 
 	if end == "" {
-		end = time.Now().Format(timeFormat)
+		end = time.Now().UTC().Format(timeFormat)
 	}
 
 	s, _ := time.Parse(timeFormat, start)
