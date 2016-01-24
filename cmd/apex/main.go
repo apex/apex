@@ -7,9 +7,13 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 
-	_ "github.com/apex/apex/runtime/golang"
-	_ "github.com/apex/apex/runtime/nodejs"
-	_ "github.com/apex/apex/runtime/python"
+	_ "github.com/apex/apex/plugins/env"
+	_ "github.com/apex/apex/plugins/golang"
+	_ "github.com/apex/apex/plugins/hooks"
+	_ "github.com/apex/apex/plugins/inference"
+	_ "github.com/apex/apex/plugins/nodejs"
+	_ "github.com/apex/apex/plugins/python"
+	_ "github.com/apex/apex/plugins/shim"
 )
 
 const version = "0.4.1"

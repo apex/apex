@@ -10,7 +10,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -23,8 +22,6 @@ import (
 	"gopkg.in/validator.v2"
 
 	"github.com/apex/apex/hooks"
-	"github.com/apex/apex/runtime"
-	"github.com/apex/apex/shim"
 	"github.com/apex/apex/utils"
 	"github.com/apex/log"
 )
@@ -57,17 +54,19 @@ func (e *InvokeError) Error() string {
 
 // Config for a Lambda function.
 type Config struct {
-	Description string      `json:"description"`
-	Runtime     string      `json:"runtime" validate:"nonzero"`
-	Memory      int64       `json:"memory" validate:"nonzero"`
-	Timeout     int64       `json:"timeout" validate:"nonzero"`
-	Role        string      `json:"role" validate:"nonzero"`
-	Hooks       hooks.Hooks `json:"hooks"`
+	Description string            `json:"description"`
+	Runtime     string            `json:"runtime" validate:"nonzero"`
+	Memory      int64             `json:"memory" validate:"nonzero"`
+	Timeout     int64             `json:"timeout" validate:"nonzero"`
+	Role        string            `json:"role" validate:"nonzero"`
+	Handler     string            `json:"handler" validate:"nonzero"`
+	Shim        bool              `json:"shim"`
+	Environment map[string]string `json:"environment"`
+	Hooks       hooks.Hooks       `json:"hooks"`
 }
 
 // Function represents a Lambda function, with configuration loaded
-// from the "function.json" file on disk. Operations are performed
-// against the function directory as the CWD, so os.Chdir() first.
+// from the "function.json" file on disk.
 type Function struct {
 	Config
 	Name            string
@@ -76,12 +75,16 @@ type Function struct {
 	Service         lambdaiface.LambdaAPI
 	Log             log.Interface
 	IgnoredPatterns []string
-	runtime         runtime.Runtime
-	env             map[string]string
 }
 
 // Open the function.json file and prime the config.
 func (f *Function) Open() error {
+	f.Log = f.Log.WithField("function", f.Name)
+
+	if f.Environment == nil {
+		f.Environment = make(map[string]string)
+	}
+
 	p, err := os.Open(filepath.Join(f.Path, "function.json"))
 	if err == nil {
 		if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
@@ -89,21 +92,13 @@ func (f *Function) Open() error {
 		}
 	}
 
-	if f.Runtime == "" {
-		if runtimeName, err := runtime.Detect(f.Path); err == nil {
-			f.Runtime = runtimeName
-		}
+	if err := f.hook(OpenHook); err != nil {
+		return err
 	}
 
 	if err := validator.Validate(&f.Config); err != nil {
 		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
 	}
-
-	r, err := runtime.ByName(f.Runtime)
-	if err != nil {
-		return err
-	}
-	f.runtime = r
 
 	patterns, err := utils.ReadIgnoreFile(f.Path)
 	if err != nil {
@@ -111,17 +106,12 @@ func (f *Function) Open() error {
 	}
 	f.IgnoredPatterns = append(f.IgnoredPatterns, patterns...)
 
-	f.Log = f.Log.WithField("function", f.Name)
-
 	return nil
 }
 
 // SetEnv sets environment variable `name` to `value`.
 func (f *Function) SetEnv(name, value string) {
-	if f.env == nil {
-		f.env = make(map[string]string)
-	}
-	f.env[name] = value
+	f.Environment[name] = value
 }
 
 // Deploy code and then configuration.
@@ -162,6 +152,11 @@ func (f *Function) DeployCode() error {
 		return nil
 	}
 
+	f.Log.WithFields(log.Fields{
+		"local":  localHash,
+		"remote": remoteHash,
+	}).Debug("changed")
+
 	return f.Update(zip)
 }
 
@@ -174,8 +169,8 @@ func (f *Function) DeployConfig() error {
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
 		Description:  &f.Description,
-		Role:         aws.String(f.Role),
-		Handler:      aws.String(f.runtime.Handler()),
+		Role:         &f.Role,
+		Handler:      &f.Handler,
 	})
 
 	return err
@@ -241,8 +236,8 @@ func (f *Function) Create(zip []byte) error {
 		Description:  &f.Description,
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
-		Runtime:      aws.String(f.runtime.Name()),
-		Handler:      aws.String(f.runtime.Handler()),
+		Runtime:      &f.Runtime,
+		Handler:      &f.Handler,
 		Role:         aws.String(f.Role),
 		Publish:      aws.Bool(true),
 		Code: &lambda.FunctionCode{
@@ -415,36 +410,12 @@ func (f *Function) BuildBytes() ([]byte, error) {
 func (f *Function) Build() (io.Reader, error) {
 	f.Log.Debugf("creating build")
 
-	if err := f.RunHook("build"); err != nil {
+	if err := f.hook(BuildHook); err != nil {
 		return nil, err
 	}
 
 	buf := new(bytes.Buffer)
 	zip := archive.NewZipWriter(buf)
-
-	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		f.Log.Debugf("compiling")
-		if err := r.Build(f.Path); err != nil {
-			return nil, fmt.Errorf("compiling: %s", err)
-		}
-	}
-
-	if f.env != nil {
-		f.Log.Debugf("adding .env.json")
-
-		b, err := json.Marshal(f.env)
-		if err != nil {
-			return nil, err
-		}
-
-		zip.AddBytes(".env.json", b)
-	}
-
-	if f.runtime.Shimmed() {
-		f.Log.Debugf("adding nodejs shim")
-		zip.AddBytes("index.js", shim.MustAsset("index.js"))
-		zip.AddBytes("byline.js", shim.MustAsset("byline.js"))
-	}
 
 	files, err := utils.LoadFiles(f.Path, f.IgnoredPatterns)
 	if err != nil {
@@ -452,7 +423,7 @@ func (f *Function) Build() (io.Reader, error) {
 	}
 
 	for path, file := range files {
-		f.Log.WithField("file", path).Debug("add file")
+		f.Log.WithField("file", path).Debug("add file to zip")
 		if err := zip.AddFile(path, file); err != nil {
 			return nil, err
 		}
@@ -469,64 +440,7 @@ func (f *Function) Build() (io.Reader, error) {
 	return buf, nil
 }
 
-// Clean removes build artifacts from compiled runtimes.
+// Clean invokes the CleanHook, useful for removing build artifacts and so on.
 func (f *Function) Clean() error {
-	if err := f.RunHook("clean"); err != nil {
-		return err
-	}
-
-	if r, ok := f.runtime.(runtime.CompiledRuntime); ok {
-		return r.Clean(f.Path)
-	}
-
-	return nil
-}
-
-// A HookError represents a failed hook command.
-type HookError struct {
-	Name    string
-	Command string
-	Output  string
-}
-
-// Error string.
-func (e *HookError) Error() string {
-	return fmt.Sprintf("hook %q: %s", e.Name, e.Output)
-}
-
-// RunHook executes hook `name` in the function's directory.
-func (f *Function) RunHook(name string) error {
-	var command string
-
-	switch name {
-	case "clean":
-		command = f.Hooks.Clean
-	case "build":
-		command = f.Hooks.Build
-	}
-
-	if command == "" {
-		return nil
-	}
-
-	f.Log.WithFields(log.Fields{
-		"hook":    name,
-		"command": command,
-	}).Debug("hook")
-
-	cmd := exec.Command("sh", "-c", command)
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("FUNCTION=%s", f.Name))
-	cmd.Dir = f.Path
-
-	b, err := cmd.CombinedOutput()
-	if err != nil {
-		return &HookError{
-			Name:    name,
-			Command: command,
-			Output:  string(b),
-		}
-	}
-
-	return nil
+	return f.hook(CleanHook)
 }
