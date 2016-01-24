@@ -69,3 +69,24 @@ func TestPlugin_Run_cleanHook(t *testing.T) {
 	_, err := os.Stat(filepath.Join(os.TempDir(), ".env.json"))
 	assert.Error(t, err)
 }
+
+func TestPlugin_Run_otherHook(t *testing.T) {
+	p := &Plugin{}
+
+	f := &function.Function{
+		Log:  log.Log,
+		Path: os.TempDir(),
+		Config: function.Config{
+			Environment: map[string]string{
+				"foo": "bar",
+				"bar": "baz",
+			},
+		},
+	}
+
+	err := p.Run(function.OpenHook, f)
+	assert.NoError(t, err)
+
+	_, err = os.Stat(filepath.Join(os.TempDir(), ".env.json"))
+	assert.Error(t, err)
+}
