@@ -4,7 +4,7 @@
   "role": "arn:aws:iam::293503197324:role/lambda",
   "runtime": "nodejs",
   "hooks": {
-    "build": "coffee -cs < index.cs > index.js",
+    "build": "coffee -cs < index.coffee > index.js",
     "clean": "rm index.js"
   }
 }
