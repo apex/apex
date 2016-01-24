@@ -27,7 +27,7 @@ const metricsCmdExample = `  Output the last day of metrics for a function
   $ apex metrics foo
 
   Output the last three days of metrics for a function
-  $ apex metrics foo 72d`
+  $ apex metrics foo 72h`
 
 var metricsCmd = &cobra.Command{
 	Use:     "metrics <name> [<duration>]",
