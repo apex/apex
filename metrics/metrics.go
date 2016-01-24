@@ -29,19 +29,6 @@ type Metric struct {
 	Value []*cloudwatch.Datapoint
 }
 
-// getCloudWatchMetrics starts the CloudWatch metrics collection.
-func getCloudWatchMetrics(fn string, startDate time.Time, endDate time.Time, service cloudwatchiface.CloudWatchAPI) {
-	mc := &MetricCollector{
-		Metrics:      []string{},
-		Collected:    0,
-		FunctionName: fn,
-		Service:      service,
-		StartDate:    startDate,
-		EndDate:      endDate,
-	}
-	mc.Collect()
-}
-
 // Collect builds the collector pipeline
 func (mc *MetricCollector) Collect() <-chan Metric {
 	return mc.collect(mc.gen())
@@ -54,20 +41,19 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 
 	for name := range in {
 		wg.Add(1)
-		go func(metricName string) {
+		name := name
+
+		go func() {
 			defer wg.Done()
 
-			m := &Metric{
-				metricName,
-				nil,
-			}
+			m := &Metric{Name: name}
 
 			var duration int
 			switch x := mc.EndDate.Sub(mc.StartDate).Hours(); {
-			default:
-				duration = 1 // hourly
 			case x > 24:
 				duration = 24 // daily
+			default:
+				duration = 1 // hourly
 			}
 
 			period := time.Duration(duration) * time.Hour
@@ -87,14 +73,13 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 						Value: aws.String(mc.FunctionName),
 					},
 				},
-				Unit: aws.String(unit(metricName)),
+				Unit: aws.String(unit(name)),
 			}
 
 			resp, err := mc.Service.GetMetricStatistics(params)
 
 			if err != nil {
-				// Print the error, cast err to awserr.Error to get the Code and
-				// Message from an error.
+				// TODO: refactor so that errors are reported in cmd
 				fmt.Println(err.Error())
 				return
 			}
@@ -102,7 +87,7 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 			m.Value = resp.Datapoints
 
 			out <- *m
-		}(name)
+		}()
 	}
 
 	go func() {
