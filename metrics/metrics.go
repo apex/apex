@@ -56,13 +56,7 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 		wg.Add(1)
 		go func(metricName string) {
 			defer wg.Done()
-			var unit string
-			switch metricName {
-			default:
-				unit = "Count"
-			case "Duration":
-				unit = "Milliseconds"
-			}
+
 			m := &Metric{
 				metricName,
 				nil,
@@ -93,7 +87,7 @@ func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
 						Value: aws.String(mc.FunctionName),
 					},
 				},
-				Unit: aws.String(unit),
+				Unit: aws.String(unit(metricName)),
 			}
 
 			resp, err := mc.Service.GetMetricStatistics(params)
@@ -127,4 +121,14 @@ func (mc *MetricCollector) gen() <-chan string {
 	}
 	close(out)
 	return out
+}
+
+// unit for metric name.
+func unit(name string) string {
+	switch name {
+	case "Duration":
+		return "Milliseconds"
+	default:
+		return "Count"
+	}
 }
