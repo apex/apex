@@ -1,4 +1,23 @@
 
+v0.5.0 / 2016-01-24
+===================
+
+  * add metrics command
+  * add hook support. Closes #68
+  * add plugins, replacing runtimes. Closes #130
+  * add coffeescript example using hooks
+  * add invoke support to omit .event and .context. Closes #13
+  * add .apexignore support. Closes #69
+  * add simple CONTRIBUTING.md. Closes #121
+  * add deploy -c, --concurrency. Closes #46
+  * add "apex version" and dropped "-v" and "--version" global flag
+  * add -f flag support to "apex logs". Do not follow by default
+  * add wiki multi-arg support. Closes #117
+  * change wiki code to bold instead of gray
+  * remove deferring of file Close() for builds (keep fd count low)
+  * rename {Project,Function}.SetEnv to Setenv
+  * rename wiki command to docs
+
 v0.4.1 / 2016-01-17
 ===================
 
