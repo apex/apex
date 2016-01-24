@@ -109,8 +109,8 @@ func (f *Function) Open() error {
 	return nil
 }
 
-// SetEnv sets environment variable `name` to `value`.
-func (f *Function) SetEnv(name, value string) {
+// Setenv sets environment variable `name` to `value`.
+func (f *Function) Setenv(name, value string) {
 	f.Environment[name] = value
 }
 

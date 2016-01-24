@@ -56,7 +56,7 @@ func deployCmdRun(c *cobra.Command, args []string) {
 
 	for _, s := range pv.Env {
 		parts := strings.Split(s, "=")
-		pv.project.SetEnv(parts[0], parts[1])
+		pv.project.Setenv(parts[0], parts[1])
 	}
 
 	if err := pv.project.DeployAndClean(lv.names); err != nil {

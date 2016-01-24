@@ -275,8 +275,8 @@ func (p *Project) Logs(s *session.Session, name string, filter string) (*logs.Lo
 	return l, nil
 }
 
-// SetEnv sets environment variable `name` to `value` on every function in project.
-func (p *Project) SetEnv(name, value string) {
+// Setenv sets environment variable `name` to `value` on every function in project.
+func (p *Project) Setenv(name, value string) {
 	p.Environment[name] = value
 }
 
