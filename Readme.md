@@ -170,6 +170,7 @@ Via ~/.aws configuration:
 - [Maciej Winnicki](https://github.com/mthenw)
 - [Pilwon Huh](https://github.com/pilwon)
 - [Faraz Fazli](https://github.com/farazfazli)
+- [Johannes Boyne](https://github.com/johannesboyne)
 
 ## Badges
 
