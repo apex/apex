@@ -426,8 +426,14 @@ func (f *Function) Build() (io.Reader, error) {
 		return nil, err
 	}
 
-	for path, file := range files {
+	for _, path := range files {
 		f.Log.WithField("file", path).Debug("add file to zip")
+
+		file, err := os.Open(filepath.Join(f.Path, path))
+		if err != nil {
+			return nil, err
+		}
+
 		if err := zip.AddFile(path, file); err != nil {
 			return nil, err
 		}

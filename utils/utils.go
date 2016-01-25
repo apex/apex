@@ -16,10 +16,10 @@ func Sha256(b []byte) string {
 	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }
 
-// LoadFiles return filtered map of files; for filtering it uses shell file name pattern matching
-func LoadFiles(root string, ignoredPatterns []string) (map[string]*os.File, error) {
-	files := make(map[string]*os.File)
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+// LoadFiles return filtered map of relative to 'root' file paths;
+// for filtering it uses shell file name pattern matching
+func LoadFiles(root string, ignoredPatterns []string) (files []string, err error) {
+	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -45,17 +45,12 @@ func LoadFiles(root string, ignoredPatterns []string) (map[string]*os.File, erro
 			}
 		}
 
-		file, err := os.Open(path)
-		if err != nil {
-			return err
-		}
-
-		files[rel] = file
+		files = append(files, rel)
 
 		return nil
 	})
 
-	return files, err
+	return
 }
 
 // ReadIgnoreFile reads .apexignore in `dir` when present and returns a list of patterns.
