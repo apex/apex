@@ -16,13 +16,16 @@ type Logs struct {
 	Log           log.Interface
 	GroupName     string
 	FilterPattern string
+	StartTime     time.Time
+	EndTime       time.Time
 
 	err error
 }
 
 // Fetch log events.
 func (l *Logs) Fetch() ([]*cloudwatchlogs.FilteredLogEvent, error) {
-	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
+	start := l.StartTime.UTC().UnixNano() / int64(time.Millisecond)
+	end := l.EndTime.UTC().UnixNano() / int64(time.Millisecond)
 
 	l.Log.Debugf("fetching %q with filter %q", l.GroupName, l.FilterPattern)
 
@@ -30,6 +33,7 @@ func (l *Logs) Fetch() ([]*cloudwatchlogs.FilteredLogEvent, error) {
 		LogGroupName:  &l.GroupName,
 		FilterPattern: &l.FilterPattern,
 		StartTime:     &start,
+		EndTime:       &end,
 	})
 
 	if err != nil {
@@ -51,7 +55,8 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 	defer close(ch)
 
 	var nextToken *string
-	start := time.Now().Add(-time.Minute).UnixNano() / int64(time.Millisecond)
+	start := l.StartTime.UTC().UnixNano() / int64(time.Millisecond)
+	end := l.EndTime.UTC().UnixNano() / int64(time.Millisecond)
 
 	l.Log.Debugf("tailing %q with filter %q", l.GroupName, l.FilterPattern)
 
@@ -65,6 +70,7 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 			LogGroupName:  &l.GroupName,
 			FilterPattern: &l.FilterPattern,
 			StartTime:     &start,
+			EndTime:       &end,
 			NextToken:     nextToken,
 		})
 

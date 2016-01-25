@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -31,6 +32,9 @@ const (
 
 	// DefaultTimeout defines default timeout value (s) for every function in a project
 	DefaultTimeout = 3
+
+	// TimeFormat defines the default time format
+	TimeFormat = "02/01/2006 15:04"
 )
 
 // ErrNotFound is returned when a function cannot be found.
@@ -254,7 +258,7 @@ func (p *Project) FunctionNames() (list []string) {
 }
 
 // Logs returns logs.
-func (p *Project) Logs(s *session.Session, name string, filter string) (*logs.Logs, error) {
+func (p *Project) Logs(s *session.Session, name string, filter string, duration string) (*logs.Logs, error) {
 	fn, err := p.FunctionByName(name)
 	if err != nil {
 		return nil, err
@@ -271,6 +275,28 @@ func (p *Project) Logs(s *session.Session, name string, filter string) (*logs.Lo
 		GroupName:     fmt.Sprintf("/aws/lambda/%s", fnName),
 		FilterPattern: filter,
 	}
+
+	var start time.Time
+	var end time.Time
+
+	if duration == "" {
+		end = time.Now()
+		start = end.Add(-time.Duration(1) * time.Minute)
+	} else {
+		parsedDuration, err := time.ParseDuration(duration)
+		if err != nil {
+			return nil, err
+		}
+		end = time.Now()
+		start = end.Add(-parsedDuration)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	l.StartTime = start
+	l.EndTime = end
 
 	return l, nil
 }

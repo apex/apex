@@ -9,17 +9,21 @@ import (
 )
 
 type LogsCmdLocalValues struct {
-	Filter string
-	Follow bool
+	Filter   string
+	Follow   bool
+	Duration string
 
 	name string
 }
 
 const logsCmdExample = `  Print logs for a function
-  $ apex logs <name>`
+  $ apex logs <name>
+
+  Print logs for a function with a specified duration, e.g. 5 minutes
+  $ apex logs <name> 5m`
 
 var logsCmd = &cobra.Command{
-	Use:     "logs <name>",
+	Use:     "logs <name> [<duration>]",
 	Short:   "Output logs with optional filter pattern",
 	Example: logsCmdExample,
 	PreRun:  logsCmdPreRun,
@@ -43,12 +47,16 @@ func logsCmdPreRun(c *cobra.Command, args []string) {
 		log.Fatal("Missing name argument")
 	}
 	lv.name = args[0]
+
+	if len(args) >= 2 {
+		lv.Duration = args[1]
+	}
 }
 
 func logsCmdRun(c *cobra.Command, args []string) {
 	lv := &logsCmdLocalValues
 
-	l, err := pv.project.Logs(pv.session, lv.name, lv.Filter)
+	l, err := pv.project.Logs(pv.session, lv.name, lv.Filter, lv.Duration)
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
