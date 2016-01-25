@@ -14,7 +14,7 @@ func Test_Sha256(t *testing.T) {
 
 func Test_LoadFiles(t *testing.T) {
 	files, _ := utils.LoadFiles("_fixtures/fileAndDir", []string{"testfile"})
-	assert.Equal(t, "_fixtures/fileAndDir/testdir/indir", files["testdir/indir"].Name())
+	assert.Equal(t, "testdir/indir", files[0])
 	assert.Equal(t, 2, len(files))
 }
 
