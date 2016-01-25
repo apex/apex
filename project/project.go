@@ -32,9 +32,6 @@ const (
 
 	// DefaultTimeout defines default timeout value (s) for every function in a project
 	DefaultTimeout = 3
-
-	// TimeFormat defines the default time format
-	TimeFormat = "02/01/2006 15:04"
 )
 
 // ErrNotFound is returned when a function cannot be found.
