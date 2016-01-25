@@ -273,23 +273,15 @@ func (p *Project) Logs(s *session.Session, name string, filter string, duration 
 		FilterPattern: filter,
 	}
 
-	var start time.Time
-	var end time.Time
+	start := time.Now().Add(-time.Minute)
+	end := time.Now()
 
-	if duration == "" {
-		end = time.Now()
-		start = end.Add(-time.Duration(1) * time.Minute)
-	} else {
-		parsedDuration, err := time.ParseDuration(duration)
+	if duration != "" {
+		d, err := time.ParseDuration(duration)
 		if err != nil {
 			return nil, err
 		}
-		end = time.Now()
-		start = end.Add(-parsedDuration)
-	}
-
-	if err != nil {
-		return nil, err
+		start = time.Now().Add(-d)
 	}
 
 	l.StartTime = start
