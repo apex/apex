@@ -79,5 +79,4 @@ func logsCmdRun(c *cobra.Command, args []string) {
 	for _, event := range events {
 		fmt.Printf("%s", *event.Message)
 	}
-
 }
