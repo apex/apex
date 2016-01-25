@@ -1,4 +1,10 @@
 
+v0.5.1 / 2016-01-25
+===================
+
+  * fix env variable precedence when set via flag
+  * fix open file limit bug
+
 v0.5.0 / 2016-01-24
 ===================
 
