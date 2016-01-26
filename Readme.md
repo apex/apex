@@ -19,6 +19,12 @@ Or from master:
 go get github.com/apex/apex/cmd/apex
 ```
 
+Or upgrading:
+
+```
+apex upgrade
+```
+
 ## Runtimes
 
 Currently supports:
