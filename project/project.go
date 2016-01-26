@@ -114,6 +114,7 @@ func (p *Project) Open() error {
 }
 
 // LoadFunctions reads the ./functions directory, populating the Functions field.
+// If no `names` are specified, all functions are loaded.
 func (p *Project) LoadFunctions(names ...string) error {
 	dir := filepath.Join(p.Path, functionsDir)
 	p.Log.Debugf("loading functions in %s", dir)
