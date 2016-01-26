@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -18,6 +19,12 @@ var listCmd = &cobra.Command{
 
 func listCmdRun(c *cobra.Command, args []string) {
 	fmt.Println()
+
+	err := pv.project.LoadFunctions()
+	if err != nil {
+		log.Fatalf("error: %s", err)
+	}
+
 	for _, fn := range pv.project.Functions {
 		fmt.Printf("  - %s (%s)\n", fn.Name, fn.Runtime)
 	}

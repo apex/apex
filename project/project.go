@@ -110,33 +110,58 @@ func (p *Project) Open() error {
 		return err
 	}
 
-	return p.loadFunctions()
+	return nil
+}
+
+// LoadFunctions reads the ./functions directory, populating the Functions field.
+func (p *Project) LoadFunctions(names ...string) error {
+	dir := filepath.Join(p.Path, functionsDir)
+	p.Log.Debugf("loading functions in %s", dir)
+
+	var err error
+	if len(names) == 0 {
+		names, err = p.FunctionDirNames()
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, name := range names {
+		fn, err := p.loadFunction(name)
+		if err != nil {
+			return err
+		}
+
+		p.Functions = append(p.Functions, fn)
+	}
+
+	return nil
 }
 
 // DeployAndClean deploys functions and then cleans up their build artifacts.
-func (p *Project) DeployAndClean(names []string) error {
-	if err := p.Deploy(names); err != nil {
+func (p *Project) DeployAndClean() error {
+	if err := p.Deploy(); err != nil {
 		return err
 	}
 
-	return p.Clean(names)
+	return p.Clean()
 }
 
 // Deploy functions and their configurations.
-func (p *Project) Deploy(names []string) error {
-	p.Log.Debugf("deploying %d functions", len(names))
+func (p *Project) Deploy() error {
+	p.Log.Debugf("deploying %d functions", len(p.Functions))
 
 	sem := make(semaphore.Semaphore, p.Concurrency)
 	errs := make(chan error)
 
 	go func() {
-		for _, name := range names {
-			name := name
+		for _, fn := range p.Functions {
+			fn := fn
 			sem.Acquire()
 
 			go func() {
 				defer sem.Release()
-				errs <- p.deploy(name)
+				errs <- fn.Deploy()
 			}()
 		}
 
@@ -153,33 +178,11 @@ func (p *Project) Deploy(names []string) error {
 	return nil
 }
 
-// deploy function by `name`.
-func (p *Project) deploy(name string) error {
-	fn, err := p.FunctionByName(name)
-
-	if err == ErrNotFound {
-		p.Log.Warnf("function %q does not exist", name)
-		return nil
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return fn.Deploy()
-}
-
 // Clean up function build artifacts.
-func (p *Project) Clean(names []string) error {
-	p.Log.Debugf("cleaning %d functions", len(names))
+func (p *Project) Clean() error {
+	p.Log.Debugf("cleaning %d functions", len(p.Functions))
 
-	for _, name := range names {
-		fn, err := p.FunctionByName(name)
-
-		if err == ErrNotFound {
-			continue
-		}
-
+	for _, fn := range p.Functions {
 		if err := fn.Clean(); err != nil {
 			return err
 		}
@@ -189,20 +192,13 @@ func (p *Project) Clean(names []string) error {
 }
 
 // Delete functions.
-func (p *Project) Delete(names []string) error {
-	p.Log.Debugf("deleting %d functions", len(names))
+func (p *Project) Delete() error {
+	p.Log.Debugf("deleting %d functions", len(p.Functions))
 
-	for _, name := range names {
-		fn, err := p.FunctionByName(name)
-
-		if err == ErrNotFound {
-			p.Log.Warnf("function %q does not exist in project", name)
-			continue
-		}
-
+	for _, fn := range p.Functions {
 		if _, err := fn.GetConfig(); err != nil {
 			if awserr, ok := err.(awserr.Error); ok && awserr.Code() == "ResourceNotFoundException" {
-				p.Log.Infof("function %q hasn't been deployed yet or has been deleted manually on AWS Lambda", name)
+				p.Log.Infof("function %q hasn't been deployed yet or has been deleted manually on AWS Lambda", fn.Name)
 				continue
 			}
 			return err
@@ -229,7 +225,7 @@ func (p *Project) FunctionByName(name string) (*function.Function, error) {
 
 // FunctionDirNames returns a list of function directory names.
 func (p *Project) FunctionDirNames() (list []string, err error) {
-	dir := filepath.Join(p.Path, "functions")
+	dir := filepath.Join(p.Path, functionsDir)
 
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -245,23 +241,9 @@ func (p *Project) FunctionDirNames() (list []string, err error) {
 	return list, nil
 }
 
-// FunctionNames returns a list of function names.
-func (p *Project) FunctionNames() (list []string) {
-	for _, fn := range p.Functions {
-		list = append(list, fn.Name)
-	}
-
-	return list
-}
-
 // Logs returns logs.
-func (p *Project) Logs(s *session.Session, name string, filter string, duration string) (*logs.Logs, error) {
-	fn, err := p.FunctionByName(name)
-	if err != nil {
-		return nil, err
-	}
-
-	fnName, err := p.name(fn)
+func (p *Project) Logs(s *session.Session, filter string, duration string) (*logs.Logs, error) {
+	fnName, err := p.name(p.Functions[0])
 	if err != nil {
 		return nil, err
 	}
@@ -297,31 +279,9 @@ func (p *Project) Setenv(name, value string) {
 	}
 }
 
-// loadFunctions reads the ./functions directory, populating the Functions field.
-func (p *Project) loadFunctions() error {
-	dir := filepath.Join(p.Path, "functions")
-	p.Log.Debugf("loading functions in %s", dir)
-
-	names, err := p.FunctionDirNames()
-	if err != nil {
-		return err
-	}
-
-	for _, name := range names {
-		fn, err := p.loadFunction(name)
-		if err != nil {
-			return err
-		}
-
-		p.Functions = append(p.Functions, fn)
-	}
-
-	return nil
-}
-
 // loadFunction returns the function in the ./functions/<name> directory.
 func (p *Project) loadFunction(name string) (*function.Function, error) {
-	dir := filepath.Join(p.Path, "functions", name)
+	dir := filepath.Join(p.Path, functionsDir, name)
 	p.Log.Debugf("loading function in %s", dir)
 
 	fn := &function.Function{
@@ -372,6 +332,8 @@ func (p *Project) name(fn *function.Function) (string, error) {
 
 	return name, nil
 }
+
+const functionsDir = "functions"
 
 // render returns a string by executing template `t` against the given value `v`.
 func render(t *template.Template, v interface{}) (string, error) {

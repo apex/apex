@@ -59,10 +59,13 @@ func invokeCmdRun(c *cobra.Command, args []string) {
 		kind = function.Event
 	}
 
-	fn, err := pv.project.FunctionByName(lv.name)
+	err := pv.project.LoadFunctions(lv.name)
 	if err != nil {
 		log.Fatalf("error: %s", err)
+		return
 	}
+
+	fn := pv.project.Functions[0]
 
 	for {
 		var v map[string]interface{}

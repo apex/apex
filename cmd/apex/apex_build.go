@@ -39,12 +39,13 @@ func buildCmdPreRun(c *cobra.Command, args []string) {
 func buildCmdRun(c *cobra.Command, args []string) {
 	lv := &buildCmdLocalValues
 
-	fn, err := pv.project.FunctionByName(lv.name)
+	err := pv.project.LoadFunctions(lv.name)
 	if err != nil {
 		log.Fatalf("error: %s", err)
+		return
 	}
 
-	zip, err := fn.Build()
+	zip, err := pv.project.Functions[0].Build()
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}

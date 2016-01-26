@@ -43,10 +43,12 @@ func rollbackCmdPreRun(c *cobra.Command, args []string) {
 func rollbackCmdRun(c *cobra.Command, args []string) {
 	lv := &rollbackCmdLocalValues
 
-	fn, err := pv.project.FunctionByName(lv.name)
+	err := pv.project.LoadFunctions(lv.name)
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
+
+	fn := pv.project.Functions[0]
 
 	if lv.version == "" {
 		err = fn.Rollback()
