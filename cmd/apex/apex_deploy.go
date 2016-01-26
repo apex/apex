@@ -10,7 +10,6 @@ import (
 
 type DeployCmdLocalValues struct {
 	concurrency int
-	names       []string
 }
 
 const deployCmdExample = `  Deploy all functions
@@ -26,7 +25,6 @@ var deployCmd = &cobra.Command{
 	Use:     "deploy [<name>...]",
 	Short:   "Deploy code and config changes",
 	Example: deployCmdExample,
-	PreRun:  deployCmdPreRun,
 	Run:     deployCmdRun,
 }
 
@@ -39,27 +37,22 @@ func init() {
 	f.IntVarP(&lv.concurrency, "concurrency", "c", 5, "Concurrent deploys")
 }
 
-func deployCmdPreRun(c *cobra.Command, args []string) {
-	lv := &deployCmdLocalValues
-
-	if len(args) == 0 {
-		lv.names = pv.project.FunctionNames()
-		return
-	}
-	lv.names = args
-}
-
 func deployCmdRun(c *cobra.Command, args []string) {
 	lv := &deployCmdLocalValues
 
 	pv.project.Concurrency = lv.concurrency
+
+	if err := pv.project.LoadFunctions(args...); err != nil {
+		log.Fatalf("error: %s", err)
+		return
+	}
 
 	for _, s := range pv.Env {
 		parts := strings.Split(s, "=")
 		pv.project.Setenv(parts[0], parts[1])
 	}
 
-	if err := pv.project.DeployAndClean(lv.names); err != nil {
+	if err := pv.project.DeployAndClean(); err != nil {
 		log.Fatalf("error: %s", err)
 	}
 }

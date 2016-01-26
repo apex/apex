@@ -65,20 +65,22 @@ func metricsCmdPreRun(c *cobra.Command, args []string) {
 
 // aggregate accumulates the datapoints.
 func aggregate(values []*cloudwatch.Datapoint) int {
-	aggregated_sum := 0.0
+	aggregatedSum := 0.0
 	for _, dp := range values {
-		aggregated_sum += *dp.Sum
+		aggregatedSum += *dp.Sum
 	}
-	return int(aggregated_sum)
+	return int(aggregatedSum)
 }
 
 func metricsCmdRun(c *cobra.Command, args []string) {
 	lv := &metricsCmdLocalValues
 
-	fn, err := pv.project.FunctionByName(lv.name)
+	err := pv.project.LoadFunctions(lv.name)
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
+
+	fn := pv.project.Functions[0]
 
 	d, err := time.ParseDuration(lv.duration)
 	if err != nil {

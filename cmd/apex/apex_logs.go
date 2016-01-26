@@ -56,7 +56,13 @@ func logsCmdPreRun(c *cobra.Command, args []string) {
 func logsCmdRun(c *cobra.Command, args []string) {
 	lv := &logsCmdLocalValues
 
-	l, err := pv.project.Logs(pv.session, lv.name, lv.Filter, lv.Duration)
+	err := pv.project.LoadFunctions(lv.name)
+	if err != nil {
+		log.Fatalf("error: %s", err)
+		return
+	}
+
+	l, err := pv.project.Logs(pv.session, lv.Filter, lv.Duration)
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}
