@@ -8,7 +8,8 @@ Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.
 Download [binaries](https://github.com/apex/apex/releases):
 
 ```
-curl -sL https://github.com/apex/apex/releases/download/v0.4.1/apex_darwin_amd64 -o /usr/local/bin/apex
+latest=$(curl -s https://api.github.com/repos/apex/apex/tags | grep name | head -n 1 | sed 's/[," ]//g' | cut -d ':' -f 2)
+curl -sL https://github.com/apex/apex/releases/download/$latest/apex_darwin_amd64 -o /usr/local/bin/apex
 chmod +x $_
 ```
 
