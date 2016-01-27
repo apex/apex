@@ -8,13 +8,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/apex/apex/function"
 	"github.com/apex/log"
 )
 
 type InvokeCmdLocalValues struct {
-	Async bool
-	Logs  bool
+	Logs bool
 
 	name string
 }
@@ -36,7 +34,6 @@ func init() {
 	lv := &invokeCmdLocalValues
 	f := invokeCmd.Flags()
 
-	f.BoolVarP(&lv.Async, "async", "a", false, "Async invocation")
 	f.BoolVarP(&lv.Logs, "logs", "L", false, "Print logs")
 }
 
@@ -53,11 +50,6 @@ func invokeCmdPreRun(c *cobra.Command, args []string) {
 func invokeCmdRun(c *cobra.Command, args []string) {
 	lv := &invokeCmdLocalValues
 	dec := json.NewDecoder(os.Stdin)
-	kind := function.RequestResponse
-
-	if lv.Async {
-		kind = function.Event
-	}
 
 	err := pv.project.LoadFunctions(lv.name)
 	if err != nil {
@@ -82,17 +74,17 @@ func invokeCmdRun(c *cobra.Command, args []string) {
 		var reply, logs io.Reader
 
 		if e, ok := v["event"].(map[string]interface{}); ok {
-			reply, logs, err = fn.Invoke(e, v["context"], kind)
+			reply, logs, err = fn.Invoke(e, v["context"])
 		} else {
-			reply, logs, err = fn.Invoke(v, nil, kind)
-		}
-
-		if err != nil {
-			log.Fatalf("error response: %s", err)
+			reply, logs, err = fn.Invoke(v, nil)
 		}
 
 		if lv.Logs {
 			io.Copy(os.Stderr, logs)
+		}
+
+		if err != nil {
+			log.Fatalf("error response: %s", err)
 		}
 
 		io.Copy(os.Stdout, reply)
