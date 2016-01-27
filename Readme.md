@@ -182,7 +182,6 @@ Via ~/.aws configuration:
 ## Badges
 
 [![Build Status](https://semaphoreci.com/api/v1/projects/d27ff350-b9c5-4d99-96e5-64b1afb441c5/649392/badge.svg)](https://semaphoreci.com/tj/apex)
-[![Stories in Ready](https://badge.waffle.io/apex/apex.svg?label=ready&title=Ready)](http://waffle.io/apex/apex)
 [![Slack Status](https://apex-dev.azurewebsites.net/badge.svg)](https://apex-dev.azurewebsites.net/)
 [![GoDoc](https://godoc.org/github.com/apex/apex?status.svg)](https://godoc.org/github.com/apex/apex)
 ![](https://img.shields.io/badge/license-MIT-blue.svg)
