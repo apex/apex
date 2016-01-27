@@ -118,7 +118,7 @@ package main
 import (
   "encoding/json"
 
-  "github.com/apex/apex"
+  "github.com/apex/go-apex"
 )
 
 type Message struct {
