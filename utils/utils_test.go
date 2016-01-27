@@ -29,3 +29,8 @@ func Test_ReadIgnoreFile_missing(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, []string(nil), patterns)
 }
+
+func Test_ContainsString(t *testing.T) {
+	assert.True(t, utils.ContainsString([]string{"a", "b"}, "a"))
+	assert.False(t, utils.ContainsString([]string{"a", "b"}, "c"))
+}

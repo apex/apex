@@ -57,3 +57,28 @@ func TestProject_LoadFunctions_loadSpecified(t *testing.T) {
 	assert.Equal(t, 1, len(p.Functions))
 	assert.Equal(t, "foo", p.Functions[0].Name)
 }
+
+func TestProject_LoadFunctions_onlyExisting(t *testing.T) {
+	p := &project.Project{
+		Path: "_fixtures/twoFunctions",
+		Log:  log.Log,
+	}
+
+	p.Open()
+	p.LoadFunctions("foo", "buz")
+
+	assert.Equal(t, 1, len(p.Functions))
+	assert.Equal(t, "foo", p.Functions[0].Name)
+}
+
+func TestProject_LoadFunctions_noFunctionLoaded(t *testing.T) {
+	p := &project.Project{
+		Path: "_fixtures/twoFunctions",
+		Log:  log.Log,
+	}
+
+	p.Open()
+	err := p.LoadFunctions("buz")
+
+	assert.EqualError(t, err, "no function loaded")
+}
