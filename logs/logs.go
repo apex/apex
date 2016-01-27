@@ -56,7 +56,6 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 
 	var nextToken *string
 	start := l.StartTime.UTC().UnixNano() / int64(time.Millisecond)
-	end := l.EndTime.UTC().UnixNano() / int64(time.Millisecond)
 
 	l.Log.Debugf("tailing %q with filter %q", l.GroupName, l.FilterPattern)
 
@@ -70,7 +69,6 @@ func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
 			LogGroupName:  &l.GroupName,
 			FilterPattern: &l.FilterPattern,
 			StartTime:     &start,
-			EndTime:       &end,
 			NextToken:     nextToken,
 		})
 
