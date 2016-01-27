@@ -274,7 +274,7 @@ func (f *Function) Create(zip []byte) error {
 }
 
 // Invoke the remote Lambda function, returning the response and logs, if any.
-func (f *Function) Invoke(event, context interface{}, kind InvocationType) (reply, logs io.Reader, err error) {
+func (f *Function) Invoke(event, context interface{}) (reply, logs io.Reader, err error) {
 	eventBytes, err := json.Marshal(event)
 	if err != nil {
 		return nil, nil, err
@@ -288,7 +288,7 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 	res, err := f.Service.Invoke(&lambda.InvokeInput{
 		ClientContext:  aws.String(base64.StdEncoding.EncodeToString(contextBytes)),
 		FunctionName:   &f.FunctionName,
-		InvocationType: aws.String(string(kind)),
+		InvocationType: aws.String(string(RequestResponse)),
 		LogType:        aws.String("Tail"),
 		Qualifier:      aws.String(CurrentAlias),
 		Payload:        eventBytes,
@@ -298,23 +298,20 @@ func (f *Function) Invoke(event, context interface{}, kind InvocationType) (repl
 		return nil, nil, err
 	}
 
+	logs = base64.NewDecoder(base64.StdEncoding, strings.NewReader(*res.LogResult))
+
 	if res.FunctionError != nil {
 		e := &InvokeError{
 			Handled: *res.FunctionError == "Handled",
 		}
 
 		if err := json.Unmarshal(res.Payload, e); err != nil {
-			return nil, nil, err
+			return nil, logs, err
 		}
 
-		return nil, nil, e
+		return nil, logs, e
 	}
 
-	if kind == Event {
-		return bytes.NewReader(nil), bytes.NewReader(nil), nil
-	}
-
-	logs = base64.NewDecoder(base64.StdEncoding, strings.NewReader(*res.LogResult))
 	reply = bytes.NewReader(res.Payload)
 	return reply, logs, nil
 }
