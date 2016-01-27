@@ -34,9 +34,6 @@ const (
 	DefaultTimeout = 3
 )
 
-// ErrNotFound is returned when a function cannot be found.
-var ErrNotFound = errors.New("project: no function found")
-
 // Config for project.
 type Config struct {
 	Name         string            `json:"name" validate:"nonzero"`
@@ -119,21 +116,31 @@ func (p *Project) LoadFunctions(names ...string) error {
 	dir := filepath.Join(p.Path, functionsDir)
 	p.Log.Debugf("loading functions in %s", dir)
 
-	var err error
+	existing, err := p.FunctionDirNames()
+	if err != nil {
+		return err
+	}
+
 	if len(names) == 0 {
-		names, err = p.FunctionDirNames()
-		if err != nil {
-			return err
-		}
+		names = existing
 	}
 
 	for _, name := range names {
+		if !utils.ContainsString(existing, name) {
+			p.Log.Warnf("function %q does not exist in project", name)
+			continue
+		}
+
 		fn, err := p.loadFunction(name)
 		if err != nil {
 			return err
 		}
 
 		p.Functions = append(p.Functions, fn)
+	}
+
+	if len(p.Functions) == 0 {
+		return errors.New("no function loaded")
 	}
 
 	return nil
@@ -211,17 +218,6 @@ func (p *Project) Delete() error {
 	}
 
 	return nil
-}
-
-// FunctionByName returns a function by `name` or returns ErrNotFound.
-func (p *Project) FunctionByName(name string) (*function.Function, error) {
-	for _, fn := range p.Functions {
-		if fn.Name == name {
-			return fn, nil
-		}
-	}
-
-	return nil, ErrNotFound
 }
 
 // FunctionDirNames returns a list of function directory names.

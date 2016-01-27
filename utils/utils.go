@@ -69,3 +69,13 @@ func ReadIgnoreFile(dir string) ([]string, error) {
 
 	return strings.Split(string(b), "\n"), nil
 }
+
+// ContainsString checks if array contains string
+func ContainsString(array []string, element string) bool {
+	for _, e := range array {
+		if element == e {
+			return true
+		}
+	}
+	return false
+}
