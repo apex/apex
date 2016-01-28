@@ -13,7 +13,7 @@ import (
 	"github.com/apex/log"
 )
 
-type PersistentValues struct {
+type persistentValues struct {
 	Chdir    string
 	DryRun   bool
 	Env      []string
@@ -25,9 +25,9 @@ type PersistentValues struct {
 	project *project.Project
 }
 
-func (*PersistentValues) noopRun(*cobra.Command, []string) {}
+func (pv *persistentValues) noopRun(*cobra.Command, []string) {}
 
-func (pv *PersistentValues) preRun(c *cobra.Command, args []string) {
+func (pv *persistentValues) preRun(c *cobra.Command, args []string) {
 	if l, err := log.ParseLevel(pv.LogLevel); err == nil {
 		log.SetLevel(l)
 	}
@@ -58,4 +58,4 @@ func (pv *PersistentValues) preRun(c *cobra.Command, args []string) {
 	}
 }
 
-var pv PersistentValues
+var pv persistentValues

@@ -6,7 +6,7 @@ import (
 	"github.com/apex/log"
 )
 
-type RollbackCmdLocalValues struct {
+var rollbackCmdLocalValues struct {
 	name    string
 	version string
 }
@@ -24,8 +24,6 @@ var rollbackCmd = &cobra.Command{
 	PreRun:  rollbackCmdPreRun,
 	Run:     rollbackCmdRun,
 }
-
-var rollbackCmdLocalValues = RollbackCmdLocalValues{}
 
 func rollbackCmdPreRun(c *cobra.Command, args []string) {
 	lv := &rollbackCmdLocalValues

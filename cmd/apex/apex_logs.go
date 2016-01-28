@@ -8,7 +8,7 @@ import (
 	"github.com/apex/log"
 )
 
-type LogsCmdLocalValues struct {
+var logsCmdLocalValues struct {
 	Filter   string
 	Follow   bool
 	Duration string
@@ -29,8 +29,6 @@ var logsCmd = &cobra.Command{
 	PreRun:  logsCmdPreRun,
 	Run:     logsCmdRun,
 }
-
-var logsCmdLocalValues = LogsCmdLocalValues{}
 
 func init() {
 	lv := &logsCmdLocalValues

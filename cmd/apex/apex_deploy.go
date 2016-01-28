@@ -8,7 +8,7 @@ import (
 	"github.com/apex/log"
 )
 
-type DeployCmdLocalValues struct {
+var deployCmdLocalValues struct {
 	concurrency int
 }
 
@@ -27,8 +27,6 @@ var deployCmd = &cobra.Command{
 	Example: deployCmdExample,
 	Run:     deployCmdRun,
 }
-
-var deployCmdLocalValues = DeployCmdLocalValues{}
 
 func init() {
 	lv := &deployCmdLocalValues

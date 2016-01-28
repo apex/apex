@@ -10,7 +10,7 @@ import (
 	"github.com/apex/log"
 )
 
-type DocsCmdLocalValues struct {
+var docsCmdLocalValues struct {
 	topic string
 }
 
@@ -28,8 +28,6 @@ var docsCmd = &cobra.Command{
 	PreRun:           docsCmdPreRun,
 	Run:              docsCmdRun,
 }
-
-var docsCmdLocalValues = DocsCmdLocalValues{}
 
 func docsCmdPreRun(c *cobra.Command, args []string) {
 	lv := &docsCmdLocalValues

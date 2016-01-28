@@ -16,7 +16,7 @@ type aggregatedMetric struct {
 	Count int
 }
 
-type MetricsCmdLocalValues struct {
+var metricsCmdLocalValues struct {
 	Start    string
 	End      string
 	name     string
@@ -36,8 +36,6 @@ var metricsCmd = &cobra.Command{
 	PreRun:  metricsCmdPreRun,
 	Run:     metricsCmdRun,
 }
-
-var metricsCmdLocalValues = MetricsCmdLocalValues{}
 
 func init() {
 	lv := &metricsCmdLocalValues

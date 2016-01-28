@@ -9,7 +9,7 @@ import (
 	"github.com/apex/log"
 )
 
-type DeleteCmdLocalValues struct {
+var deleteCmdLocalValues struct {
 	Force bool
 }
 
@@ -25,8 +25,6 @@ var deleteCmd = &cobra.Command{
 	Example: deleteCmdExample,
 	Run:     deleteCmdRun,
 }
-
-var deleteCmdLocalValues = DeleteCmdLocalValues{}
 
 func init() {
 	lv := &deleteCmdLocalValues

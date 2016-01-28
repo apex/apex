@@ -36,7 +36,7 @@ const (
 	DryRun                         = "DryRun"
 )
 
-// Current alias name.
+// CurrentAlias name.
 const CurrentAlias = "current"
 
 // InvokeError records an error from an invocation.

@@ -11,7 +11,7 @@ import (
 	"github.com/apex/log"
 )
 
-type InvokeCmdLocalValues struct {
+var invokeCmdLocalValues struct {
 	Logs bool
 
 	name string
@@ -27,8 +27,6 @@ var invokeCmd = &cobra.Command{
 	PreRun:  invokeCmdPreRun,
 	Run:     invokeCmdRun,
 }
-
-var invokeCmdLocalValues = InvokeCmdLocalValues{}
 
 func init() {
 	lv := &invokeCmdLocalValues

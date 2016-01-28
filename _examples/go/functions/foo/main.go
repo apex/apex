@@ -6,12 +6,12 @@ import (
 	"github.com/apex/go-apex"
 )
 
-type Message struct {
+type message struct {
 	Hello string `json:"hello"`
 }
 
 func main() {
 	apex.HandleFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {
-		return &Message{"foo"}, nil
+		return &message{"foo"}, nil
 	})
 }

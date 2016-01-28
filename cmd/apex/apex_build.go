@@ -9,7 +9,7 @@ import (
 	"github.com/apex/log"
 )
 
-type BuildCmdLocalValues struct {
+var buildCmdLocalValues struct {
 	name string
 }
 
@@ -23,8 +23,6 @@ var buildCmd = &cobra.Command{
 	PreRun:  buildCmdPreRun,
 	Run:     buildCmdRun,
 }
-
-var buildCmdLocalValues = BuildCmdLocalValues{}
 
 func buildCmdPreRun(c *cobra.Command, args []string) {
 	lv := &buildCmdLocalValues
