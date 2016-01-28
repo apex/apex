@@ -1,5 +1,9 @@
 package function
 
+import (
+	"github.com/jpillora/archive"
+)
+
 // A Plugin is a chunk of isolated(ish) logic which reacts to various
 // hooks within the system in order to implement specific features
 // such as runtime inference or environment variable support.
@@ -12,7 +16,7 @@ type Opener interface {
 
 // Builder reacts to the Build hook.
 type Builder interface {
-	Build(*Function) error
+	Build(*Function, *archive.Archive) error
 }
 
 // Cleaner reacts to the Clean hook.

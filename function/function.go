@@ -429,12 +429,12 @@ func (f *Function) BuildBytes() ([]byte, error) {
 func (f *Function) Build() (io.Reader, error) {
 	f.Log.Debugf("creating build")
 
-	if err := f.hookBuild(); err != nil {
-		return nil, err
-	}
-
 	buf := new(bytes.Buffer)
 	zip := archive.NewZipWriter(buf)
+
+	if err := f.hookBuild(zip); err != nil {
+		return nil, err
+	}
 
 	files, err := utils.LoadFiles(f.Path, f.IgnoredPatterns)
 	if err != nil {
@@ -483,10 +483,10 @@ func (f *Function) hookOpen() error {
 }
 
 // hookBuild calls Builders.
-func (f *Function) hookBuild() error {
+func (f *Function) hookBuild(zip *archive.Archive) error {
 	for _, name := range f.Plugins {
 		if p, ok := plugins[name].(Builder); ok {
-			if err := p.Build(f); err != nil {
+			if err := p.Build(f, zip); err != nil {
 				return fmt.Errorf("build hook: %s", err)
 			}
 		}
