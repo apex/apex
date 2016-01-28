@@ -18,20 +18,22 @@ func init() {
 // Plugin implementation.
 type Plugin struct{}
 
-// Run adds the shim on build and removes it on clean.
-func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
-	if !fn.Shim {
-		return nil
+// Build adds the nodejs shim files.
+func (p *Plugin) Build(fn *function.Function) error {
+	if fn.Shim {
+		return p.addShim(fn)
 	}
 
-	switch hook {
-	case function.BuildHook:
-		return p.addShim(fn)
-	case function.CleanHook:
+	return nil
+}
+
+// Clean removes the nodejs shim files.
+func (p *Plugin) Clean(fn *function.Function) error {
+	if fn.Shim {
 		return p.removeShim(fn)
-	default:
-		return nil
 	}
+
+	return nil
 }
 
 // addShim saves nodejs shim.

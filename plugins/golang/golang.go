@@ -12,9 +12,9 @@ func init() {
 // Plugin implementation.
 type Plugin struct{}
 
-// Run adds the shim when runtime is "golang".
-func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
-	if hook != function.OpenHook || fn.Runtime != "golang" {
+// Open adds the shim and golang defaults.
+func (p *Plugin) Open(fn *function.Function) error {
+	if fn.Runtime != "golang" {
 		return nil
 	}
 

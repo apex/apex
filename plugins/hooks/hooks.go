@@ -14,9 +14,9 @@ func init() {
 	function.RegisterPlugin("hooks", &Plugin{})
 }
 
-// A HookError represents a failed hook command.
+// HookError represents a failed hook command.
 type HookError struct {
-	Hook    function.Hook
+	Hook    string
 	Command string
 	Output  string
 }
@@ -29,19 +29,23 @@ func (e *HookError) Error() string {
 // Plugin implementation.
 type Plugin struct{}
 
-// Run executes any commands defined for a hook.
-func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
-	var command string
+// Build runs the "build" hook commands.
+func (p *Plugin) Build(fn *function.Function) error {
+	return p.run("build", fn.Hooks.Build, fn)
+}
 
-	switch hook {
-	case function.CleanHook:
-		command = fn.Hooks.Clean
-	case function.BuildHook:
-		command = fn.Hooks.Build
-	case function.DeployHook:
-		command = fn.Hooks.Deploy
-	}
+// Clean runs the "clean" hook commands.
+func (p *Plugin) Clean(fn *function.Function) error {
+	return p.run("clean", fn.Hooks.Clean, fn)
+}
 
+// Deploy runs the "deploy" hook commands.
+func (p *Plugin) Deploy(fn *function.Function) error {
+	return p.run("deploy", fn.Hooks.Deploy, fn)
+}
+
+// run a hook command.
+func (p *Plugin) run(hook, command string, fn *function.Function) error {
 	if command == "" {
 		return nil
 	}
@@ -53,7 +57,6 @@ func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
 
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("FUNCTION=%s", fn.Name))
 	cmd.Dir = fn.Path
 
 	b, err := cmd.CombinedOutput()

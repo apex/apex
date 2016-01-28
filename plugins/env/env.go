@@ -16,22 +16,22 @@ func init() {
 // Plugin implementation.
 type Plugin struct{}
 
-// Run adds .env.json on build and removes it on clean.
-func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
+// Build hook adds .env.json populate with Function.Enironment.
+func (p *Plugin) Build(fn *function.Function) error {
 	if len(fn.Environment) == 0 {
 		return nil
 	}
 
-	path := filepath.Join(fn.Path, ".env.json")
+	return p.addEnv(filepath.Join(fn.Path, ".env.json"), fn)
+}
 
-	switch hook {
-	case function.BuildHook:
-		return p.addEnv(path, fn)
-	case function.CleanHook:
-		return os.Remove(path)
-	default:
+// Clean hook removes .env.json.
+func (p *Plugin) Clean(fn *function.Function) error {
+	if len(fn.Environment) == 0 {
 		return nil
 	}
+
+	return os.Remove(filepath.Join(fn.Path, ".env.json"))
 }
 
 // addEnv saves the environment as json into .env.json.

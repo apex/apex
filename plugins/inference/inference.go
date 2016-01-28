@@ -23,9 +23,9 @@ type Plugin struct {
 	Files map[string]string
 }
 
-// Run checks for files in the function directory to infer its runtime.
-func (p *Plugin) Run(hook function.Hook, fn *function.Function) error {
-	if hook != function.OpenHook || fn.Runtime != "" {
+// Open checks for files in the function directory to infer its runtime.
+func (p *Plugin) Open(fn *function.Function) error {
+	if fn.Runtime != "" {
 		return nil
 	}
 

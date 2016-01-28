@@ -26,6 +26,19 @@ import (
 	"github.com/apex/log"
 )
 
+// defaultPlugins are the default plugins which are required by Apex. Note that
+// the order here is important for some plugins such as inference before the
+// runtimes.
+var defaultPlugins = []string{
+	"inference",
+	"golang",
+	"python",
+	"nodejs",
+	"hooks",
+	"env",
+	"shim",
+}
+
 // InvocationType determines how an invocation request is made.
 type InvocationType string
 
@@ -75,11 +88,16 @@ type Function struct {
 	Service         lambdaiface.LambdaAPI
 	Log             log.Interface
 	IgnoredPatterns []string
+	Plugins         []string
 }
 
 // Open the function.json file and prime the config.
 func (f *Function) Open() error {
 	f.Log = f.Log.WithField("function", f.Name)
+
+	if f.Plugins == nil {
+		f.Plugins = defaultPlugins
+	}
 
 	if f.Environment == nil {
 		f.Environment = make(map[string]string)
@@ -92,7 +110,7 @@ func (f *Function) Open() error {
 		}
 	}
 
-	if err := f.hook(OpenHook); err != nil {
+	if err := f.hookOpen(); err != nil {
 		return err
 	}
 
@@ -132,7 +150,7 @@ func (f *Function) DeployCode() error {
 		return err
 	}
 
-	if err := f.hook(DeployHook); err != nil {
+	if err := f.hookDeploy(); err != nil {
 		return err
 	}
 
@@ -411,7 +429,7 @@ func (f *Function) BuildBytes() ([]byte, error) {
 func (f *Function) Build() (io.Reader, error) {
 	f.Log.Debugf("creating build")
 
-	if err := f.hook(BuildHook); err != nil {
+	if err := f.hookBuild(); err != nil {
 		return nil, err
 	}
 
@@ -449,5 +467,53 @@ func (f *Function) Build() (io.Reader, error) {
 
 // Clean invokes the CleanHook, useful for removing build artifacts and so on.
 func (f *Function) Clean() error {
-	return f.hook(CleanHook)
+	return f.hookClean()
+}
+
+// hookOpen calls Openers.
+func (f *Function) hookOpen() error {
+	for _, name := range f.Plugins {
+		if p, ok := plugins[name].(Opener); ok {
+			if err := p.Open(f); err != nil {
+				return fmt.Errorf("open hook: %s", err)
+			}
+		}
+	}
+	return nil
+}
+
+// hookBuild calls Builders.
+func (f *Function) hookBuild() error {
+	for _, name := range f.Plugins {
+		if p, ok := plugins[name].(Builder); ok {
+			if err := p.Build(f); err != nil {
+				return fmt.Errorf("build hook: %s", err)
+			}
+		}
+	}
+	return nil
+}
+
+// hookClean calls Cleaners.
+func (f *Function) hookClean() error {
+	for _, name := range f.Plugins {
+		if p, ok := plugins[name].(Cleaner); ok {
+			if err := p.Clean(f); err != nil {
+				return fmt.Errorf("clean hook: %s", err)
+			}
+		}
+	}
+	return nil
+}
+
+// hookDeploy calls Deployers.
+func (f *Function) hookDeploy() error {
+	for _, name := range f.Plugins {
+		if p, ok := plugins[name].(Deployer); ok {
+			if err := p.Deploy(f); err != nil {
+				return fmt.Errorf("deploy hook: %s", err)
+			}
+		}
+	}
+	return nil
 }
