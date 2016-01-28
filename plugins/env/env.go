@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/jpillora/archive"
+
 	"github.com/apex/apex/function"
 )
 
@@ -17,7 +19,7 @@ func init() {
 type Plugin struct{}
 
 // Build hook adds .env.json populate with Function.Enironment.
-func (p *Plugin) Build(fn *function.Function) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	if len(fn.Environment) == 0 {
 		return nil
 	}

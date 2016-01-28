@@ -12,6 +12,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
@@ -23,7 +24,6 @@ import (
 	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/logs"
 	"github.com/apex/apex/utils"
-	"github.com/apex/log"
 )
 
 const (

@@ -12,14 +12,15 @@ import (
 	_ "github.com/apex/apex/plugins/python"
 	_ "github.com/apex/apex/plugins/shim"
 
-	"github.com/apex/apex/function"
-	"github.com/apex/apex/mock"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/apex/apex/function"
+	"github.com/apex/apex/mock"
 )
 
 func init() {

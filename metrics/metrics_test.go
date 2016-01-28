@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/apex/apex/metrics/mock"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/golang/mock/gomock"
+
+	"github.com/apex/apex/metrics/mock"
 )
 
 func TestGetStatistics(t *testing.T) {

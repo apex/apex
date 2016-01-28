@@ -1,9 +1,10 @@
 package main
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/apex/apex/upgrade"
 	"github.com/apex/log"
-	"github.com/spf13/cobra"
 )
 
 var upgradeCmd = &cobra.Command{

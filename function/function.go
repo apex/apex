@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda"
@@ -23,7 +24,6 @@ import (
 
 	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/utils"
-	"github.com/apex/log"
 )
 
 // defaultPlugins are the default plugins which are required by Apex. Note that

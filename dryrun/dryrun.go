@@ -4,12 +4,13 @@ package dryrun
 import (
 	"fmt"
 
-	"github.com/apex/apex/utils"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dustin/go-humanize"
+
+	"github.com/apex/apex/utils"
 )
 
 const (

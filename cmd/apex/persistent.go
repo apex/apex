@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/apex/apex/dryrun"
 	"github.com/apex/apex/project"
-	"github.com/apex/log"
 )
 
 type persistentValues struct {

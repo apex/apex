@@ -6,8 +6,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/apex/apex/function"
 	"github.com/apex/log"
+
+	"github.com/apex/apex/function"
 )
 
 func init() {
