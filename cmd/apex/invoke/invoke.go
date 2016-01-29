@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -52,7 +54,7 @@ func preRun(c *cobra.Command, args []string) error {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	dec := json.NewDecoder(os.Stdin)
+	dec := json.NewDecoder(input())
 
 	if err := root.Project.LoadFunctions(name); err != nil {
 		return err
@@ -93,4 +95,13 @@ func run(c *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+// input from stdin or empty object by default.
+func input() io.Reader {
+	if isatty.IsTerminal(os.Stdin.Fd()) {
+		return strings.NewReader("{}")
+	}
+
+	return os.Stdin
 }
