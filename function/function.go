@@ -480,7 +480,7 @@ func (f *Function) hookOpen() error {
 	for _, name := range f.Plugins {
 		if p, ok := plugins[name].(Opener); ok {
 			if err := p.Open(f); err != nil {
-				return fmt.Errorf("open hook: %s", err)
+				return err
 			}
 		}
 	}
@@ -492,7 +492,7 @@ func (f *Function) hookBuild(zip *archive.Archive) error {
 	for _, name := range f.Plugins {
 		if p, ok := plugins[name].(Builder); ok {
 			if err := p.Build(f, zip); err != nil {
-				return fmt.Errorf("build hook: %s", err)
+				return err
 			}
 		}
 	}
@@ -504,7 +504,7 @@ func (f *Function) hookClean() error {
 	for _, name := range f.Plugins {
 		if p, ok := plugins[name].(Cleaner); ok {
 			if err := p.Clean(f); err != nil {
-				return fmt.Errorf("clean hook: %s", err)
+				return err
 			}
 		}
 	}
@@ -516,7 +516,7 @@ func (f *Function) hookDeploy() error {
 	for _, name := range f.Plugins {
 		if p, ok := plugins[name].(Deployer); ok {
 			if err := p.Deploy(f); err != nil {
-				return fmt.Errorf("deploy hook: %s", err)
+				return err
 			}
 		}
 	}

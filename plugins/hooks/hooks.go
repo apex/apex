@@ -25,7 +25,7 @@ type HookError struct {
 
 // Error string.
 func (e *HookError) Error() string {
-	return fmt.Sprintf("%s: %s", e.Hook, e.Output)
+	return fmt.Sprintf("%s hook: %s", e.Hook, e.Output)
 }
 
 // Plugin implementation.

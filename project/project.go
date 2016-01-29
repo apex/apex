@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -164,7 +165,13 @@ func (p *Project) Deploy() error {
 
 			go func() {
 				defer sem.Release()
-				errs <- fn.Deploy()
+
+				err := fn.Deploy()
+				if err != nil {
+					err = fmt.Errorf("function %s: %s", fn.Name, err)
+				}
+
+				errs <- err
 			}()
 		}
 
@@ -187,7 +194,7 @@ func (p *Project) Clean() error {
 
 	for _, fn := range p.Functions {
 		if err := fn.Clean(); err != nil {
-			return err
+			return fmt.Errorf("function %s: %s", fn.Name, err)
 		}
 	}
 
@@ -204,11 +211,11 @@ func (p *Project) Delete() error {
 				p.Log.Infof("function %q hasn't been deployed yet or has been deleted manually on AWS Lambda", fn.Name)
 				continue
 			}
-			return err
+			return fmt.Errorf("function %s: %s", fn.Name, err)
 		}
 
 		if err := fn.Delete(); err != nil {
-			return err
+			return fmt.Errorf("function %s: %s", fn.Name, err)
 		}
 	}
 
