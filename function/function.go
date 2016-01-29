@@ -215,6 +215,20 @@ func (f *Function) GetConfig() (*lambda.GetFunctionOutput, error) {
 	})
 }
 
+// GetConfigQualifier returns the function configuration for the given qualifier.
+func (f *Function) GetConfigQualifier(s string) (*lambda.GetFunctionOutput, error) {
+	f.Log.Debug("fetching config")
+	return f.Service.GetFunction(&lambda.GetFunctionInput{
+		FunctionName: &f.FunctionName,
+		Qualifier:    &s,
+	})
+}
+
+// GetConfigCurrent returns the function configuration for the current version.
+func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
+	return f.GetConfigQualifier(CurrentAlias)
+}
+
 // Update the function with the given `zip`.
 func (f *Function) Update(zip []byte) error {
 	f.Log.Info("updating function")

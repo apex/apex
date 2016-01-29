@@ -78,6 +78,14 @@ func outputList() {
 		fmt.Printf("    timeout: %vs\n", fn.Timeout)
 		fmt.Printf("    role: %v\n", fn.Role)
 		fmt.Printf("    handler: %v\n", fn.Handler)
+
+		config, err := fn.GetConfigCurrent()
+		if err != nil {
+			log.Fatalf("error: %s", err)
+		}
+
+		fmt.Printf("    current version: %s\n", *config.Configuration.Version)
+
 		fmt.Println()
 	}
 }
