@@ -1,0 +1,82 @@
+// Package logs outputs logs from CloudWatch logs.
+package logs
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/spf13/cobra"
+
+	"github.com/apex/apex/cmd/apex/root"
+	"github.com/apex/apex/logs"
+)
+
+// filter pattern.
+var filter string
+
+// follow via polling.
+var follow bool
+
+// duration of results.
+var duration time.Duration
+
+// example output.
+const example = `  Print logs for all functions
+  $ apex logs
+
+  Follow the output
+  $ apex logs -f
+
+  Print logs for a single function
+  $ apex logs api
+
+  Print logs for functions with a specified duration, e.g. 5 minutes
+  $ apex logs foo bar --duration 5m`
+
+// Command config.
+var Command = &cobra.Command{
+	Use:     "logs [<name>...] [<duration>]",
+	Short:   "Output logs with optional filter pattern",
+	Example: example,
+	RunE:    run,
+}
+
+// Initialize.
+func init() {
+	root.Register(Command)
+
+	f := Command.Flags()
+	f.DurationVarP(&duration, "duration", "d", 5*time.Minute, "Duration of log search prior to now")
+	f.StringVarP(&filter, "filter", "F", "", "Filter logs with pattern")
+	f.BoolVarP(&follow, "follow", "f", false, "Follow tails logs for updates")
+}
+
+// Run command.
+func run(c *cobra.Command, args []string) error {
+	if err := root.Project.LoadFunctions(args...); err != nil {
+		return err
+	}
+
+	config := logs.Config{
+		Service:       cloudwatchlogs.New(root.Session),
+		StartTime:     time.Now().Add(-duration).UTC(),
+		PollInterval:  2 * time.Second,
+		Follow:        follow,
+		FilterPattern: filter,
+	}
+
+	l := &logs.Logs{
+		Config: config,
+	}
+
+	for _, fn := range root.Project.Functions {
+		l.GroupNames = append(l.GroupNames, fn.GroupName())
+	}
+
+	for event := range l.Start() {
+		fmt.Printf("\033[34m%s\033[0m %s", event.GroupName, event.Message)
+	}
+
+	return l.Err()
+}

@@ -1,12 +1,25 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 
+	"github.com/apex/apex/cmd/apex/root"
+
+	// commands
+	_ "github.com/apex/apex/cmd/apex/build"
+	_ "github.com/apex/apex/cmd/apex/delete"
+	_ "github.com/apex/apex/cmd/apex/deploy"
+	_ "github.com/apex/apex/cmd/apex/docs"
+	_ "github.com/apex/apex/cmd/apex/invoke"
+	_ "github.com/apex/apex/cmd/apex/list"
+	_ "github.com/apex/apex/cmd/apex/logs"
+	_ "github.com/apex/apex/cmd/apex/metrics"
+	_ "github.com/apex/apex/cmd/apex/rollback"
+	_ "github.com/apex/apex/cmd/apex/upgrade"
+	_ "github.com/apex/apex/cmd/apex/version"
+
+	// plugins
 	_ "github.com/apex/apex/plugins/env"
 	_ "github.com/apex/apex/plugins/golang"
 	_ "github.com/apex/apex/plugins/hooks"
@@ -16,13 +29,10 @@ import (
 	_ "github.com/apex/apex/plugins/shim"
 )
 
-const version = "0.5.1"
-
 func main() {
 	log.SetHandler(cli.Default)
 
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s\n", err)
-		os.Exit(1)
+	if err := root.Command.Execute(); err != nil {
+		log.Fatalf("Error: %s", err)
 	}
 }
