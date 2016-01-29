@@ -4,91 +4,71 @@ package logs
 import (
 	"time"
 
-	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
-
 	"github.com/apex/log"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs/cloudwatchlogsiface"
 )
 
-// Logs implements log tailing for CloudWatchLogs.
-type Logs struct {
-	Service       cloudwatchlogsiface.CloudWatchLogsAPI
-	Log           log.Interface
-	GroupName     string
-	FilterPattern string
-	StartTime     time.Time
-	EndTime       time.Time
-
-	err error
+// Event is a single log event from a group.
+type Event struct {
+	GroupName string
+	Message   string
 }
 
-// Fetch log events.
-func (l *Logs) Fetch() ([]*cloudwatchlogs.FilteredLogEvent, error) {
-	start := l.StartTime.UTC().UnixNano() / int64(time.Millisecond)
-	end := l.EndTime.UTC().UnixNano() / int64(time.Millisecond)
+// Config is used to configure Logs and Log.
+type Config struct {
+	Service       cloudwatchlogsiface.CloudWatchLogsAPI
+	FilterPattern string
+	PollInterval  time.Duration
+	StartTime     time.Time
+	Follow        bool
+}
 
-	l.Log.Debugf("fetching %q with filter %q", l.GroupName, l.FilterPattern)
+// Logs fetches or tails logs from CloudWatchLogs for any number of groups.
+type Logs struct {
+	Config
+	GroupNames []string
+	err        error
+}
 
-	res, err := l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
-		LogGroupName:  &l.GroupName,
-		FilterPattern: &l.FilterPattern,
-		StartTime:     &start,
-		EndTime:       &end,
-	})
+// Start consuming logs.
+func (l *Logs) Start() <-chan *Event {
+	ch := make(chan *Event)
+	done := make(chan error)
 
-	if err != nil {
-		return nil, err
+	for _, name := range l.GroupNames {
+		go l.consume(name, ch, done)
 	}
 
-	return res.Events, nil
-}
+	go func() {
+		defer close(ch)
 
-// Tail logs, make sure to check Err() after the returned channel closes.
-func (l *Logs) Tail() <-chan *cloudwatchlogs.FilteredLogEvent {
-	ch := make(chan *cloudwatchlogs.FilteredLogEvent)
-	go l.loop(ch)
+		for range l.GroupNames {
+			if err := <-done; err != nil {
+				l.err = err
+				break
+			}
+		}
+	}()
+
 	return ch
 }
 
-// loop polls for log tailing.
-func (l *Logs) loop(ch chan<- *cloudwatchlogs.FilteredLogEvent) {
-	defer close(ch)
-
-	var nextToken *string
-	start := l.StartTime.UTC().UnixNano() / int64(time.Millisecond)
-
-	l.Log.Debugf("tailing %q with filter %q", l.GroupName, l.FilterPattern)
-
-	for {
-		l.Log.Debugf("tailing from %d", start)
-
-		var res *cloudwatchlogs.FilterLogEventsOutput
-		var err error
-
-		res, err = l.Service.FilterLogEvents(&cloudwatchlogs.FilterLogEventsInput{
-			LogGroupName:  &l.GroupName,
-			FilterPattern: &l.FilterPattern,
-			StartTime:     &start,
-			NextToken:     nextToken,
-		})
-
-		if err != nil {
-			l.err = err
-			return
-		}
-
-		nextToken = res.NextToken
-
-		for _, event := range res.Events {
-			start = *event.Timestamp + 1
-			ch <- event
-		}
-
-		time.Sleep(time.Second)
-	}
-}
-
-// Err returns the first error, if any, during processing.
+// Err returns the error, if any, during processing.
 func (l *Logs) Err() error {
 	return l.err
+}
+
+// consume logs for group `name`.
+func (l *Logs) consume(name string, ch chan *Event, done chan error) {
+	log := Log{
+		Config:    l.Config,
+		GroupName: name,
+		Log:       log.WithField("group", name),
+	}
+
+	for event := range log.Start() {
+		ch <- event
+	}
+
+	done <- log.Err()
 }

@@ -470,6 +470,11 @@ func (f *Function) Clean() error {
 	return f.hookClean()
 }
 
+// GroupName returns the CloudWatchLogs group name.
+func (f *Function) GroupName() string {
+	return fmt.Sprintf("/aws/lambda/%s", f.FunctionName)
+}
+
 // hookOpen calls Openers.
 func (f *Function) hookOpen() error {
 	for _, name := range f.Plugins {

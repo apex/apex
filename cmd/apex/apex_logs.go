@@ -2,31 +2,37 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/spf13/cobra"
+	"time"
 
 	"github.com/apex/log"
+	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/spf13/cobra"
+
+	"github.com/apex/apex/logs"
 )
 
 var logsCmdLocalValues struct {
 	Filter   string
 	Follow   bool
-	Duration string
-
-	name string
+	Duration time.Duration
 }
 
-const logsCmdExample = `  Print logs for a function
-  $ apex logs <name>
+const logsCmdExample = `  Print logs for all functions
+  $ apex logs
 
-  Print logs for a function with a specified duration, e.g. 5 minutes
-  $ apex logs <name> 5m`
+  Follow the output
+  $ apex logs -f
+
+  Print logs for a single function
+  $ apex logs api
+
+  Print logs for functions with a specified duration, e.g. 5 minutes
+  $ apex logs foo bar --duration 5m`
 
 var logsCmd = &cobra.Command{
-	Use:     "logs <name> [<duration>]",
+	Use:     "logs [<name>...] [<duration>]",
 	Short:   "Output logs with optional filter pattern",
 	Example: logsCmdExample,
-	PreRun:  logsCmdPreRun,
 	Run:     logsCmdRun,
 }
 
@@ -34,53 +40,40 @@ func init() {
 	lv := &logsCmdLocalValues
 	f := logsCmd.Flags()
 
+	f.DurationVarP(&lv.Duration, "duration", "d", 5*time.Minute, "Duration of log search prior to now")
 	f.StringVarP(&lv.Filter, "filter", "F", "", "Filter logs with pattern")
-	f.BoolVarP(&lv.Follow, "follow", "f", false, "Tail logs")
-}
-
-func logsCmdPreRun(c *cobra.Command, args []string) {
-	lv := &logsCmdLocalValues
-
-	if len(args) < 1 {
-		log.Fatal("Missing name argument")
-	}
-	lv.name = args[0]
-
-	if len(args) >= 2 {
-		lv.Duration = args[1]
-	}
+	f.BoolVarP(&lv.Follow, "follow", "f", false, "Follow tails logs for updates")
 }
 
 func logsCmdRun(c *cobra.Command, args []string) {
 	lv := &logsCmdLocalValues
 
-	err := pv.project.LoadFunctions(lv.name)
-	if err != nil {
+	if err := pv.project.LoadFunctions(args...); err != nil {
 		log.Fatalf("error: %s", err)
 		return
 	}
 
-	l, err := pv.project.Logs(pv.session, lv.Filter, lv.Duration)
-	if err != nil {
+	config := logs.Config{
+		Service:       cloudwatchlogs.New(pv.session),
+		FilterPattern: lv.Filter,
+		PollInterval:  2 * time.Second,
+		StartTime:     time.Now().Add(-lv.Duration).UTC(),
+		Follow:        lv.Follow,
+	}
+
+	l := &logs.Logs{
+		Config: config,
+	}
+
+	for _, fn := range pv.project.Functions {
+		l.GroupNames = append(l.GroupNames, fn.GroupName())
+	}
+
+	for event := range l.Start() {
+		fmt.Printf("\033[34m%s\033[0m %s", event.GroupName, event.Message)
+	}
+
+	if err := l.Err(); err != nil {
 		log.Fatalf("error: %s", err)
-	}
-
-	if lv.Follow {
-		for event := range l.Tail() {
-			fmt.Printf("%s", *event.Message)
-		}
-
-		if err := l.Err(); err != nil {
-			log.Fatalf("error: %s", err)
-		}
-	}
-
-	events, err := l.Fetch()
-	if err != nil {
-		log.Fatalf("error: %s", err)
-	}
-
-	for _, event := range events {
-		fmt.Printf("%s", *event.Message)
 	}
 }
