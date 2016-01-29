@@ -151,7 +151,7 @@ func (l *Lambda) UpdateAlias(in *lambda.UpdateAliasInput) (*lambda.AliasConfigur
 func (l *Lambda) log(kind, name string, m map[string]interface{}, symbol rune, color int) {
 	fmt.Printf("  \033[%dm%c %s\033[0m \033[%dm%s\033[0m\n", color, symbol, kind, blue, name)
 	for k, v := range m {
-		fmt.Printf("    \033[%dm%s\033[0m: %v\n", color, k, v)
+		fmt.Printf("    %s: %v\n", k, v)
 	}
 	fmt.Printf("\n")
 }
