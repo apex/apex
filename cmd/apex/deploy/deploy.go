@@ -25,7 +25,7 @@ const example = `  Deploy all functions
 // Command config.
 var Command = &cobra.Command{
 	Use:     "deploy [<name>...]",
-	Short:   "Deploy code and config changes",
+	Short:   "Deploy functions and config",
 	Example: example,
 	RunE:    run,
 }

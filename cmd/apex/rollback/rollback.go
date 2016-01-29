@@ -25,7 +25,7 @@ const example = `  Rollback a function to the previous version
 // Command config.
 var Command = &cobra.Command{
 	Use:     "rollback <name>",
-	Short:   "Rollback a function with optional version",
+	Short:   "Rollback a function",
 	Example: example,
 	PreRunE: preRun,
 	RunE:    run,

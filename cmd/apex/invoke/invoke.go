@@ -28,7 +28,7 @@ const example = `  Invoke a function with input json
 // Command config.
 var Command = &cobra.Command{
 	Use:     "invoke <name>",
-	Short:   "Invoke a function",
+	Short:   "Invoke functions",
 	Example: example,
 	PreRunE: preRun,
 	RunE:    run,

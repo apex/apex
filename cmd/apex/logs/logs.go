@@ -37,7 +37,7 @@ const example = `  Print logs for all functions
 // Command config.
 var Command = &cobra.Command{
 	Use:     "logs [<name>...] [<duration>]",
-	Short:   "Output logs with optional filter pattern",
+	Short:   "Output function logs",
 	Example: example,
 	RunE:    run,
 }

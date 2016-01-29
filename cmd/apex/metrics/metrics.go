@@ -35,7 +35,7 @@ const example = `  Output the last day of metrics for a function
 // Command config.
 var Command = &cobra.Command{
 	Use:     "metrics <name> [<duration>]",
-	Short:   "Output the CloudWatch metrics for a function",
+	Short:   "Output function metrics",
 	Example: example,
 	PreRunE: preRun,
 	RunE:    run,
