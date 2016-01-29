@@ -2,9 +2,12 @@
 package docs
 
 import (
+	"io"
 	"os"
+	"os/exec"
 	"strings"
 
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -44,10 +47,30 @@ func preRun(c *cobra.Command, args []string) {
 }
 
 // Run command.
-func run(c *cobra.Command, args []string) error {
-	if topic == "" {
-		return wiki.Topics(os.Stdout)
+func run(c *cobra.Command, args []string) (err error) {
+	var w io.WriteCloser = os.Stdin
+
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		cmd := exec.Command("less", "-R")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		defer cmd.Wait()
+
+		w, err = cmd.StdinPipe()
+		if err != nil {
+			return err
+		}
+		defer w.Close()
+
+		if err := cmd.Start(); err != nil {
+			return err
+		}
 	}
 
-	return wiki.Topic(topic, os.Stdout)
+	if topic == "" {
+		return wiki.Topics(w)
+	}
+
+	return wiki.Topic(topic, w)
 }
