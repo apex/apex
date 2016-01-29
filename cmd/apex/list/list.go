@@ -44,9 +44,10 @@ func run(c *cobra.Command, args []string) error {
 
 	if tfvars {
 		outputTFvars()
+	} else {
+		outputList()
 	}
 
-	outputList()
 	return nil
 }
 
