@@ -9,6 +9,7 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/shim"
+	"github.com/jpillora/archive"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 type Plugin struct{}
 
 // Build adds the nodejs shim files.
-func (p *Plugin) Build(fn *function.Function) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	if fn.Shim {
 		return p.addShim(fn)
 	}
