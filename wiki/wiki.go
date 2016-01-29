@@ -9,21 +9,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mitchellh/go-wordwrap"
 	"golang.org/x/net/html"
+
+	"github.com/apex/apex/colors"
 )
 
 // TODO: handle invalid page
 // TODO: WikiTopics could be interactive
-// TODO: ~/.apex.json user config, use here for color mapping etc
-
-// colors.
-const (
-	none   = 0
-	red    = 31
-	green  = 32
-	yellow = 33
-	blue   = 34
-	gray   = 37
-)
 
 // Endpoint used to lookup wiki information.
 var Endpoint = "https://github.com/apex/apex/wiki"
@@ -40,7 +31,7 @@ func Topics(w io.Writer) error {
 
 	doc.Find(`#wiki-content .markdown-body ul li`).Each(func(i int, s *goquery.Selection) {
 		strs := strings.Split(text(s), ": ")
-		fmt.Fprintf(w, "  \033[%dm%s\033[0m: %s \n", blue, strs[0], strs[1])
+		fmt.Fprintf(w, "  \033[%dm%s\033[0m: %s \n", colors.Blue, strs[0], strs[1])
 	})
 
 	fmt.Fprintf(w, "\n  Use `apex docs <topic>` to view a topic.\n")
@@ -76,13 +67,13 @@ func contents(s *goquery.Selection) string {
 func node(i int, s *goquery.Selection) string {
 	switch node := s.Get(0); {
 	case node.Data == "h1":
-		return fmt.Sprintf(" \033[%dm# %s\033[0m\n\n", blue, text(s))
+		return fmt.Sprintf(" \033[%dm# %s\033[0m\n\n", colors.Blue, text(s))
 	case node.Data == "h2":
-		return fmt.Sprintf(" \033[%dm## %s\033[0m\n\n", blue, text(s))
+		return fmt.Sprintf(" \033[%dm## %s\033[0m\n\n", colors.Blue, text(s))
 	case node.Data == "h3":
-		return fmt.Sprintf(" \033[%dm### %s\033[0m\n\n", blue, text(s))
+		return fmt.Sprintf(" \033[%dm### %s\033[0m\n\n", colors.Blue, text(s))
 	case node.Data == "p":
-		return fmt.Sprintf("\033[%dm%s\033[0m\n\n", none, indent(text(s), 1))
+		return fmt.Sprintf("\033[%dm%s\033[0m\n\n", colors.None, indent(text(s), 1))
 	case node.Data == "pre" || s.HasClass("highlight"):
 		return fmt.Sprintf("\033[1m%s\033[0m\n\n", indent(text(s), 2))
 	case node.Data == "a":

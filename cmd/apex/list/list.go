@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
+	"github.com/apex/apex/colors"
 )
 
 // tfvars output format.
@@ -68,7 +69,15 @@ func outputTFvars() {
 func outputList() {
 	fmt.Println()
 	for _, fn := range root.Project.Functions {
-		fmt.Printf("  - %s (%s)\n", fn.Name, fn.Runtime)
+		fmt.Printf("  \033[%dm%s\033[0m\n", colors.Blue, fn.Name)
+		if fn.Description != "" {
+			fmt.Printf("    description: %v\n", fn.Description)
+		}
+		fmt.Printf("    runtime: %v\n", fn.Runtime)
+		fmt.Printf("    memory: %vmd\n", fn.Memory)
+		fmt.Printf("    timeout: %vs\n", fn.Timeout)
+		fmt.Printf("    role: %v\n", fn.Role)
+		fmt.Printf("    handler: %v\n", fn.Handler)
+		fmt.Println()
 	}
-	fmt.Println()
 }
