@@ -30,6 +30,7 @@ func init() {
 	pf.StringSliceVarP(&pv.Env, "env", "e", nil, "Environment variable")
 	pf.StringVarP(&pv.LogLevel, "log-level", "l", "info", "Log severity level")
 	pf.BoolVarP(&pv.Yes, "yes", "y", false, "Automatic yes to prompts")
+	pf.StringVarP(&pv.Profile, "profile", "p", "", "AWS profile to use")
 
 	// Add a newline at the top of each help message
 	rootCmd.SetHelpTemplate("\n" + rootCmd.HelpTemplate())
