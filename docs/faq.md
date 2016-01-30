@@ -1,15 +1,7 @@
 
-## Do I need to compile Go programs first?
-
-No, Apex generates a cross-compiled build for you on deploy.
-
 ## How do you manage multiple environments?
 
-It's highly recommended to create separate AWS accounts for staging and production environments. This provides complete isolation of resources, and allows you to easily provide granular access to environments as required. Use the __AWS_PROFILE__ environment variable to point to these credentials. For this reason Apex has no notion of an environment.
-
-## How do you structure projects with multiple Lambda functions?
-
-Apex is project oriented, a project may have zero or more Lambda functions, and must currently live in the "functions" directory.
+It's highly recommended to create separate AWS accounts for staging and production environments. This provides complete isolation of resources, and allows you to easily provide granular access to environments as required. See [AWS credentials](#aws-credentials) for supplying an account profile.
 
 ## How is this different than serverless.com?
 
