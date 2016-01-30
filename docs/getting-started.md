@@ -13,7 +13,6 @@ Before you get started, you will need to setup some things on the AWS console.
 Note: Lambda functions don't need any policy, but adding the policy `CloudWatchLogsFullAccess` will allow log tailing.
 4. Click on the Role and copy the Role ARN.
 
-
 ## AWS credentials
 
 You'll need your AWS credentials set up. You have two options, set the following environment variables:
