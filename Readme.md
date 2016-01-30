@@ -151,20 +151,7 @@ $ echo '{ "some": "data" }' | apex invoke foo
 { "hello": "foo" }
 ```
 
-See the [Wiki](https://github.com/apex/apex/wiki) for more information.
-
-## Credentials
-
-Via environment variables:
-
-- `AWS_ACCESS_KEY` AWS account access key
-- `AWS_SECRET_KEY` AWS account secret key
-- `AWS_REGION` AWS region
-
-Via ~/.aws configuration:
-
-- `AWS_PROFILE` profile name to use
-- `AWS_REGION` AWS region (aws-sdk-go does not read ~/.aws/config)
+See the [Documentation](docs) for more information.
 
 ## Links
 
@@ -192,4 +179,3 @@ Via ~/.aws configuration:
 > [tjholowaychuk.com](http://tjholowaychuk.com) &nbsp;&middot;&nbsp;
 > GitHub [@tj](https://github.com/tj) &nbsp;&middot;&nbsp;
 > Twitter [@tjholowaychuk](https://twitter.com/tjholowaychuk)
-
