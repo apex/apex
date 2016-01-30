@@ -1,6 +1,4 @@
 
-# Getting started
-
 Step by step instructions for getting started with Apex and AWS services.
 
 ## AWS setup

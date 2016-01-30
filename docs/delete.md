@@ -1,6 +1,4 @@
 
-# Deleting functions
-
 Apex allows you to delete functions, however it will prompt by default. Use the `-f, --force` flag to override this behaviour. You may pass zero or more function names.
 
 ## Examples

@@ -1,6 +1,4 @@
 
-# Projects
-
 A "project" is the largest unit of abstraction in Apex. A project consists of collection of AWS Lambda functions, and
 all `apex(1)` operations have access to these functions.
 

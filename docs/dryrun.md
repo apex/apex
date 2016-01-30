@@ -1,6 +1,4 @@
 
-# Dry run operations
-
 Apex lets you perform a "dry run" of any operation with the `--dry-run` flag, and no destructive AWS changes will be made.
 
 ## Notation

@@ -1,6 +1,4 @@
 
-# Rolling back function deploys
-
 Apex allows you to roll back to the previous, or specified version of a function.
 
 ## Examples

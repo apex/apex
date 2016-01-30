@@ -1,6 +1,4 @@
 
-# Listing functions
-
 Apex supports listing of functions in various outputs, currently human-friendly terminal output and "tfvars" support for integration with Terraform.
 
 ## Examples

@@ -1,6 +1,4 @@
 
-# Deploying functions
-
 To deploy one or more functions all you need to do is run `apex deploy`. Apex deploys are idempotent; a build is created
 for each function, and Apex and performs a checksum to see if the deployed function matches the local build, if so
 it's not deployed.

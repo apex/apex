@@ -1,6 +1,4 @@
 
-# Invoking functions
-
 Apex allows you to invoke functions from the command-line, optionally passing a JSON event or stream to STDIN.
 
 ## Examples

@@ -1,6 +1,4 @@
 
-# Installation
-
 Download [binaries](https://github.com/apex/apex/releases) for your platform, or if you're on OSX grab the latest release with:
 
 ```sh

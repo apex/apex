@@ -1,6 +1,4 @@
 
-# AWS credentials
-
 Before using Apex you need to first give it your account credentials so that Apex can manage resources. There are a number of ways to do that, which are outlined here.
 
 ## Via environment variables

@@ -1,6 +1,4 @@
 
-# View function logs
-
 Apex is integrated with CloudWatch Logs to view the output of functions. By default the logs for all functions will be displayed, unless one or more function names are passed to `apex logs`. You may also specify the duration of time in which the history is displayed (defaults to 5 minutes), as well as following and filtering results.
 
 ## Examples

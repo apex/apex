@@ -1,6 +1,4 @@
 
-# Functions
-
 A function is the smallest unit in Apex. A function represents an AWS Lambda function.
 
 Functions __MUST__ include at least one source file (runtime dependent), such as index.js or main.go. Optionally a function.json file may be placed in the _function's directory_, specifying details such as the memory allocated or the AWS IAM role. If one or more functions is missing a function.json file you __MUST__ provide defaults for the required fields in project.json (see "Projects" for an example).

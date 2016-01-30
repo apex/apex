@@ -1,6 +1,4 @@
 
-# FAQ
-
 ## Do I need to compile Go programs first?
 
 No, Apex generates a cross-compiled build for you on deploy.
