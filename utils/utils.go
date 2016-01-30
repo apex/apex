@@ -3,10 +3,14 @@ package utils
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
+
+	"github.com/Unknwon/goconfig"
 )
 
 // Sha256 returns a base64 encoded SHA256 hash of `b`.
@@ -51,6 +55,32 @@ func LoadFiles(root string, ignoredPatterns []string) (files []string, err error
 	})
 
 	return
+}
+
+// GetRegion attempts loading the AWS region from ~/.aws.config.
+func GetRegion(profile string) (string, error) {
+	u, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+
+	path := filepath.Join(u.HomeDir, ".aws", "config")
+	cfg, err := goconfig.LoadConfigFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	sectionName := "default"
+	if profile != "" {
+		sectionName = fmt.Sprintf("profile %s", profile)
+	}
+
+	section, err := cfg.GetSection(sectionName)
+	if err != nil {
+		return "", fmt.Errorf("Could not find AWS region in %s", path)
+	}
+
+	return section["region"], nil
 }
 
 // ReadIgnoreFile reads .apexignore in `dir` when present and returns a list of patterns.

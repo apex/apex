@@ -1,10 +1,7 @@
 package root
 
 import (
-	"errors"
-	"fmt"
 	"os"
-	"os/user"
 
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
@@ -13,9 +10,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/spf13/cobra"
 
-	"github.com/Unknwon/goconfig"
 	"github.com/apex/apex/dryrun"
 	"github.com/apex/apex/project"
+	"github.com/apex/apex/utils"
 )
 
 // chdir working directory.
@@ -83,8 +80,7 @@ func preRun(c *cobra.Command, args []string) error {
 		config = config.WithCredentials(credentials.NewSharedCredentials("", profile))
 	}
 
-	region, _ := getAWSRegion()
-	if region != "" {
+	if region, _ := utils.GetRegion(profile); region != "" {
 		config = config.WithRegion(region)
 	}
 
@@ -110,31 +106,4 @@ func preRun(c *cobra.Command, args []string) error {
 	}
 
 	return Project.Open()
-}
-
-func getAWSRegion() (string, error) {
-	currentUser, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-
-	cfgPath := fmt.Sprintf("%s/.aws/config", currentUser.HomeDir)
-	cfg, err := goconfig.LoadConfigFile(cfgPath)
-	if err != nil {
-		return "", err
-	}
-
-	var sectionName string
-	if profile != "" {
-		sectionName = fmt.Sprintf("profile %s", profile)
-	} else {
-		sectionName = "default"
-	}
-
-	section, err := cfg.GetSection(sectionName)
-	if err != nil {
-		return "", errors.New("Did not find AWS region from config file")
-	}
-
-	return section["region"], nil
 }
