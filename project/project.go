@@ -61,6 +61,7 @@ type Project struct {
 func (p *Project) defaults() {
 	p.Memory = DefaultMemory
 	p.Timeout = DefaultTimeout
+	p.IgnoredPatterns = []string{"function.json"}
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 5
@@ -98,10 +99,11 @@ func (p *Project) Open() error {
 	}
 	p.nameTemplate = t
 
-	p.IgnoredPatterns, err = utils.ReadIgnoreFile(p.Path)
+	patterns, err := utils.ReadIgnoreFile(p.Path)
 	if err != nil {
 		return err
 	}
+	p.IgnoredPatterns = append(p.IgnoredPatterns, patterns...)
 
 	return nil
 }
