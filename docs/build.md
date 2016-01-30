@@ -7,6 +7,6 @@ Apex generates a zip file for you upon deploy, however sometimes it can be usefu
 
 Output zip to out.zip:
 
-```
+```sh
 $ apex build foo > out.zip
 ```

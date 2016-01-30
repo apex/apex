@@ -7,7 +7,7 @@ Apex allows you to delete functions, however it will prompt by default. Use the 
 
 Delete all with prompt:
 
-```
+```sh
 $ apex delete
 The following will be deleted:
 
@@ -19,12 +19,12 @@ Are you sure? (yes/no):
 
 For delete of all functions:
 
-```
+```sh
 $ apex delete -f
 ```
 
 For delete of specific functions:
 
-```
+```sh
 $ apex delete -f foo bar
 ```

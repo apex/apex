@@ -11,19 +11,19 @@ If you prefer to be explicit you can pass one or more function names to `apex de
 
 Deploy all functions in the current directory:
 
-```
+```sh
 $ apex deploy
 ```
 
 Deploy all functions in the directory "~/dev/myapp":
 
-```
+```sh
 $ apex deploy -C ~/dev/myapp
 ```
 
 Deploy specific functions:
 
-```
+```sh
 $ apex deploy auth
 $ apex deploy auth api
 ```

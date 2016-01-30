@@ -15,7 +15,7 @@ Dry runs use the following symbols:
 
 For example if you have the functions "foo" and "bar" which have never been deployed, you'll see the following output. This output represents the final requests made to AWS; notice how the function names are prefixed with the project's ("testing") to prevent collisions, and aliases are made to maintain the "current" release alias.
 
-```
+```sh
 $ apex deploy --dry-run
 
   + function testing_bar
@@ -41,7 +41,7 @@ $ apex deploy --dry-run
 
 If you were to run `apex deploy foo`, then run `apex deploy --dry-run` again, you'll see that only "bar" needs deploying:
 
-```
+```sh
 $ apex deploy --dry-run
 
   + function testing_bar
@@ -57,7 +57,7 @@ $ apex deploy --dry-run
 
 Similarly this can be used to preview configuration changes:
 
-```
+```sh
 $ apex deploy --dry-run
 
   ~ alias testing_foo
@@ -71,7 +71,7 @@ $ apex deploy --dry-run
 
 As mentioned this works for all AWS operations, here's a delete preview:
 
-```
+```sh
 $ apex delete --dry-run -f
 
   - function testing_bar

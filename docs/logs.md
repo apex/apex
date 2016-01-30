@@ -7,38 +7,38 @@ Apex is integrated with CloudWatch Logs to view the output of functions. By defa
 
 View all function logs within the last 5 minutes:
 
-```
+```sh
 $ apex logs
 ```
 
 View logs for "uppercase" and "lowercase" functions:
 
-```
+```sh
 $ apex logs uppercase lowercase
 ```
 
 Follow or tail the log output for all functions:
 
-```
+```sh
 $ apex logs -f
 ```
 
 Follow a specific function:
 
-```
+```sh
 $ apex logs -f foo
 ```
 
 Follow filtered by pattern "error":
 
-```
+```sh
 $ apex logs -f foo --filter error
 $ apex logs -f foo -F error
 ```
 
 Output the last hour of logs:
 
-```
+```sh
 $ apex logs --duration 1h
 $ apex logs -d 1h
 ```

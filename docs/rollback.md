@@ -7,19 +7,19 @@ Apex allows you to roll back to the previous, or specified version of a function
 
 Rollback to the previous release:
 
-```
+```sh
 $ apex rollback foo
 ```
 
 Rollback to specific version:
 
-```
+```sh
 $ apex rollback foo 5
 ```
 
 Preview rollback with `--dry-run`:
 
-```
+```sh
 $ apex rollback --dry-run lowercase
 
 ~ alias testing_lowercase

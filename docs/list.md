@@ -7,7 +7,7 @@ Apex supports listing of functions in various outputs, currently human-friendly 
 
 List all functions and their configuration:
 
-```
+```sh
 $ apex list
 
   bar
@@ -29,7 +29,7 @@ $ apex list
 
 Terraform vars output:
 
-```
+```sh
 $ apex list --tfvars
 apex_function_bar="arn:aws:lambda:us-west-2:293503197324:function:testing_bar"
 apex_function_foo="arn:aws:lambda:us-west-2:293503197324:function:testing_foo"
