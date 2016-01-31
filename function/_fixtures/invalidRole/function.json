@@ -3,5 +3,6 @@
   "runtime": "nodejs",
   "memory": 1,
   "timeout": 1,
-  "role": ""
+  "role": "",
+  "handler": "index.handle"
 }

@@ -3,5 +3,6 @@
   "runtime": "",
   "memory": 1,
   "timeout": 1,
-  "role": "iamrole"
+  "role": "iamrole",
+  "handler": "index.handle"
 }

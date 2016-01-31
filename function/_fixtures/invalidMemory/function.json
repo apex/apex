@@ -3,5 +3,6 @@
   "runtime": "nodejs",
   "memory": 0,
   "timeout": 1,
-  "role": "iamrole"
+  "role": "iamrole",
+  "handler": "index.handle"
 }
