@@ -11,15 +11,7 @@ Using environment variables only, you must specify the following:
 
 ## Via ~/.aws files
 
-Using the ~/.aws/credentials and ~/.aws/config files you may specify __AWS__PROFILE__ to tell apex which one to reference:
-
-- `AWS_PROFILE` profile name to use
-
-If you do not have a ~/.aws/config file, or "region" is not defined, you should set it with __AWS_REGION__:
-
-- `AWS_REGION` AWS region such as "us-west-2"
-
-To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
+Using the ~/.aws/credentials and ~/.aws/config files you may specify `AWS_PROFILE` to tell apex which one to reference. However, if you do not have a ~/.aws/config file, or "region" is not defined, you should set it with the `AWS_REGION` environment variable. To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
 ## Via profile flag
 
