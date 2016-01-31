@@ -1,0 +1,13 @@
+{
+  "name": "babel",
+  "description": "Node.js Babel example project",
+  "role": "arn:aws:iam::293503197324:role/lambda",
+  "runtime": "nodejs",
+  "handler": "lib.default",
+  "memory": 128,
+  "timeout": 30,
+  "hooks": {
+    "build": "../../node_modules/.bin/babel src -d lib && cp -fr ../../node_modules node_modules",
+    "clean": "rm -fr lib node_modules"
+  }
+}

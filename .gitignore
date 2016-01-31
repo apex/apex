@@ -3,3 +3,4 @@ main
 .DS_Store
 examples/go/main
 cov.out
+node_modules
