@@ -15,7 +15,7 @@ Functions __MUST__ include at least one source file (runtime dependent), such as
 }
 ```
 
-### Fields
+## Fields
 
 Fields marked as `inherited` may be provided in the [[project.json]] file instead.
 
