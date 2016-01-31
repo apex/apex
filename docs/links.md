@@ -1,6 +1,6 @@
 
 
-- [Project examples](_examples) with source
+- [Project examples](https://github.com/apex/apex/tree/master/_examples) with source
 - [GitHub](https://github.com/apex/apex) repository
 - [Boilerplate](https://github.com/apex/boilerplate) example with Terraform
 - [Go](https://github.com/apex/go-apex) runtime package
