@@ -18,30 +18,45 @@ defaults for functions, if desired. Here's an example of a project.json file dec
 
 ## Fields
 
-### name (string, required)
+### name
 
 Name of the project. This field is used in the default value for "nameTemplate" to prevent collisions between multiple projects.
 
-### description (string, optional)
+- type: `string`
+- required
+
+### description
 
 Description of the project. This field is informational.
 
-### runtime (string, optional)
+- type: `string`
+
+### runtime
 
 Default runtime of function(s) unless specified in their [[function.json]] configuration.
 
-### memory (int, optional)
+- type: `string`
+
+### memory
 
 Default memory allocation of function(s) unless specified in their [[function.json]] configuration.
 
-### timeout (int, optional)
+- type: `int`
+
+### timeout
 
 Default timeout of function(s) unless specified in their [[function.json]] configuration.
 
-### role (string, optional)
+- type: `int`
+
+### role
 
 Default role of function(s) unless specified in their [[function.json]] configuration.
 
-### nameTemplate (string, optional)
+- type: `string`
+
+### nameTemplate
 
 Template used to compute the function names. By default the template `{{.Project.Name}}_{{.Function.Name}}` is used, for example project "api" and `./functions/users` becomes "api_users". To disable prefixing, use `{{.Function.Name}}`, which would result in "users".
+
+- type: `string`

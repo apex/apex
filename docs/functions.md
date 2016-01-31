@@ -19,22 +19,41 @@ Functions __MUST__ include at least one source file (runtime dependent), such as
 
 Fields marked as `inherited` may be provided in the [[project.json]] file instead.
 
-### description (string, optional)
+### description
 
 Description of the function. This is used as the description in AWS Lambda.
 
-### runtime (string, required, inherited)
+- type: `string`
+- required
+
+### runtime
 
 Runtime of the function. This is used as the runtime in AWS Lambda, or when required, is used to determine that the Node.js shim should be used. For example when this field is "golang", the canonical runtime used is "nodejs" and a shim is injected into the zip file.
 
-### memory (int, required, inherited)
+- type: `string`
+- required
+- inherited
+
+### memory
 
 Memory allocated to the function, in megabytes.
 
-### timeout (int, required, inherited)
+- type: `int`
+- required
+- inherited
+
+### timeout
 
 Function timeout in sections.
 
-### role (string, required, inherited)
+- type: `int`
+- required
+- inherited
+
+### role
 
 AWS Lambda role used.
+
+- type: `string`
+- required
+- inherited
