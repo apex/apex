@@ -81,7 +81,8 @@ func outputList() {
 
 		config, err := fn.GetConfigCurrent()
 		if err != nil {
-			log.Fatalf("error: %s", err)
+			fmt.Println()
+			continue // ignore
 		}
 
 		fmt.Printf("    current version: %s\n", *config.Configuration.Version)
