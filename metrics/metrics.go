@@ -4,114 +4,45 @@
 package metrics
 
 import (
-	"fmt"
-	"sync"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 )
 
-// MetricCollector a wrapper all metrics for a specific function.
-type MetricCollector struct {
-	Metrics      []string
-	Collected    int
-	FunctionName string
-	Service      cloudwatchiface.CloudWatchAPI
-	StartDate    time.Time
-	EndDate      time.Time
+// Config is used to configure Metrics.
+type Config struct {
+	MetricNames []string
+	Service     cloudwatchiface.CloudWatchAPI
+	StartDate   time.Time
+	EndDate     time.Time
 }
 
-// Metric represents a CloudWatch metric with a given name and value.
-type Metric struct {
-	Name  string
-	Value []*cloudwatch.Datapoint
+// AggregatedMetrics represents aggregated metrics.
+type AggregatedMetrics struct {
+	Duration    int
+	Errors      int
+	Invocations int
+	Throttles   int
 }
 
-// Collect builds the collector pipeline
-func (mc *MetricCollector) Collect() <-chan Metric {
-	return mc.collect(mc.gen())
+// Metrics collects CloudWatch metrics for multiple functions
+type Metrics struct {
+	Config
+	FunctionNames []string
 }
 
-// collect starts a new cloudwatch session and requests the key metrics.
-func (mc *MetricCollector) collect(in <-chan string) <-chan Metric {
-	var wg sync.WaitGroup
-	out := make(chan Metric)
+// Collect and aggregate metrics for multiple functions.
+func (m *Metrics) Collect() (a map[string]AggregatedMetrics) {
+	a = make(map[string]AggregatedMetrics)
 
-	for name := range in {
-		wg.Add(1)
-		name := name
+	for _, fnName := range m.FunctionNames {
+		metric := Metric{
+			Config:       m.Config,
+			FunctionName: fnName,
+		}
 
-		go func() {
-			defer wg.Done()
-			params := &cloudwatch.GetMetricStatisticsInput{
-				StartTime:  aws.Time(mc.StartDate),
-				EndTime:    aws.Time(mc.EndDate),
-				MetricName: aws.String(name),
-				Namespace:  aws.String("AWS/Lambda"),
-				Period:     aws.Int64(int64(period(mc.StartDate, mc.EndDate).Seconds())),
-				Statistics: []*string{
-					aws.String("Sum"),
-				},
-				Dimensions: []*cloudwatch.Dimension{
-					{
-						Name:  aws.String("FunctionName"),
-						Value: aws.String(mc.FunctionName),
-					},
-				},
-				Unit: aws.String(unit(name)),
-			}
-
-			res, err := mc.Service.GetMetricStatistics(params)
-
-			if err != nil {
-				// TODO: refactor so that errors are reported in cmd
-				fmt.Println(err.Error())
-				return
-			}
-
-			out <- Metric{
-				Name:  name,
-				Value: res.Datapoints,
-			}
-		}()
+		a[fnName] = metric.Collect()
 	}
 
-	go func() {
-		wg.Wait()
-		close(out)
-	}()
-
-	return out
-}
-
-// gen generates the key metric structs and returns a channel pipeline.
-func (mc *MetricCollector) gen() <-chan string {
-	out := make(chan string, len(mc.Metrics))
-	for _, n := range mc.Metrics {
-		out <- n
-	}
-	close(out)
-	return out
-}
-
-// period returns the resolution of metrics.
-func period(start, end time.Time) time.Duration {
-	switch n := end.Sub(start).Hours(); {
-	case n > 24:
-		return time.Hour * 24
-	default:
-		return time.Hour
-	}
-}
-
-// unit for metric name.
-func unit(name string) string {
-	switch name {
-	case "Duration":
-		return "Milliseconds"
-	default:
-		return "Count"
-	}
+	return
 }
