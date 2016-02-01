@@ -7,5 +7,4 @@ Here's an example ignoring go source files and the function.json itself:
 
 ```
 *.go
-function.json
 ```
