@@ -74,12 +74,20 @@ func preRun(c *cobra.Command, args []string) error {
 		log.SetLevel(l)
 	}
 
+	// credential defaults
 	config := aws.NewConfig()
 
+	// explicit profile
 	if profile != "" {
 		config = config.WithCredentials(credentials.NewSharedCredentials("", profile))
 	}
 
+	// support region from ~/.aws/config for AWS_PROFILE
+	if profile == "" {
+		profile = os.Getenv("AWS_PROFILE")
+	}
+
+	// region from ~/.aws/config
 	if region, _ := utils.GetRegion(profile); region != "" {
 		config = config.WithRegion(region)
 	}
