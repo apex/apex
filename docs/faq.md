@@ -15,6 +15,10 @@ Serverless is written using Node.js, Apex is written in Go.
 
 The shim creates a child process, thus creates a few-hundred millisecond delay for the _first_ invocation. Subsequent calls to a function are likely to hit an active container, unless the function sees very little traffic.
 
+## Do shimmed languages have any limitations?
+
+The shim currently operates using JSON over stdout, because of this you must use stderr for logging.
+
 ## Can I manage functions that Apex did not create?
 
 Apex is not designed to handle legacy cases, or functions created by other software. For most operations Apex references the local functions, if it is not defined locally, then you cannot operate against it. This is by-design and is unlikely to change.
