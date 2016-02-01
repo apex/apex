@@ -74,7 +74,7 @@ func outputList() {
 			fmt.Printf("    description: %v\n", fn.Description)
 		}
 		fmt.Printf("    runtime: %v\n", fn.Runtime)
-		fmt.Printf("    memory: %vmd\n", fn.Memory)
+		fmt.Printf("    memory: %vmb\n", fn.Memory)
 		fmt.Printf("    timeout: %vs\n", fn.Timeout)
 		fmt.Printf("    role: %v\n", fn.Role)
 		fmt.Printf("    handler: %v\n", fn.Handler)
