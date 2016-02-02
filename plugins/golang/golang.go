@@ -3,18 +3,24 @@ package golang
 
 import (
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/plugins/nodejs"
 )
 
 func init() {
 	function.RegisterPlugin("golang", &Plugin{})
 }
 
+const (
+	// Runtime name used by Apex
+	Runtime = "golang"
+)
+
 // Plugin implementation.
 type Plugin struct{}
 
 // Open adds the shim and golang defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != "golang" {
+	if fn.Runtime != Runtime {
 		return nil
 	}
 
@@ -23,7 +29,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 	}
 
 	fn.Shim = true
-	fn.Runtime = "nodejs"
+	fn.Runtime = nodejs.Runtime
 	fn.Hooks.Clean = "rm -f main"
 
 	return nil

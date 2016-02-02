@@ -6,14 +6,17 @@ import (
 	"path/filepath"
 
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/plugins/golang"
+	"github.com/apex/apex/plugins/nodejs"
+	"github.com/apex/apex/plugins/python"
 )
 
 func init() {
 	function.RegisterPlugin("inference", &Plugin{
 		Files: map[string]string{
-			"main.py":  "python",
-			"index.js": "nodejs",
-			"main.go":  "golang",
+			"main.py":  python.Runtime,
+			"index.js": nodejs.Runtime,
+			"main.go":  golang.Runtime,
 		},
 	})
 }

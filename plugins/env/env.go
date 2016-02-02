@@ -15,6 +15,9 @@ func init() {
 	function.RegisterPlugin("env", &Plugin{})
 }
 
+// FileName of file with environment variables.
+const FileName = ".env.json"
+
 // Plugin implementation.
 type Plugin struct{}
 
@@ -24,7 +27,7 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 		return nil
 	}
 
-	return p.addEnv(filepath.Join(fn.Path, ".env.json"), fn)
+	return p.addEnv(filepath.Join(fn.Path, FileName), fn)
 }
 
 // Clean hook removes .env.json.
@@ -33,7 +36,7 @@ func (p *Plugin) Clean(fn *function.Function) error {
 		return nil
 	}
 
-	return os.Remove(filepath.Join(fn.Path, ".env.json"))
+	return os.Remove(filepath.Join(fn.Path, FileName))
 }
 
 // addEnv saves the environment as json into .env.json.
