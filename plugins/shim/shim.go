@@ -3,10 +3,6 @@
 package shim
 
 import (
-	"io/ioutil"
-	"os"
-	"path/filepath"
-
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/shim"
 	"github.com/jpillora/archive"
@@ -22,44 +18,15 @@ type Plugin struct{}
 // Build adds the nodejs shim files.
 func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	if fn.Shim {
-		return p.addShim(fn)
-	}
+		fn.Log.Debug("add shim")
 
-	return nil
-}
+		if err := zip.AddBytes("index.js", shim.MustAsset("index.js")); err != nil {
+			return err
+		}
 
-// Clean removes the nodejs shim files.
-func (p *Plugin) Clean(fn *function.Function) error {
-	if fn.Shim {
-		return p.removeShim(fn)
-	}
-
-	return nil
-}
-
-// addShim saves nodejs shim.
-func (p *Plugin) addShim(fn *function.Function) error {
-	fn.Log.Debug("add shim")
-
-	if err := ioutil.WriteFile(filepath.Join(fn.Path, "index.js"), shim.MustAsset("index.js"), 0666); err != nil {
-		return err
-	}
-
-	if err := ioutil.WriteFile(filepath.Join(fn.Path, "byline.js"), shim.MustAsset("byline.js"), 0666); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// removeShim removes the nodejs shim.
-func (p *Plugin) removeShim(fn *function.Function) error {
-	if err := os.Remove(filepath.Join(fn.Path, "index.js")); err != nil {
-		return err
-	}
-
-	if err := os.Remove(filepath.Join(fn.Path, "byline.js")); err != nil {
-		return err
+		if err := zip.AddBytes("byline.js", shim.MustAsset("byline.js")); err != nil {
+			return err
+		}
 	}
 
 	return nil
