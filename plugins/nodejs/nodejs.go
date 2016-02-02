@@ -9,6 +9,7 @@ import (
 	"github.com/jpillora/archive"
 
 	"github.com/apex/apex/function"
+	"github.com/apex/apex/plugins/env"
 )
 
 func init() {
@@ -28,12 +29,17 @@ var prelude = template.Must(template.New("prelude").Parse(`try {
 exports.handle = require('./{{.HandleFile}}').{{.HandleMethod}}
 `))
 
+const (
+	// Runtime name used by Apex and by AWS Lambda
+	Runtime = "nodejs"
+)
+
 // Plugin implementation.
 type Plugin struct{}
 
 // Open adds nodejs defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != "nodejs" {
+	if fn.Runtime != Runtime {
 		return nil
 	}
 
@@ -46,7 +52,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 
 // Build injects a script for loading the environment.
 func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
-	if len(fn.Environment) == 0 {
+	if fn.Runtime != Runtime || len(fn.Environment) == 0 {
 		return nil
 	}
 
@@ -61,7 +67,7 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 		HandleFile   string
 		HandleMethod string
 	}{
-		EnvFile:      ".env.json",
+		EnvFile:      env.FileName,
 		HandleFile:   file,
 		HandleMethod: method,
 	})
