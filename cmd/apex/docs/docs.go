@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/wiki"
+	doc "github.com/apex/apex/docs"
 )
 
 // topic name.
@@ -48,7 +48,7 @@ func preRun(c *cobra.Command, args []string) {
 
 // Run command.
 func run(c *cobra.Command, args []string) (err error) {
-	var w io.WriteCloser = os.Stdin
+	var w io.WriteCloser = os.Stdout
 
 	if isatty.IsTerminal(os.Stdout.Fd()) {
 		cmd := exec.Command("less", "-R")
@@ -68,9 +68,6 @@ func run(c *cobra.Command, args []string) (err error) {
 		}
 	}
 
-	if topic == "" {
-		return wiki.Topics(w)
-	}
-
-	return wiki.Topic(topic, w)
+	_, err = io.Copy(w, doc.Reader())
+	return err
 }

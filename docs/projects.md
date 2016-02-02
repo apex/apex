@@ -4,8 +4,8 @@ all `apex(1)` operations have access to these functions.
 
 ## Configuration
 
-Projects __MUST__ have a project.json file in the root directory. This file contains details about your project, as well as
-defaults for functions, if desired. Here's an example of a project.json file declaring a default AWS IAM "role" and "memory" for _all_ functions.
+Projects must have a project.json file in the root directory. This file contains details about your project, as well as
+defaults for functions, if desired. Here's an example of a project.json file declaring a default AWS IAM "role" and "memory" for all functions.
 
 ```json
 {
@@ -33,25 +33,25 @@ Description of the project. This field is informational.
 
 ### runtime
 
-Default runtime of function(s) unless specified in their [[function.json]] configuration.
+Default runtime of function(s) unless specified in their function.json configuration.
 
 - type: `string`
 
 ### memory
 
-Default memory allocation of function(s) unless specified in their [[function.json]] configuration.
+Default memory allocation of function(s) unless specified in their function.json configuration.
 
 - type: `int`
 
 ### timeout
 
-Default timeout of function(s) unless specified in their [[function.json]] configuration.
+Default timeout of function(s) unless specified in their function.json configuration.
 
 - type: `int`
 
 ### role
 
-Default role of function(s) unless specified in their [[function.json]] configuration.
+Default role of function(s) unless specified in their function.json configuration.
 
 - type: `string`
 
