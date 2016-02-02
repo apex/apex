@@ -3,7 +3,7 @@ The `apex docs` command lets you read this documentation from the command line. 
 
 ## Tips
 
-- Type `/` and search keyword, and press enter to search the document
+- Type `/` and search a keyword, and press enter to search the document
 - Type `n` to view the next occurrence of your query  
 - Type `u` to page up
 - Type `d` to page down
