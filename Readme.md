@@ -155,7 +155,6 @@ See the [Documentation](docs) for more information.
 
 ## Links
 
-- [Wiki](https://github.com/apex/apex/wiki)
 - [Project Examples](_examples) with source
 
 ## Contributors
