@@ -132,17 +132,10 @@ func (f *Function) Setenv(name, value string) {
 	f.Environment[name] = value
 }
 
-// Deploy code and then configuration.
+// Deploy generates a zip and creates or deploy the function.
+// If the configuration hasn't been changed it will deploy only code,
+// otherwise it will deploy both configuration and code.
 func (f *Function) Deploy() error {
-	if err := f.DeployCode(); err != nil {
-		return err
-	}
-
-	return f.DeployConfig()
-}
-
-// DeployCode generates a zip and creates or updates the function.
-func (f *Function) DeployCode() error {
 	f.Log.Info("deploying")
 
 	zip, err := f.BuildBytes()
@@ -155,36 +148,45 @@ func (f *Function) DeployCode() error {
 	}
 
 	config, err := f.GetConfig()
-
 	if e, ok := err.(awserr.Error); ok {
 		if e.Code() == "ResourceNotFoundException" {
 			return f.Create(zip)
 		}
 	}
-
 	if err != nil {
 		return err
 	}
 
+	if f.configChanged(config) {
+		f.Log.Info("config changed")
+		return f.DeployConfigAndCode(zip)
+	}
+
+	f.Log.Info("config unchanged")
+	return f.DeployCode(zip, config)
+}
+
+// DeployCode deploys function code when changed.
+func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) error {
 	remoteHash := *config.Configuration.CodeSha256
 	localHash := utils.Sha256(zip)
 
 	if localHash == remoteHash {
-		f.Log.Info("unchanged")
+		f.Log.Info("code unchanged")
 		return nil
 	}
 
 	f.Log.WithFields(log.Fields{
 		"local":  localHash,
 		"remote": remoteHash,
-	}).Debug("changed")
+	}).Debug("code changed")
 
 	return f.Update(zip)
 }
 
-// DeployConfig deploys changes to configuration.
-func (f *Function) DeployConfig() error {
-	f.Log.Info("deploying config")
+// DeployConfigAndCode updates config and updates function code.
+func (f *Function) DeployConfigAndCode(zip []byte) error {
+	f.Log.Info("updating config")
 
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &f.FunctionName,
@@ -194,8 +196,11 @@ func (f *Function) DeployConfig() error {
 		Role:         &f.Role,
 		Handler:      &f.Handler,
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	return f.Update(zip)
 }
 
 // Delete the function including all its versions
@@ -258,7 +263,7 @@ func (f *Function) Update(zip []byte) error {
 	f.Log.WithFields(log.Fields{
 		"version": *updated.Version,
 		"name":    f.FunctionName,
-	}).Info("deployed")
+	}).Info("function updated")
 
 	return nil
 }
@@ -300,7 +305,7 @@ func (f *Function) Create(zip []byte) error {
 	f.Log.WithFields(log.Fields{
 		"version": *created.Version,
 		"name":    f.FunctionName,
-	}).Info("deployed")
+	}).Info("function created")
 
 	return nil
 }
@@ -487,6 +492,31 @@ func (f *Function) Clean() error {
 // GroupName returns the CloudWatchLogs group name.
 func (f *Function) GroupName() string {
 	return fmt.Sprintf("/aws/lambda/%s", f.FunctionName)
+}
+
+// configChanged checks if function configuration differs from configuration stored in AWS Lambda
+func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
+	if f.Description != *config.Configuration.Description {
+		return true
+	}
+
+	if f.Memory != *config.Configuration.MemorySize {
+		return true
+	}
+
+	if f.Timeout != *config.Configuration.Timeout {
+		return true
+	}
+
+	if f.Role != *config.Configuration.Role {
+		return true
+	}
+
+	if f.Handler != *config.Configuration.Handler {
+		return true
+	}
+
+	return false
 }
 
 // hookOpen calls Openers.
