@@ -26,8 +26,8 @@ const example = `  Print the last 24 hours of metrics for all functions
   Print the last 24 hours of metrics for a function
   $ apex metrics foo
 
-  Print metrics for a function with a specified duration, e.g. the last 3 days
-  $ apex metrics foo --duration 72h`
+  Print metrics for a function with a specified start time, e.g. the last 3 days
+  $ apex metrics foo --start 72h`
 
 // Command config.
 var Command = &cobra.Command{
@@ -42,7 +42,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
-	f.DurationVarP(&duration, "duration", "d", 24*time.Hour, "Duration of metrics results prior to now")
+	f.DurationVarP(&duration, "start", "s", 24*time.Hour, "Start time of the results")
 }
 
 // Run command.
