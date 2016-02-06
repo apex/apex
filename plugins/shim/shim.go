@@ -5,7 +5,7 @@ package shim
 import (
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/shim"
-	"github.com/jpillora/archive"
+	"github.com/tj/archive"
 )
 
 func init() {

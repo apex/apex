@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,7 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/dustin/go-humanize"
-	"github.com/jpillora/archive"
+	"github.com/tj/archive"
 	"gopkg.in/validator.v2"
 
 	"github.com/apex/apex/hooks"
@@ -468,7 +469,12 @@ func (f *Function) Build() (io.Reader, error) {
 			return nil, err
 		}
 
-		if err := zip.AddFile(path, file); err != nil {
+		info, err := file.Stat()
+		if err != nil {
+			return nil, err
+		}
+
+		if err := zip.AddInfoFile(path, fileInfo{info}, file); err != nil {
 			return nil, err
 		}
 
@@ -565,4 +571,15 @@ func (f *Function) hookDeploy() error {
 		}
 	}
 	return nil
+}
+
+// fileInfo overrides ModTime so that we can inject files without
+// causing the checksum to differ from the remote when contents has
+// not changed.
+type fileInfo struct {
+	os.FileInfo
+}
+
+func (f fileInfo) ModTime() time.Time {
+	return time.Unix(0, 0)
 }

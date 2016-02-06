@@ -8,7 +8,7 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/env"
-	"github.com/jpillora/archive"
+	"github.com/tj/archive"
 )
 
 func init() {

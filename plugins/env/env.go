@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/jpillora/archive"
+	"github.com/tj/archive"
 
 	"github.com/apex/apex/function"
 )
