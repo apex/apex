@@ -1,4 +1,12 @@
 
+release:
+	@echo "[+] re-generating"
+	@go generate ./...
+	@echo "[+] building"
+	@$(MAKE) build
+	@echo "[+] complete"
+.PHONY: release
+
 test:
 	@go test -cover ./...
 .PHONY: test
