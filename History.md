@@ -1,4 +1,34 @@
 
+v0.6.0 / 2016-02-06
+===================
+
+  * add babel example
+  * add hook documentation. Closes #212
+  * add FileInfo wrapper to zero mtime. Closes #152
+  * add inline markdown docs. Closes #194
+  * add env populating for python runtime. Closes #202
+  * add multiple functions to metrics. Closes #182
+  * add support for AWS_PROFILE region from ~/.aws/config
+  * add function.json ignoring by default. Closes #196
+  * add support for pulling region from aws-cli config. Closes #90
+  * add ./docs moved from wiki and additional content
+  * add support for invoke without event. Closes #173
+  * add pager to docs command when stdout is a tty
+  * add function name to error output. Closes #160
+  * add multi-function log support. Closes #159
+  * add tfvars output to list command. Closes #155
+  * add nodejs prelude script injection. Closes #140
+  * add support for aws profile switching via aws shared credentials
+  * add support for overriding the build hook when using golang runtime
+  * rename --duration to --start. Closes #204
+  * remove old --verbose flag
+  * remove Go runtime, use apex/go-apex, updates examples. Closes #156
+  * refactor shim plugin to access zip directly. Closes #190
+  * refactor commands into packages. Closes #107
+  * refactor functions loading. Closes #132
+  * fix updating configuration. Closes #206
+  * fix list command when function does not exist (ignore remote config)
+
 v0.5.1 / 2016-01-25
 ===================
 
