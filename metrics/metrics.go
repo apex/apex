@@ -1,5 +1,3 @@
-//go:generate mockgen -destination mock/cloudwatchiface.go github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface CloudWatchAPI
-
 // Package metrics fetches CloudWatch metrics for a function.
 package metrics
 
