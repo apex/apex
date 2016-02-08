@@ -1,6 +1,7 @@
 package utils_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/apex/apex/utils"
@@ -33,4 +34,17 @@ func Test_ReadIgnoreFile_missing(t *testing.T) {
 func Test_ContainsString(t *testing.T) {
 	assert.True(t, utils.ContainsString([]string{"a", "b"}, "a"))
 	assert.False(t, utils.ContainsString([]string{"a", "b"}, "c"))
+}
+
+func Test_GetProfile_missing(t *testing.T) {
+	os.Unsetenv("AWS_PROFILE")
+	assert.Equal(t, utils.GetProfile(), "default")
+}
+
+func Test_GetProfile_fromENV(t *testing.T) {
+	os.Setenv("AWS_PROFILE", "otherMe")
+
+	assert.Equal(t, utils.GetProfile(), "otherMe")
+
+	os.Unsetenv("AWS_PROFILE")
 }

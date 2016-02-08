@@ -84,7 +84,7 @@ func preRun(c *cobra.Command, args []string) error {
 
 	// support region from ~/.aws/config for AWS_PROFILE
 	if profile == "" {
-		profile = os.Getenv("AWS_PROFILE")
+		profile = utils.GetProfile()
 	}
 
 	// region from ~/.aws/config

@@ -57,7 +57,18 @@ func LoadFiles(root string, ignoredPatterns []string) (files []string, err error
 	return
 }
 
-// GetRegion attempts loading the AWS region from ~/.aws.config.
+// GetProfile attempts to load the profile from AWS_PROFILE otherwise defaults to "default"
+func GetProfile() string {
+	profile := os.Getenv("AWS_PROFILE")
+
+	if profile == "" {
+		return "default"
+	}
+
+	return profile
+}
+
+// GetRegion attempts loading the AWS region from ~/.aws/config.
 func GetRegion(profile string) (string, error) {
 	u, err := user.Current()
 	if err != nil {
