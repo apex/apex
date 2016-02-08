@@ -7,7 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/apex/log"
-	"github.com/tj/archive"
+	"github.com/jpillora/archive"
 
 	"github.com/apex/apex/function"
 )

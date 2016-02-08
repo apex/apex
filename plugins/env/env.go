@@ -3,10 +3,9 @@ package env
 
 import (
 	"encoding/json"
-	"os"
-	"path/filepath"
+	"time"
 
-	"github.com/tj/archive"
+	"github.com/jpillora/archive"
 
 	"github.com/apex/apex/function"
 )
@@ -27,27 +26,12 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 		return nil
 	}
 
-	return p.addEnv(filepath.Join(fn.Path, FileName), fn)
-}
-
-// Clean hook removes .env.json.
-func (p *Plugin) Clean(fn *function.Function) error {
-	if len(fn.Environment) == 0 {
-		return nil
-	}
-
-	return os.Remove(filepath.Join(fn.Path, FileName))
-}
-
-// addEnv saves the environment as json into .env.json.
-func (p *Plugin) addEnv(path string, fn *function.Function) error {
 	fn.Log.WithField("env", fn.Environment).Debug("adding env")
 
-	f, err := os.Create(path)
+	env, err := json.Marshal(fn.Environment)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
 
-	return json.NewEncoder(f).Encode(fn.Environment)
+	return zip.AddBytesMTime(FileName, env, time.Unix(0, 0))
 }

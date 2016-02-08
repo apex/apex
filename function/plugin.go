@@ -1,7 +1,7 @@
 package function
 
 import (
-	"github.com/tj/archive"
+	"github.com/jpillora/archive"
 )
 
 // A Plugin is a chunk of isolated(ish) logic which reacts to various

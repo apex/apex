@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/env"
-	"github.com/tj/archive"
+	"github.com/jpillora/archive"
 )
 
 func init() {
@@ -83,5 +84,5 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 
 	fn.Handler = "_apex_main.handle"
 
-	return zip.AddBytes("_apex_main.py", buf.Bytes())
+	return zip.AddBytesMTime("_apex_main.py", buf.Bytes(), time.Unix(0, 0))
 }

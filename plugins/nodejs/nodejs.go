@@ -5,8 +5,9 @@ import (
 	"bytes"
 	"strings"
 	"text/template"
+	"time"
 
-	"github.com/tj/archive"
+	"github.com/jpillora/archive"
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/env"
@@ -78,5 +79,5 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 
 	fn.Handler = "_apex_index.handle"
 
-	return zip.AddBytes("_apex_index.js", buf.Bytes())
+	return zip.AddBytesMTime("_apex_index.js", buf.Bytes(), time.Unix(0, 0))
 }
