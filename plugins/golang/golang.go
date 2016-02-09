@@ -25,7 +25,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 	}
 
 	if fn.Hooks.Build == "" {
-		fn.Hooks.Build = "GOOS=linux GOARCH=amd64 go build -o main main.go"
+		fn.Hooks.Build = "GOOS=linux GOARCH=amd64 go build -o main *.go"
 	}
 
 	fn.Shim = true
