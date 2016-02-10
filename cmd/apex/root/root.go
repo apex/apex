@@ -24,8 +24,14 @@ var dryRun bool
 // logLevel specified.
 var logLevel string
 
+// credentials file for AWS SDK.
+var creds string
+
 // profile for AWS creds.
 var profile string
+
+// Config object for AWS.
+var Config *aws.Config
 
 // Env supplied.
 var Env []string
@@ -58,6 +64,7 @@ func init() {
 	f.StringSliceVarP(&Env, "env", "e", nil, "Environment variable")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
 	f.StringVarP(&profile, "profile", "p", "", "AWS profile to use")
+	f.StringVarP(&creds, "credentials", "c", "", "AWS credentials file to use (~/.aws/credentials)")
 
 	Command.SetHelpTemplate("\n" + Command.HelpTemplate())
 }
@@ -75,11 +82,11 @@ func preRun(c *cobra.Command, args []string) error {
 	}
 
 	// credential defaults
-	config := aws.NewConfig()
+	Config := aws.NewConfig()
 
 	// explicit profile
 	if profile != "" {
-		config = config.WithCredentials(credentials.NewSharedCredentials("", profile))
+		Config = Config.WithCredentials(credentials.NewSharedCredentials(creds, profile))
 	}
 
 	// support region from ~/.aws/config for AWS_PROFILE
@@ -89,10 +96,10 @@ func preRun(c *cobra.Command, args []string) error {
 
 	// region from ~/.aws/config
 	if region, _ := utils.GetRegion(profile); region != "" {
-		config = config.WithRegion(region)
+		Config = Config.WithRegion(region)
 	}
 
-	Session = session.New(config)
+	Session = session.New(Config)
 
 	Project = &project.Project{
 		Log:  log.Log,
