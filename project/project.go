@@ -32,17 +32,18 @@ const (
 
 // Config for project.
 type Config struct {
-	Name         string            `json:"name" validate:"nonzero"`
-	Description  string            `json:"description"`
-	Runtime      string            `json:"runtime"`
-	Memory       int64             `json:"memory"`
-	Timeout      int64             `json:"timeout"`
-	Role         string            `json:"role"`
-	Handler      string            `json:"handler"`
-	Shim         bool              `json:"shim"`
-	NameTemplate string            `json:"nameTemplate"`
-	Environment  map[string]string `json:"environment"`
-	Hooks        hooks.Hooks       `json:"hooks"`
+	Name             string            `json:"name" validate:"nonzero"`
+	Description      string            `json:"description"`
+	Runtime          string            `json:"runtime"`
+	Memory           int64             `json:"memory"`
+	Timeout          int64             `json:"timeout"`
+	Role             string            `json:"role"`
+	Handler          string            `json:"handler"`
+	Shim             bool              `json:"shim"`
+	NameTemplate     string            `json:"nameTemplate"`
+	RetainedVersions int               `json:"retainedVersions"`
+	Environment      map[string]string `json:"environment"`
+	Hooks            hooks.Hooks       `json:"hooks"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -73,6 +74,10 @@ func (p *Project) defaults() {
 
 	if p.NameTemplate == "" {
 		p.NameTemplate = "{{.Project.Name}}_{{.Function.Name}}"
+	}
+
+	if p.RetainedVersions == 0 {
+		p.RetainedVersions = 10
 	}
 }
 
@@ -256,14 +261,15 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 
 	fn := &function.Function{
 		Config: function.Config{
-			Runtime:     p.Runtime,
-			Memory:      p.Memory,
-			Timeout:     p.Timeout,
-			Role:        p.Role,
-			Handler:     p.Handler,
-			Shim:        p.Shim,
-			Hooks:       p.Hooks,
-			Environment: copyStringMap(p.Environment),
+			Runtime:          p.Runtime,
+			Memory:           p.Memory,
+			Timeout:          p.Timeout,
+			Role:             p.Role,
+			Handler:          p.Handler,
+			Shim:             p.Shim,
+			Hooks:            p.Hooks,
+			Environment:      copyStringMap(p.Environment),
+			RetainedVersions: p.RetainedVersions,
 		},
 		Name:            name,
 		Path:            dir,

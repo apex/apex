@@ -57,3 +57,10 @@ AWS Lambda role used.
 - type: `string`
 - required
 - inherited
+
+### retainedVersions
+
+Number of retained function's versions on AWS Lambda.
+
+- type: `int`
+- inherited

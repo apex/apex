@@ -60,3 +60,9 @@ Default role of function(s) unless specified in their function.json configuratio
 Template used to compute the function names. By default the template `{{.Project.Name}}_{{.Function.Name}}` is used, for example project "api" and `./functions/users` becomes "api_users". To disable prefixing, use `{{.Function.Name}}`, which would result in "users".
 
 - type: `string`
+
+### retainedVersions
+
+Number of retained function's versions on AWS Lambda. By default `deploy` command will leave 10 versions.
+
+- type: `int`

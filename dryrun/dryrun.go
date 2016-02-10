@@ -126,7 +126,12 @@ func (l *Lambda) UpdateFunctionConfiguration(in *lambda.UpdateFunctionConfigurat
 
 // DeleteFunction stub.
 func (l *Lambda) DeleteFunction(in *lambda.DeleteFunctionInput) (*lambda.DeleteFunctionOutput, error) {
-	l.remove("function", *in.FunctionName, nil)
+	if *in.Qualifier == "" {
+		l.remove("function", *in.FunctionName, nil)
+	} else {
+		l.remove("function version", fmt.Sprintf("%s (version: %s)", *in.FunctionName, *in.Qualifier), nil)
+	}
+
 	return nil, nil
 }
 
