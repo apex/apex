@@ -93,7 +93,7 @@ func Prepare(c *cobra.Command, args []string) error {
 	}
 
 	// credential defaults
-	Config := aws.NewConfig()
+	Config = aws.NewConfig()
 
 	// explicit profile
 	if profile != "" {
