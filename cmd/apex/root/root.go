@@ -74,9 +74,20 @@ func PreRunNoop(c *cobra.Command, args []string) {
 	// TODO: ew... better way to disable in cobra?
 }
 
-// PreRun sets up global tasks used for most commands, some use PreRunNoop
+// preRun sets up global tasks used for most commands, some use PreRunNoop
 // to remove this default behaviour.
 func preRun(c *cobra.Command, args []string) error {
+	err := Prepare(c, args)
+	if err != nil {
+		return err
+	}
+	return Project.Open()
+}
+
+
+// Prepare handles the global CLI flags and shared functionality without
+// the assumption that a Project has already been initialized.
+func Prepare(c *cobra.Command, args []string) error {
 	if l, err := log.ParseLevel(logLevel); err == nil {
 		log.SetLevel(l)
 	}
@@ -119,6 +130,7 @@ func preRun(c *cobra.Command, args []string) error {
 			return err
 		}
 	}
-
-	return Project.Open()
+	return nil
 }
+
+
