@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 
 	"github.com/Unknwon/goconfig"
+	"github.com/mitchellh/go-homedir"
 )
 
 // Sha256 returns a base64 encoded SHA256 hash of `b`.
@@ -70,12 +70,12 @@ func GetProfile() string {
 
 // GetRegion attempts loading the AWS region from ~/.aws/config.
 func GetRegion(profile string) (string, error) {
-	u, err := user.Current()
+	home, err := homedir.Dir()
 	if err != nil {
 		return "", err
 	}
 
-	path := filepath.Join(u.HomeDir, ".aws", "config")
+	path := filepath.Join(home, ".aws", "config")
 	cfg, err := goconfig.LoadConfigFile(path)
 	if err != nil {
 		return "", err
