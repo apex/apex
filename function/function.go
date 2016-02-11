@@ -468,7 +468,8 @@ func (f *Function) Build() (io.Reader, error) {
 			return nil, err
 		}
 
-		if err := zip.AddFile(path, file); err != nil {
+		pathWithUnixSeparators := strings.Replace(path, "\\", "/", -1)
+		if err := zip.AddFile(pathWithUnixSeparators, file); err != nil {
 			return nil, err
 		}
 
