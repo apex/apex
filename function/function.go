@@ -67,15 +67,16 @@ func (e *InvokeError) Error() string {
 
 // Config for a Lambda function.
 type Config struct {
-	Description string            `json:"description"`
-	Runtime     string            `json:"runtime" validate:"nonzero"`
-	Memory      int64             `json:"memory" validate:"nonzero"`
-	Timeout     int64             `json:"timeout" validate:"nonzero"`
-	Role        string            `json:"role" validate:"nonzero"`
-	Handler     string            `json:"handler" validate:"nonzero"`
-	Shim        bool              `json:"shim"`
-	Environment map[string]string `json:"environment"`
-	Hooks       hooks.Hooks       `json:"hooks"`
+	Description      string            `json:"description"`
+	Runtime          string            `json:"runtime" validate:"nonzero"`
+	Memory           int64             `json:"memory" validate:"nonzero"`
+	Timeout          int64             `json:"timeout" validate:"nonzero"`
+	Role             string            `json:"role" validate:"nonzero"`
+	Handler          string            `json:"handler" validate:"nonzero"`
+	Shim             bool              `json:"shim"`
+	Environment      map[string]string `json:"environment"`
+	Hooks            hooks.Hooks       `json:"hooks"`
+	RetainedVersions int               `json:"retainedVersions"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -238,12 +239,16 @@ func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
 func (f *Function) Update(zip []byte) error {
 	f.Log.Info("updating function")
 
+	versionsToCleanup, err := f.versionsToCleanup()
+	if err != nil {
+		return err
+	}
+
 	updated, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &f.FunctionName,
 		Publish:      aws.Bool(true),
 		ZipFile:      zip,
 	})
-
 	if err != nil {
 		return err
 	}
@@ -255,7 +260,6 @@ func (f *Function) Update(zip []byte) error {
 		Name:            aws.String(CurrentAlias),
 		FunctionVersion: updated.Version,
 	})
-
 	if err != nil {
 		return nil
 	}
@@ -265,7 +269,7 @@ func (f *Function) Update(zip []byte) error {
 		"name":    f.FunctionName,
 	}).Info("function updated")
 
-	return nil
+	return f.removeVersions(versionsToCleanup)
 }
 
 // Create the function with the given `zip`.
@@ -357,26 +361,18 @@ func (f *Function) Invoke(event, context interface{}) (reply, logs io.Reader, er
 func (f *Function) Rollback() error {
 	f.Log.Info("rolling back")
 
-	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &f.FunctionName,
-		Name:         aws.String(CurrentAlias),
-	})
-
+	alias, err := f.currentVersionAlias()
 	if err != nil {
 		return err
 	}
 
 	f.Log.Infof("current version: %s", *alias.FunctionVersion)
 
-	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
-		FunctionName: &f.FunctionName,
-	})
-
+	versions, err := f.versions()
 	if err != nil {
 		return err
 	}
 
-	versions := list.Versions[1:] // remove $LATEST
 	if len(versions) < 2 {
 		return errors.New("Can't rollback. Only one version deployed.")
 	}
@@ -404,11 +400,7 @@ func (f *Function) Rollback() error {
 func (f *Function) RollbackVersion(version string) error {
 	f.Log.Info("rolling back")
 
-	alias, err := f.Service.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &f.FunctionName,
-		Name:         aws.String(CurrentAlias),
-	})
-
+	alias, err := f.currentVersionAlias()
 	if err != nil {
 		return err
 	}
@@ -493,6 +485,60 @@ func (f *Function) Clean() error {
 // GroupName returns the CloudWatchLogs group name.
 func (f *Function) GroupName() string {
 	return fmt.Sprintf("/aws/lambda/%s", f.FunctionName)
+}
+
+// versions returns list of all versions deployed to AWS Lambda
+func (f *Function) versions() ([]*lambda.FunctionConfiguration, error) {
+	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
+		FunctionName: &f.FunctionName,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	versions := list.Versions[1:] // remove $LATEST
+
+	return versions, nil
+}
+
+// versionsToCleanup returns list of versions to remove after updating function
+func (f *Function) versionsToCleanup() ([]*lambda.FunctionConfiguration, error) {
+	versions, err := f.versions()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(versions) > f.RetainedVersions {
+		return versions[:len(versions)-f.RetainedVersions], nil
+	}
+
+	return versions, nil
+}
+
+// removeVersions removes specifed function's versions
+func (f *Function) removeVersions(versions []*lambda.FunctionConfiguration) error {
+	for _, v := range versions {
+		f.Log.Infof("cleaning up version: %s", *v.Version)
+
+		_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
+			FunctionName: &f.FunctionName,
+			Qualifier:    v.Version,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// currentVersionAlias returns alias configuration for currently deployed function
+func (f *Function) currentVersionAlias() (*lambda.AliasConfiguration, error) {
+	return f.Service.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &f.FunctionName,
+		Name:         aws.String(CurrentAlias),
+	})
 }
 
 // configChanged checks if function configuration differs from configuration stored in AWS Lambda
