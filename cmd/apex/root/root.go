@@ -64,7 +64,7 @@ func init() {
 	f.StringSliceVarP(&Env, "env", "e", nil, "Environment variable")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
 	f.StringVarP(&profile, "profile", "p", "", "AWS profile to use")
-	f.StringVarP(&creds, "credentials", "c", "", "AWS credentials file to use (~/.aws/credentials)")
+	f.StringVar(&creds, "credentials", "", "AWS credentials file to use (~/.aws/credentials)")
 
 	Command.SetHelpTemplate("\n" + Command.HelpTemplate())
 }
