@@ -49,20 +49,20 @@ type Config struct {
 // Project represents zero or more Lambda functions.
 type Project struct {
 	Config
-	Path            string
-	Concurrency     int
-	Log             log.Interface
-	Service         lambdaiface.LambdaAPI
-	Functions       []*function.Function
-	IgnoredPatterns []string
-	nameTemplate    *template.Template
+	Path         string
+	Concurrency  int
+	Log          log.Interface
+	Service      lambdaiface.LambdaAPI
+	Functions    []*function.Function
+	IgnoreFile   []byte
+	nameTemplate *template.Template
 }
 
 // defaults applies configuration defaults.
 func (p *Project) defaults() {
 	p.Memory = DefaultMemory
 	p.Timeout = DefaultTimeout
-	p.IgnoredPatterns = []string{"function.json"}
+	p.IgnoreFile = []byte(".apexignore\nfunction.json\n")
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 5
@@ -104,11 +104,11 @@ func (p *Project) Open() error {
 	}
 	p.nameTemplate = t
 
-	patterns, err := utils.ReadIgnoreFile(p.Path)
+	ignoreFile, err := utils.ReadIgnoreFile(p.Path)
 	if err != nil {
 		return err
 	}
-	p.IgnoredPatterns = append(p.IgnoredPatterns, patterns...)
+	p.IgnoreFile = append(p.IgnoreFile, ignoreFile...)
 
 	return nil
 }
@@ -271,11 +271,11 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 			Environment:      copyStringMap(p.Environment),
 			RetainedVersions: p.RetainedVersions,
 		},
-		Name:            name,
-		Path:            dir,
-		Service:         p.Service,
-		Log:             p.Log,
-		IgnoredPatterns: p.IgnoredPatterns,
+		Name:       name,
+		Path:       dir,
+		Service:    p.Service,
+		Log:        p.Log,
+		IgnoreFile: p.IgnoreFile,
 	}
 
 	if name, err := p.name(fn); err == nil {
