@@ -83,13 +83,13 @@ type Config struct {
 // from the "function.json" file on disk.
 type Function struct {
 	Config
-	Name            string
-	FunctionName    string
-	Path            string
-	Service         lambdaiface.LambdaAPI
-	Log             log.Interface
-	IgnoredPatterns []string
-	Plugins         []string
+	Name         string
+	FunctionName string
+	Path         string
+	Service      lambdaiface.LambdaAPI
+	Log          log.Interface
+	IgnoreFile   []byte
+	Plugins      []string
 }
 
 // Open the function.json file and prime the config.
@@ -119,11 +119,12 @@ func (f *Function) Open() error {
 		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
 	}
 
-	patterns, err := utils.ReadIgnoreFile(f.Path)
+	ignoreFile, err := utils.ReadIgnoreFile(f.Path)
 	if err != nil {
 		return err
 	}
-	f.IgnoredPatterns = append(f.IgnoredPatterns, patterns...)
+	f.IgnoreFile = append(f.IgnoreFile, []byte("\n")...)
+	f.IgnoreFile = append(f.IgnoreFile, ignoreFile...)
 
 	return nil
 }
@@ -447,7 +448,7 @@ func (f *Function) Build() (io.Reader, error) {
 		return nil, err
 	}
 
-	files, err := utils.LoadFiles(f.Path, f.IgnoredPatterns)
+	files, err := utils.LoadFiles(f.Path, f.IgnoreFile)
 	if err != nil {
 		return nil, err
 	}

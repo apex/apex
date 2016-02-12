@@ -1,16 +1,17 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/Unknwon/goconfig"
 	"github.com/mitchellh/go-homedir"
+	"github.com/rliebling/gitignorer"
 )
 
 // Sha256 returns a base64 encoded SHA256 hash of `b`.
@@ -22,7 +23,7 @@ func Sha256(b []byte) string {
 
 // LoadFiles return filtered map of relative to 'root' file paths;
 // for filtering it uses shell file name pattern matching
-func LoadFiles(root string, ignoredPatterns []string) (files []string, err error) {
+func LoadFiles(root string, ignoreFile []byte) (files []string, err error) {
 	err = filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -38,15 +39,13 @@ func LoadFiles(root string, ignoredPatterns []string) (files []string, err error
 			return err
 		}
 
-		for _, pattern := range ignoredPatterns {
-			matched, err := filepath.Match(pattern, rel)
-			if err != nil {
-				return err
-			}
+		matched, err := gitignorer.GitIgnore(bytes.NewReader(ignoreFile), rel)
+		if err != nil {
+			return err
+		}
 
-			if matched {
-				return nil
-			}
+		if matched {
+			return nil
 		}
 
 		files = append(files, rel)
@@ -95,7 +94,7 @@ func GetRegion(profile string) (string, error) {
 }
 
 // ReadIgnoreFile reads .apexignore in `dir` when present and returns a list of patterns.
-func ReadIgnoreFile(dir string) ([]string, error) {
+func ReadIgnoreFile(dir string) ([]byte, error) {
 	path := filepath.Join(dir, ".apexignore")
 
 	b, err := ioutil.ReadFile(path)
@@ -108,7 +107,7 @@ func ReadIgnoreFile(dir string) ([]string, error) {
 		return nil, err
 	}
 
-	return strings.Split(string(b), "\n"), nil
+	return b, nil
 }
 
 // ContainsString checks if array contains string

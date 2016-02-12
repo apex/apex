@@ -14,21 +14,21 @@ func Test_Sha256(t *testing.T) {
 }
 
 func Test_LoadFiles(t *testing.T) {
-	files, _ := utils.LoadFiles("_fixtures/fileAndDir", []string{"testfile"})
+	files, _ := utils.LoadFiles("_fixtures/fileAndDir", []byte("testfile"))
 	assert.Equal(t, "testdir/indir", files[0])
 	assert.Equal(t, 2, len(files))
 }
 
 func Test_ReadIgnoreFile_found(t *testing.T) {
-	patterns, err := utils.ReadIgnoreFile("_fixtures")
+	file, err := utils.ReadIgnoreFile("_fixtures")
 	assert.NoError(t, err)
-	assert.Equal(t, []string{"*.go", "*.log", "whatever"}, patterns)
+	assert.Equal(t, []byte("*.go\n*.log\nwhatever"), file)
 }
 
 func Test_ReadIgnoreFile_missing(t *testing.T) {
 	patterns, err := utils.ReadIgnoreFile("_fixtures/fileAndDir")
 	assert.NoError(t, err)
-	assert.Equal(t, []string(nil), patterns)
+	assert.Equal(t, []byte(nil), patterns)
 }
 
 func Test_ContainsString(t *testing.T) {
