@@ -30,9 +30,6 @@ var creds string
 // profile for AWS creds.
 var profile string
 
-// Config object for AWS.
-var Config *aws.Config
-
 // Env supplied.
 var Env []string
 
@@ -81,9 +78,9 @@ func preRun(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
 	return Project.Open()
 }
-
 
 // Prepare handles the global CLI flags and shared functionality without
 // the assumption that a Project has already been initialized.
@@ -93,11 +90,11 @@ func Prepare(c *cobra.Command, args []string) error {
 	}
 
 	// credential defaults
-	Config = aws.NewConfig()
+	config := aws.NewConfig()
 
 	// explicit profile
 	if profile != "" {
-		Config = Config.WithCredentials(credentials.NewSharedCredentials(creds, profile))
+		config = config.WithCredentials(credentials.NewSharedCredentials(creds, profile))
 	}
 
 	// support region from ~/.aws/config for AWS_PROFILE
@@ -107,10 +104,10 @@ func Prepare(c *cobra.Command, args []string) error {
 
 	// region from ~/.aws/config
 	if region, _ := utils.GetRegion(profile); region != "" {
-		Config = Config.WithRegion(region)
+		config = config.WithRegion(region)
 	}
 
-	Session = session.New(Config)
+	Session = session.New(config)
 
 	Project = &project.Project{
 		Log:  log.Log,
@@ -130,7 +127,6 @@ func Prepare(c *cobra.Command, args []string) error {
 			return err
 		}
 	}
+
 	return nil
 }
-
-
