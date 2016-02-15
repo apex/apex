@@ -60,7 +60,28 @@ AWS Lambda role used.
 
 ### retainedVersions
 
-Number of retained function's versions on AWS Lambda.
+Number of retained function's versions on AWS Lambda. If not specified `deploy` command will leave 10 versions.
 
 - type: `int`
+- inherited
+
+### vpc
+
+If your function needs to access resources in a VPC security groups and subnets have to be provided. You must provide at least one security group and one subnet.
+
+- type: `object`
+- inherited
+
+#### vpc.securityGroups
+
+List of security groups IDs
+
+- type: `array`
+- inherited
+
+#### vpc.subnets
+
+List of subnets IDs
+
+- type: `array`
 - inherited

@@ -20,6 +20,7 @@ import (
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/utils"
+	"github.com/apex/apex/vpc"
 )
 
 const (
@@ -44,6 +45,7 @@ type Config struct {
 	RetainedVersions int               `json:"retainedVersions"`
 	Environment      map[string]string `json:"environment"`
 	Hooks            hooks.Hooks       `json:"hooks"`
+	VPC              vpc.VPC           `json:"vpc"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -270,6 +272,7 @@ func (p *Project) loadFunction(name string) (*function.Function, error) {
 			Hooks:            p.Hooks,
 			Environment:      copyStringMap(p.Environment),
 			RetainedVersions: p.RetainedVersions,
+			VPC:              p.VPC,
 		},
 		Name:       name,
 		Path:       dir,
