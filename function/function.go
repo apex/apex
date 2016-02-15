@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/apex/log"
@@ -24,6 +25,7 @@ import (
 
 	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/utils"
+	"github.com/apex/apex/vpc"
 )
 
 // defaultPlugins are the default plugins which are required by Apex. Note that
@@ -77,6 +79,7 @@ type Config struct {
 	Environment      map[string]string `json:"environment"`
 	Hooks            hooks.Hooks       `json:"hooks"`
 	RetainedVersions int               `json:"retainedVersions"`
+	VPC              vpc.VPC           `json:"vpc"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -196,6 +199,10 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 		Description:  &f.Description,
 		Role:         &f.Role,
 		Handler:      &f.Handler,
+		VpcConfig: &lambda.VpcConfig{
+			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
+			SubnetIds:        aws.StringSlice(f.VPC.Subnets),
+		},
 	})
 	if err != nil {
 		return err
@@ -287,6 +294,10 @@ func (f *Function) Create(zip []byte) error {
 		Publish:      aws.Bool(true),
 		Code: &lambda.FunctionCode{
 			ZipFile: zip,
+		},
+		VpcConfig: &lambda.VpcConfig{
+			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
+			SubnetIds:        aws.StringSlice(f.VPC.Subnets),
 		},
 	})
 
@@ -560,6 +571,14 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 	}
 
 	if f.Handler != *config.Configuration.Handler {
+		return true
+	}
+
+	if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SubnetIds), f.Config.VPC.Subnets) {
+		return true
+	}
+
+	if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds), f.Config.VPC.SecurityGroups) {
 		return true
 	}
 

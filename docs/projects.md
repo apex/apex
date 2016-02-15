@@ -63,6 +63,24 @@ Template used to compute the function names. By default the template `{{.Project
 
 ### retainedVersions
 
-Number of retained function's versions on AWS Lambda. By default `deploy` command will leave 10 versions.
+Default number of retained function's versions on AWS Lambda unless specified in their function.json configuration.
 
 - type: `int`
+
+### vpc
+
+Default VPC configuration of function(s) unless specified in their function.json configuration.
+
+- type: `object`
+
+#### vpc.securityGroups
+
+List of security groups IDs
+
+- type: `array`
+
+#### vpc.subnets
+
+List of subnets IDs
+
+- type: `array`
