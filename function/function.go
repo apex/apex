@@ -514,7 +514,7 @@ func (f *Function) versionsToCleanup() ([]*lambda.FunctionConfiguration, error) 
 		return versions[:len(versions)-f.RetainedVersions], nil
 	}
 
-	return versions, nil
+	return nil, nil
 }
 
 // removeVersions removes specifed function's versions
