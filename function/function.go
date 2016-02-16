@@ -555,6 +555,8 @@ func (f *Function) currentVersionAlias() (*lambda.AliasConfiguration, error) {
 
 // configChanged checks if function configuration differs from configuration stored in AWS Lambda
 func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
+	// TODO(tj): maybe we should just serialize both here and compare the blob?
+
 	if f.Description != *config.Configuration.Description {
 		return true
 	}
@@ -575,12 +577,14 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		return true
 	}
 
-	if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SubnetIds), f.Config.VPC.Subnets) {
-		return true
-	}
+	if config.Configuration.VpcConfig != nil {
+		if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SubnetIds), f.Config.VPC.Subnets) {
+			return true
+		}
 
-	if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds), f.Config.VPC.SecurityGroups) {
-		return true
+		if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds), f.Config.VPC.SecurityGroups) {
+			return true
+		}
 	}
 
 	return false
