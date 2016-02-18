@@ -7,7 +7,7 @@
   "memory": 128,
   "timeout": 30,
   "hooks": {
-    "build": "../../node_modules/.bin/babel src -d lib && cp -fr ../../node_modules node_modules",
-    "clean": "rm -fr lib node_modules"
+    "build": "webpack --config ../../webpack.config.js",
+    "clean": "rm -fr lib"
   }
 }
