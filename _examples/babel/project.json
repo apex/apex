@@ -7,7 +7,7 @@
   "memory": 128,
   "timeout": 30,
   "hooks": {
-    "build": "webpack --config ../../webpack.config.js",
+    "build": "../../node_modules/.bin/webpack --config ../../webpack.config.js",
     "clean": "rm -fr lib"
   }
 }
