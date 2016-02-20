@@ -24,7 +24,7 @@ type Cleaner interface {
 	Clean(*Function) error
 }
 
-// Deployer reacts to the Open hook.
+// Deployer reacts to the Deploy hook.
 type Deployer interface {
 	Deploy(*Function) error
 }

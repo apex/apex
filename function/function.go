@@ -315,7 +315,7 @@ func (f *Function) Create(zip []byte) error {
 	})
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	f.Log.WithFields(log.Fields{
