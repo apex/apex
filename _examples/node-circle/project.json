@@ -1,0 +1,10 @@
+{
+  "name": "node",
+  "description": "Node.js example project",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::293503197324:role/lambda",
+  "environment": {
+    "LOGGLY_TOKEN": "123123123123"
+  }
+}
