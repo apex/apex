@@ -34,6 +34,7 @@ var defaultPlugins = []string{
 	"golang",
 	"python",
 	"nodejs",
+	"java",
 	"hooks",
 	"env",
 	"shim",
