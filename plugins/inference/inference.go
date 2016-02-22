@@ -7,6 +7,7 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/golang"
+	"github.com/apex/apex/plugins/java"
 	"github.com/apex/apex/plugins/nodejs"
 	"github.com/apex/apex/plugins/python"
 )
@@ -14,9 +15,11 @@ import (
 func init() {
 	function.RegisterPlugin("inference", &Plugin{
 		Files: map[string]string{
-			"main.py":  python.Runtime,
-			"index.js": nodejs.Runtime,
-			"main.go":  golang.Runtime,
+			"main.py":                         python.Runtime,
+			"index.js":                        nodejs.Runtime,
+			"main.go":                         golang.Runtime,
+			"pom.xml":                         java.Runtime,
+			"/src/main/java/lambda/Main.java": java.Runtime,
 		},
 	})
 }
