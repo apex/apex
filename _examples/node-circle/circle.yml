@@ -1,0 +1,16 @@
+machine:
+  node:
+    version: 4
+  environment:
+    AWS_REGION: eu-west-1
+
+dependencies:
+  pre:
+    - curl -sL https://github.com/apex/apex/releases/download/v0.6.1/apex_linux_amd64 -o ~/apex
+    - chmod +x ~/apex
+
+deployment:
+  prod:
+    branch: master
+    commands:
+      - ~/apex deploy

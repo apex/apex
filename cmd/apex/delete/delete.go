@@ -50,7 +50,7 @@ func run(c *cobra.Command, args []string) error {
 		fmt.Printf("\n")
 	}
 
-	if !force && !prompt.Confirm("Are you sure? (yes/no)") {
+	if !force && !prompt.Confirm("Are you sure? (yes/no) ") {
 		return nil
 	}
 

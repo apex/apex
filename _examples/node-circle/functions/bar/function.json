@@ -1,0 +1,8 @@
+{
+  "description": "Node.js example function",
+  "timeout": 1,
+  "memory": 512,
+  "environment": {
+    "LOGGLY_TOKEN": "9999999999"
+  }
+}
