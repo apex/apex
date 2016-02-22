@@ -106,6 +106,10 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 
 // Clean runs mvn clean.
 func (p *Plugin) Clean(fn *function.Function) error {
+	if fn.Runtime != RuntimeCanonical {
+		return nil
+	}
+
 	fn.Log.Debug("cleaning mvn tmpfiles")
 	cmd := exec.Command("mvn", "clean")
 	cmd.Dir = fn.Path
