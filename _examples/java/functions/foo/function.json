@@ -1,0 +1,7 @@
+{
+  "description": "Java example function",
+  "timeout": 1,
+  "memory": 512,
+  "runtime": "java",
+  "handler": "lambda.Hello::handler"
+}

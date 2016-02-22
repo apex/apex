@@ -1,0 +1,7 @@
+{
+  "name": "java",
+  "description": "Java example project",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::293503197324:role/lambda"
+}
