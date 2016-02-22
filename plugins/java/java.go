@@ -66,8 +66,7 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	fn.Log.Debug("creating jar")
 	mvnCmd := exec.Command("mvn", "package", "-Djar.finalName="+targetJarFile)
 	mvnCmd.Dir = fn.Path
-	err := mvnCmd.Run()
-	if err != nil {
+	if err := mvnCmd.Run(); err != nil {
 		return err
 	}
 
@@ -78,30 +77,24 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 
 	fn.Log.Debug("appending compiled files")
 	reader, err := azip.OpenReader(expectedJarPath)
+	if err != nil {
+		return err
+	}
 	defer reader.Close()
-	if err != nil {
-		return err
-	}
+
 	for _, file := range reader.File {
-		fileReader, err := file.Open()
+		r, err := file.Open()
 		if err != nil {
 			return err
 		}
 
-		fileContents, err := ioutil.ReadAll(fileReader)
-		fileReader.Close()
+		b, err := ioutil.ReadAll(r)
 		if err != nil {
 			return err
 		}
-		zip.AddBytes(file.Name, fileContents)
-	}
+		r.Close()
 
-	fn.Log.Debug("cleaning mvn tmpfiles")
-	mvnCleanCmd := exec.Command("mvn", "clean")
-	mvnCleanCmd.Dir = fn.Path
-	err = mvnCleanCmd.Run()
-	if err != nil {
-		return err
+		zip.AddBytes(file.Name, b)
 	}
 
 	if generatedPom {
@@ -109,4 +102,12 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	}
 
 	return nil
+}
+
+// Clean runs mvn clean.
+func (p *Plugin) Clean(fn *function.Function) error {
+	fn.Log.Debug("cleaning mvn tmpfiles")
+	cmd := exec.Command("mvn", "clean")
+	cmd.Dir = fn.Path
+	return cmd.Run()
 }
