@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
@@ -468,17 +469,13 @@ func (f *Function) Build() (io.Reader, error) {
 	for _, path := range files {
 		f.Log.WithField("file", path).Debug("add file to zip")
 
-		file, err := os.Open(filepath.Join(f.Path, path))
+		b, err := ioutil.ReadFile(filepath.Join(f.Path, path))
 		if err != nil {
 			return nil, err
 		}
 
 		unixPath := strings.Replace(path, "\\", "/", -1)
-		if err := zip.AddFile(unixPath, file); err != nil {
-			return nil, err
-		}
-
-		if err := file.Close(); err != nil {
+		if err := zip.AddBytesMTime(unixPath, b, time.Unix(0, 0)); err != nil {
 			return nil, err
 		}
 	}
