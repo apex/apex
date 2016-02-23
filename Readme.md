@@ -31,8 +31,9 @@ Currently supports:
 ## Features
 
 - Supports languages Lambda does not natively support via shim, such as Go
-- Binary install (useful for continuous deployment in CI etc)
+- Binary install (install apex quickly for continuous deployment in CI etc)
 - Hook support for running commands (transpile code, lint, etc)
+- Batteries included but optional (opt-in to higher level abstractions)
 - Project level function and resource management
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
