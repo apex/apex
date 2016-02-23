@@ -24,7 +24,7 @@ const example = `  List all functions
 // Command config.
 var Command = &cobra.Command{
 	Use:     "list",
-	Short:   "List functions",
+	Short:   "Output functions list",
 	Example: example,
 	RunE:    run,
 }
