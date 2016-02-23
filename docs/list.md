@@ -10,7 +10,7 @@ $ apex list
 
   bar
     runtime: nodejs
-    memory: 128md
+    memory: 128mb
     timeout: 5s
     role: arn:aws:iam::293503197324:role/lambda
     handler: index.handle
@@ -18,7 +18,7 @@ $ apex list
 
   foo
     runtime: nodejs
-    memory: 512md
+    memory: 512mb
     timeout: 10s
     role: arn:aws:iam::293503197324:role/lambda
     handler: index.handle
