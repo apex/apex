@@ -97,6 +97,10 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 		zip.AddBytes(file.Name, b)
 	}
 
+	if err := p.cleanTarget(fn); err != nil {
+		return err
+	}
+
 	if generatedPom {
 		os.Remove(expectedPomPath)
 	}
@@ -104,12 +108,8 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	return nil
 }
 
-// Clean runs mvn clean.
-func (p *Plugin) Clean(fn *function.Function) error {
-	if fn.Runtime != RuntimeCanonical {
-		return nil
-	}
-
+// cleanTarget cleans target dir. pom.xml is required to call this function.
+func (p *Plugin) cleanTarget(fn *function.Function) error {
 	fn.Log.Debug("cleaning mvn tmpfiles")
 	cmd := exec.Command("mvn", "clean")
 	cmd.Dir = fn.Path
