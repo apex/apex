@@ -23,9 +23,10 @@ apex upgrade
 
 Currently supports:
 
-- Nodejs
+- Node.js
 - Golang
 - Python
+- Java
 
 ## Features
 

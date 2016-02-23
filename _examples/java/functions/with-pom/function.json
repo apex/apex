@@ -1,0 +1,4 @@
+{
+  "description": "Java example function with existing pom.xml",
+  "handler": "lambda.Example::handler"
+}

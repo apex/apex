@@ -1,7 +1,0 @@
-{
-  "description": "Java example function",
-  "timeout": 1,
-  "memory": 256,
-  "runtime": "java",
-  "handler": "lambda.Example::handler"
-}

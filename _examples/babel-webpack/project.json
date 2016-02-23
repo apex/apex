@@ -1,11 +1,9 @@
 {
   "name": "babel",
-  "description": "Node.js Babel example project",
+  "description": "Node.js Babel (using webpack) example project",
   "role": "arn:aws:iam::293503197324:role/lambda",
   "runtime": "nodejs",
   "handler": "lib.default",
-  "memory": 128,
-  "timeout": 30,
   "hooks": {
     "build": "../../node_modules/.bin/webpack --config ../../webpack.config.js",
     "clean": "rm -fr lib"
