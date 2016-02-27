@@ -12,7 +12,7 @@ import (
 // Command config.
 var Command = &cobra.Command{
 	Use:              "upgrade",
-	Short:            "Ugrade apex to the latest stable release",
+	Short:            "Upgrade apex to the latest stable release",
 	PersistentPreRun: root.PreRunNoop,
 	RunE:             run,
 }
