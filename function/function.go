@@ -3,6 +3,7 @@ package function
 
 import (
 	"bytes"
+	"compress/flate"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -455,7 +456,7 @@ func (f *Function) Build() (io.Reader, error) {
 	f.Log.Debugf("creating build")
 
 	buf := new(bytes.Buffer)
-	zip := archive.NewZipWriter(buf)
+	zip := archive.NewCompressedZipWriter(buf, flate.DefaultCompression)
 
 	if err := f.hookBuild(zip); err != nil {
 		return nil, err
