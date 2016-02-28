@@ -1,7 +1,7 @@
 
 ![Apex Serverless Architecture](assets/logo.png)
 
-Apex is a small tool for deploying and managing [AWS Lambda](https://aws.amazon.com/lambda/) functions. With shims for languages not yet supported by Lambda, you can use Golang out of the box.
+Apex lets you build, deploy, and manage [AWS Lambda](https://aws.amazon.com/lambda/) functions with ease. With Apex you can use languages that are not natively supported by AWS Lambda, such as Golang, through the use of a Node.js shim injected into the build. A variety of workflow related tooling is provided for testing functions, rolling back deploys, viewing metrics, tailing logs, hooking into the build system and more.
 
 ## Installation
 
@@ -28,6 +28,8 @@ Currently supports:
 - Python
 - Java
 
+Example projects for all supported runtimes can be found in [_examples](_examples) directory.
+
 ## Features
 
 - Supports languages Lambda does not natively support via shim, such as Go
@@ -40,7 +42,7 @@ Currently supports:
 - Transparently generates a zip for your deploy
 - Ignore deploying files with .apexignore
 - Function rollback support
-- Tail function CloudWatchLogs
+- Tail function logs
 - Concurrency for quick deploys
 - Dry-run to preview changes
 - VPC support
@@ -53,9 +55,6 @@ Apex projects are made up of a project.json configuration file, and zero or more
 project.json
 functions
 ├── bar
-│   ├── function.json
-│   └── index.js
-├── baz
 │   ├── function.json
 │   └── index.js
 └── foo
@@ -92,8 +91,6 @@ project.json
 functions
 ├── bar
 │   └── index.js
-├── baz
-│   └── index.js
 └── foo
     └── index.js
 ```
@@ -103,29 +100,7 @@ Finally the source for the functions themselves look like this in Node.js:
 ```js
 console.log('start bar')
 exports.handle = function(e, ctx) {
-  ctx.succeed({ hello: 'bar' })
-}
-```
-
-Or using the Golang Lambda package, Apex supports Golang out of the box with a Node.js shim:
-
-```go
-package main
-
-import (
-  "encoding/json"
-
-  "github.com/apex/go-apex"
-)
-
-type Message struct {
-  Hello string `json:"hello"`
-}
-
-func main() {
-  apex.HandleFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {
-    return &Message{"baz"}, nil
-  })
+  ctx.succeed({ hello: e.name })
 }
 ```
 
@@ -144,23 +119,16 @@ $ apex deploy foo bar
 Invoke it!
 
 ```
-$ echo '{ "some": "data" }' | apex invoke foo
-{ "hello": "foo" }
+$ echo '{ "name": "Tobi" }' | apex invoke bar
+{ "hello": "Tobi" }
 ```
 
 See the [Documentation](docs) for more information.
 
 ## Links
 
-- [Project Examples](_examples) with source
-
-## Contributors
-
-- [TJ Holowaychuk](https://github.com/tj)
-- [Maciej Winnicki](https://github.com/mthenw)
-- [Pilwon Huh](https://github.com/pilwon)
-- [Faraz Fazli](https://github.com/farazfazli)
-- [Johannes Boyne](https://github.com/johannesboyne)
+- [Website](http://apex.run)
+- [Twitter](https://twitter.com/apexserverless)
 
 ## Badges
 
