@@ -30,6 +30,17 @@ import (
 	"github.com/apex/apex/vpc"
 )
 
+// timelessInfo is used to zero mtime which causes function checksums
+// to change regardless of the contents actually being altered, specifically
+// when using tools such as browserify or webpack.
+type timelessInfo struct {
+	os.FileInfo
+}
+
+func (t timelessInfo) ModTime() time.Time {
+	return time.Unix(0, 0)
+}
+
 // defaultPlugins are the default plugins which are required by Apex. Note that
 // the order here is important for some plugins such as inference before the
 // runtimes.
@@ -470,13 +481,22 @@ func (f *Function) Build() (io.Reader, error) {
 	for _, path := range files {
 		f.Log.WithField("file", path).Debug("add file to zip")
 
-		b, err := ioutil.ReadFile(filepath.Join(f.Path, path))
+		f, err := os.Open(filepath.Join(f.Path, path))
+		if err != nil {
+			return nil, err
+		}
+
+		info, err := f.Stat()
 		if err != nil {
 			return nil, err
 		}
 
 		unixPath := strings.Replace(path, "\\", "/", -1)
-		if err := zip.AddBytesMTime(unixPath, b, time.Unix(0, 0)); err != nil {
+		if err := zip.AddInfoFile(unixPath, timelessInfo{info}, f); err != nil {
+			return nil, err
+		}
+
+		if err := f.Close(); err != nil {
 			return nil, err
 		}
 	}
