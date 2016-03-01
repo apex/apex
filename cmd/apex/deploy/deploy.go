@@ -9,6 +9,9 @@ import (
 	"github.com/apex/apex/cmd/apex/root"
 )
 
+// env supplied.
+var env []string
+
 // concurrency of deploys.
 var concurrency int
 
@@ -35,6 +38,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
+	f.StringSliceVarP(&env, "env", "e", nil, "Environment variable")
 	f.IntVarP(&concurrency, "concurrency", "c", 5, "Concurrent deploys")
 }
 
@@ -47,7 +51,7 @@ func run(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	for _, s := range root.Env {
+	for _, s := range env {
 		parts := strings.Split(s, "=")
 		root.Project.Setenv(parts[0], parts[1])
 	}
