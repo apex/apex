@@ -30,9 +30,6 @@ var creds string
 // profile for AWS creds.
 var profile string
 
-// Env supplied.
-var Env []string
-
 // Session instance.
 var Session *session.Session
 
@@ -58,7 +55,6 @@ func init() {
 
 	f.StringVarP(&chdir, "chdir", "C", "", "Working directory")
 	f.BoolVarP(&dryRun, "dry-run", "D", false, "Perform a dry-run")
-	f.StringSliceVarP(&Env, "env", "e", nil, "Environment variable")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
 	f.StringVarP(&profile, "profile", "p", "", "AWS profile to use")
 	f.StringVar(&creds, "credentials", "", "AWS credentials file to use (~/.aws/credentials)")
