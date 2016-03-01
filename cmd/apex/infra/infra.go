@@ -8,8 +8,6 @@ import (
 	"github.com/apex/apex/infra"
 )
 
-var infraEnvironment string
-
 // example output.
 const example = `  View change plan
   $ apex infra plan
