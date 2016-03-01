@@ -437,6 +437,8 @@ func (f *Function) RollbackVersion(version string) error {
 		return errors.New("Specified version currently deployed.")
 	}
 
+	f.Log.Infof("rollback to version: %s", version)
+
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
 		Name:            aws.String(CurrentAlias),
