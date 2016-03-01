@@ -20,7 +20,7 @@ const example = `  Rollback a function to the previous version
   $ apex rollback foo
 
   Rollback a function to the specified version
-  $ apex rollback bar 3`
+  $ apex rollback bar -v 3`
 
 // Command config.
 var Command = &cobra.Command{
@@ -34,6 +34,9 @@ var Command = &cobra.Command{
 // Initialize.
 func init() {
 	root.Register(Command)
+
+	f := Command.Flags()
+	f.StringVarP(&version, "version", "v", "", "version to which rollback is done")
 }
 
 // PreRun errors if the name is missing.
@@ -43,11 +46,6 @@ func preRun(c *cobra.Command, args []string) error {
 	}
 
 	name = args[0]
-
-	if len(args) >= 2 {
-		version = args[1]
-	}
-
 	return nil
 }
 
