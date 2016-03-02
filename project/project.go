@@ -19,6 +19,7 @@ import (
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/hooks"
+	"github.com/apex/apex/infra"
 	"github.com/apex/apex/utils"
 	"github.com/apex/apex/vpc"
 )
@@ -65,6 +66,7 @@ func (p *Project) defaults() {
 	p.Memory = DefaultMemory
 	p.Timeout = DefaultTimeout
 	p.IgnoreFile = []byte(".apexignore\nfunction.json\n")
+	p.Role = p.readInfraRole()
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 5
@@ -310,6 +312,16 @@ func (p *Project) name(fn *function.Function) (string, error) {
 	}
 
 	return name, nil
+}
+
+// readInfraRole reads lambda function IAM role from infrastructure
+func (p *Project) readInfraRole() string {
+	role, err := infra.ReadRole()
+	if err != nil {
+		p.Log.Debugf("couldn't read role from infrastructure: %s", err)
+		return ""
+	}
+	return role
 }
 
 const functionsDir = "functions"
