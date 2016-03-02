@@ -138,7 +138,7 @@ func (p *Project) LoadFunctions(names ...string) error {
 			continue
 		}
 
-		fn, err := p.loadFunction(name)
+		fn, err := p.LoadFunction(name)
 		if err != nil {
 			return err
 		}
@@ -258,8 +258,8 @@ func (p *Project) Setenv(name, value string) {
 	}
 }
 
-// loadFunction returns the function in the ./functions/<name> directory.
-func (p *Project) loadFunction(name string) (*function.Function, error) {
+// LoadFunction returns the function in the ./functions/<name> directory.
+func (p *Project) LoadFunction(name string) (*function.Function, error) {
 	return p.LoadFunctionByPath(name, filepath.Join(p.Path, functionsDir, name))
 }
 
