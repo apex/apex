@@ -6,14 +6,16 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/apex/apex/function"
 	"github.com/apex/log"
-
-	"github.com/apex/apex/project"
 )
+
+// Dir in which Terraform configs are stored
+const Dir = "infrastructure"
 
 // Proxy is a wrapper around Terraform commands.
 type Proxy struct {
-	Project *project.Project
+	Functions []*function.Function
 }
 
 // Run terraform command in infrastructure directory.
@@ -30,14 +32,14 @@ func (p *Proxy) Run(args ...string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Dir = "infrastructure"
+	cmd.Dir = Dir
 
 	return cmd.Run()
 }
 
 // functionVars returns the function ARN's as terraform -var arguments.
 func (p *Proxy) functionVars() (args []string) {
-	for _, fn := range p.Project.Functions {
+	for _, fn := range p.Functions {
 		config, err := fn.GetConfig()
 		if err != nil {
 			log.Debugf("can't fetch function config: %s", err.Error())
@@ -58,4 +60,16 @@ func (p *Proxy) shouldInjectVars(args []string) bool {
 	}
 
 	return args[0] == "plan" || args[0] == "apply"
+}
+
+// ReadRole reads functions' IAM role from Terraform
+func ReadRole() (string, error) {
+	cmd := exec.Command("sh", "-c", "terraform output lambda_function_role_id")
+	cmd.Dir = Dir
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
 }

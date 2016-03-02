@@ -35,7 +35,7 @@ func run(c *cobra.Command, args []string) error {
 	}
 
 	p := &infra.Proxy{
-		Project: root.Project,
+		Functions: root.Project.Functions,
 	}
 
 	return p.Run(args...)
