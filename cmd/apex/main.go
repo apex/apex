@@ -12,6 +12,7 @@ import (
 	_ "github.com/apex/apex/cmd/apex/deploy"
 	_ "github.com/apex/apex/cmd/apex/docs"
 	_ "github.com/apex/apex/cmd/apex/infra"
+	_ "github.com/apex/apex/cmd/apex/init"
 	_ "github.com/apex/apex/cmd/apex/invoke"
 	_ "github.com/apex/apex/cmd/apex/list"
 	_ "github.com/apex/apex/cmd/apex/logs"
