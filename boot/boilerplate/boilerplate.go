@@ -1,0 +1,3 @@
+//go:generate go-bindata -pkg boilerplate --prefix _boilerplate _boilerplate/...
+
+package boilerplate
