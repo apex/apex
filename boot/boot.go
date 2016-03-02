@@ -44,7 +44,7 @@ func All() error {
 	description := prompt.String("  Project description: ")
 
 	fmt.Println()
-	if prompt.Confirm("Would you like to manage infrastructure with Terraform? (yes/no)? ") {
+	if prompt.Confirm("Would you like to manage infrastructure with Terraform? (yes/no) ") {
 		fmt.Println()
 		if err := initProject(name, description, ""); err != nil {
 			return err
@@ -54,7 +54,7 @@ func All() error {
 			return err
 		}
 
-		help("Setup complete!\nNext steps: \n  - apex infra apply - apply Terraform configs\n  - apex deploy - deploy example function")
+		help("Setup complete!\nNext steps: \n  - apex infra plan - show an execution plan for Terraform configs\n  - apex infra apply - apply Terraform configs\n  - apex deploy - deploy example function")
 	} else {
 		fmt.Println()
 		help(`Enter IAM role used by Lambda functions.`)
