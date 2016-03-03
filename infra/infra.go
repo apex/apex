@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/apex/apex/function"
 	"github.com/apex/log"
@@ -71,5 +72,5 @@ func ReadRole() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(out), nil
+	return strings.Trim(string(out), "\n"), nil
 }
