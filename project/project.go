@@ -265,8 +265,7 @@ func (p *Project) LoadFunction(name string) (*function.Function, error) {
 
 // LoadFunctionByPath returns the function in the given directory.
 func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, error) {
-	dir := filepath.Join(p.Path, functionsDir, name)
-	p.Log.Debugf("loading function in %s", dir)
+	p.Log.Debugf("loading function in %s", path)
 
 	fn := &function.Function{
 		Config: function.Config{
@@ -282,7 +281,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 			VPC:              p.VPC,
 		},
 		Name:       name,
-		Path:       dir,
+		Path:       path,
 		Service:    p.Service,
 		Log:        p.Log,
 		IgnoreFile: p.IgnoreFile,
