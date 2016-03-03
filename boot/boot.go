@@ -55,19 +55,19 @@ func All() error {
 		}
 
 		help("Setup complete!\n\nNext steps: \n  - apex infra plan - show an execution plan for Terraform configs\n  - apex infra apply - apply Terraform configs\n  - apex deploy - deploy example function")
-	} else {
-		fmt.Println()
-		help(`Enter IAM role used by Lambda functions.`)
-		iamRole := prompt.StringRequired("  IAM role: ")
-
-		fmt.Println()
-		if err := initProject(name, description, iamRole); err != nil {
-			return err
-		}
-
-		help("Setup complete!\n\nNext step: \n  - apex deploy - deploy example function")
+		return nil
 	}
 
+	fmt.Println()
+	help(`Enter IAM role used by Lambda functions.`)
+	iamRole := prompt.StringRequired("  IAM role: ")
+
+	fmt.Println()
+	if err := initProject(name, description, iamRole); err != nil {
+		return err
+	}
+
+	help("Setup complete!\n\nNext step: \n  - apex deploy - deploy example function")
 	return nil
 }
 
