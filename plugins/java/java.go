@@ -43,6 +43,8 @@ func (p *Plugin) Open(fn *function.Function) error {
 		fn.Handler = "lambda.Main::handler"
 	}
 
+	fn.Hooks.Clean = "mvn clean"
+
 	return nil
 }
 
@@ -50,17 +52,6 @@ func (p *Plugin) Open(fn *function.Function) error {
 func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	if fn.Runtime != RuntimeCanonical {
 		return nil
-	}
-
-	generatedPom := false
-
-	expectedPomPath := filepath.Join(fn.Path, "pom.xml")
-	if _, err := os.Stat(expectedPomPath); err != nil {
-		fn.Log.Debug("generating default pom")
-		generatedPom = true
-		if err := ioutil.WriteFile(expectedPomPath, []byte(genericPom), 0644); err != nil {
-			return err
-		}
 	}
 
 	fn.Log.Debug("creating jar")
@@ -97,21 +88,5 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 		zip.AddBytes(file.Name, b)
 	}
 
-	if err := p.cleanTarget(fn); err != nil {
-		return err
-	}
-
-	if generatedPom {
-		os.Remove(expectedPomPath)
-	}
-
 	return nil
-}
-
-// cleanTarget cleans target dir. pom.xml is required to call this function.
-func (p *Plugin) cleanTarget(fn *function.Function) error {
-	fn.Log.Debug("cleaning mvn tmpfiles")
-	cmd := exec.Command("mvn", "clean")
-	cmd.Dir = fn.Path
-	return cmd.Run()
 }

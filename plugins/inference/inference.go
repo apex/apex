@@ -15,11 +15,10 @@ import (
 func init() {
 	function.RegisterPlugin("inference", &Plugin{
 		Files: map[string]string{
-			"main.py":                         python.Runtime,
-			"index.js":                        nodejs.Runtime,
-			"main.go":                         golang.Runtime,
-			"pom.xml":                         java.Runtime,
-			"/src/main/java/lambda/Main.java": java.Runtime,
+			"main.py":  python.Runtime,
+			"index.js": nodejs.Runtime,
+			"main.go":  golang.Runtime,
+			"pom.xml":  java.Runtime,
 		},
 	})
 }
