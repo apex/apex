@@ -1,4 +1,28 @@
 
+v0.7.0 / 2016-03-02
+==================
+
+  * add `Project.LoadFunction(name)`
+  * add `project.LoadFunctionByPath(name, path)`
+  * add `init` command
+  * add `infra` command
+  * add zip compression. Closes #263
+  * add zero-ing of mtime for all files. Closes #262
+  * add java runtime support . Closes #4
+  * add browserify example
+  * add webpack example
+  * add CODE_OF_CONDUCT.md
+  * add one-liner installation script. Closes #199
+  * add VPC support. Closes #242
+  * add pattern .gitignore parity for .apexignore pattern matching. Closes #228
+  * add auto-removal of old versions. Closes #148
+  * add `--credentials` AWS credentials file flag
+  * add "default" AWS profile support
+  * refactor env flag; moved to deploy command
+  * refactor rollback to use flag instead of arg. Closes #289
+  * change `golang` build hook to use `*.go` for multiple main package support
+  * fix path separator handling in windows. Closes #222.
+
 v0.6.1 / 2016-02-08
 ===================
 
