@@ -1,10 +1,7 @@
 
 release:
-	@echo "[+] releasing $(VERSION)"
-	@echo "[+] re-generating bin data"
+	@echo "[+] re-generating"
 	@go generate ./...
-	@echo "[+] committing"
-	@git release $(VERSION)
 	@echo "[+] building"
 	@$(MAKE) build
 	@echo "[+] complete"
