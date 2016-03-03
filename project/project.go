@@ -320,11 +320,12 @@ func (p *Project) name(fn *function.Function) (string, error) {
 
 // readInfraRole reads lambda function IAM role from infrastructure
 func (p *Project) readInfraRole() string {
-	role, err := infra.ReadRole()
+	role, err := infra.Output("lambda_function_role_id")
 	if err != nil {
 		p.Log.Debugf("couldn't read role from infrastructure: %s", err)
 		return ""
 	}
+
 	return role
 }
 

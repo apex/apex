@@ -63,14 +63,15 @@ func (p *Proxy) shouldInjectVars(args []string) bool {
 	return args[0] == "plan" || args[0] == "apply"
 }
 
-// ReadRole reads functions' IAM role from Terraform
-func ReadRole() (string, error) {
-	cmd := exec.Command("sh", "-c", "terraform output lambda_function_role_id")
+// Output fetches output variable `name` from terraform.
+func Output(name string) (string, error) {
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("terraform output %s", name))
 	cmd.Dir = Dir
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", err
 	}
+
 	return strings.Trim(string(out), "\n"), nil
 }
