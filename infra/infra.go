@@ -11,12 +11,15 @@ import (
 	"github.com/apex/log"
 )
 
+// TODO(tj): revisit removal of Region when TF supports ~/.aws/config
+
 // Dir in which Terraform configs are stored
 const Dir = "infrastructure"
 
 // Proxy is a wrapper around Terraform commands.
 type Proxy struct {
 	Functions []*function.Function
+	Region    string
 }
 
 // Run terraform command in infrastructure directory.
@@ -34,6 +37,9 @@ func (p *Proxy) Run(args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Dir = Dir
+
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, fmt.Sprintf("AWS_REGION=%s", p.Region))
 
 	return cmd.Run()
 }
