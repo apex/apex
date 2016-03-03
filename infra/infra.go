@@ -33,13 +33,11 @@ func (p *Proxy) Run(args ...string) error {
 	}).Debug("terraform")
 
 	cmd := exec.Command("terraform", args...)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("AWS_REGION=%s", p.Region))
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Dir = Dir
-
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("AWS_REGION=%s", p.Region))
 
 	return cmd.Run()
 }
