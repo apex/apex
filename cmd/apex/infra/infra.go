@@ -2,6 +2,8 @@
 package infra
 
 import (
+	"strings"
+
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -30,8 +32,14 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	if err := root.Project.LoadFunctions(); err != nil {
-		return err
+	err := root.Project.LoadFunctions()
+
+	// Hack to prevent initial `apex infra apply` from failing,
+	// as we load functions to expose their ARNs.
+	if err != nil {
+		if !strings.Contains(err.Error(), "Role: zero value") {
+			return err
+		}
 	}
 
 	p := &infra.Proxy{
