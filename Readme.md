@@ -40,6 +40,7 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
 - Transparently generates a zip for your deploy
+- Project bootstrapping with optional Terraform support
 - Ignore deploying files with .apexignore
 - Function rollback support
 - Tail function logs
