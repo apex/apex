@@ -1,4 +1,28 @@
 
+v0.7.0 / 2016-03-03
+===================
+
+  * add Project.LoadFunction(name)
+  * add project.LoadFunctionByPath(name, path)
+  * add `init` command
+  * add `infra` command
+  * add zip compression. Closes #263
+  * add several new examples (browserify, webpack, java)
+  * add zero-ing of mtime for all files. Closes #262
+  * add java support . Closes #4
+  * add installation script. Closes #199
+  * add VPC support. Closes #242
+  * add cleaning up old versions. Closes #148
+  * add a flag for passing an AWS credentials file into Apex
+  * refactor rollback to use flag instead of arg. Closes #289
+  * refactor Java plugin; no pom.xml generation
+  * refactor env flag; moved to deploy command
+  * fix EACCESS error caused by missing exec bit. Closes #281
+  * fix pattern matching for .gitignore parity. Closes #228
+  * fix loading region from default profile
+  * fix path separator handling in windows. Closes #222.
+  * fix: build all Golang source files for function
+
 v0.6.1 / 2016-02-08
 ===================
 

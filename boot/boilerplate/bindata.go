@@ -87,7 +87,7 @@ func functionsHelloIndexJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "functions/hello/index.js", size: 146, mode: os.FileMode(420), modTime: time.Unix(1456944518, 0)}
+	info := bindataFileInfo{name: "functions/hello/index.js", size: 146, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,7 +107,7 @@ func infrastructureGitignore() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/.gitignore", size: 10, mode: os.FileMode(420), modTime: time.Unix(1456948679, 0)}
+	info := bindataFileInfo{name: "infrastructure/.gitignore", size: 10, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func infrastructureMainTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/main.tf", size: 132, mode: os.FileMode(420), modTime: time.Unix(1456950604, 0)}
+	info := bindataFileInfo{name: "infrastructure/main.tf", size: 132, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func infrastructureModulesIamIamTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/modules/iam/iam.tf", size: 626, mode: os.FileMode(420), modTime: time.Unix(1456948527, 0)}
+	info := bindataFileInfo{name: "infrastructure/modules/iam/iam.tf", size: 626, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -167,7 +167,7 @@ func infrastructureModulesIamOutputsTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/modules/iam/outputs.tf", size: 85, mode: os.FileMode(420), modTime: time.Unix(1456948675, 0)}
+	info := bindataFileInfo{name: "infrastructure/modules/iam/outputs.tf", size: 85, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
