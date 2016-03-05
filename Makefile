@@ -15,7 +15,7 @@ test:
 .PHONY: test
 
 build:
-	@gox -os="linux darwin windows" ./...
+	@gox -os="linux darwin windows openbsd" ./...
 .PHONY: build
 
 clean:
