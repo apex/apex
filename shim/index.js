@@ -31,6 +31,7 @@ proc.on('exit', function(code){
 var out = byline(proc.stdout)
 
 out.on('data', function(line){
+  if (process.env.DEBUG_SHIM) console.log('[shim] parsing: %j', line)
   var msg = JSON.parse(line)
   ctx.done(msg.error, msg.value)
 })
