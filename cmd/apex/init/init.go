@@ -2,6 +2,8 @@
 package init
 
 import (
+	"errors"
+
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/boot"
@@ -32,5 +34,10 @@ func run(c *cobra.Command, args []string) error {
 		return err
 	}
 
-	return boot.All()
+	region := root.Config.Region
+	if region == nil {
+		return errors.New("AWS region missing, are your credentials set up? Visit http://apex.run/#aws-credentials for more details")
+	}
+
+	return boot.All(*region)
 }
