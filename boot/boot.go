@@ -35,8 +35,16 @@ var projectConfigWithoutRole = `
   "environment": {}
 }`
 
+var remoteStateCommand = `
+  terraform remote config \
+    -backend=s3 \
+    -backend-config="region=%s" \
+    -backend-config="bucket=%s" \
+    -backend-config="key=terraform/state"
+`
+
 // All bootstraps a project.
-func All() error {
+func All(region string) error {
 	help(`Enter the name of your project. It should be machine-friendly, as this is used to prefix your functions in Lambda.`)
 	name := prompt.StringRequired("  Project name: ")
 
@@ -52,6 +60,17 @@ func All() error {
 
 		if err := initInfra(); err != nil {
 			return err
+		}
+
+		fmt.Println()
+		if prompt.Confirm("Would you like to store Terraform state on S3? (yes/no) ") {
+			help(`Enter the S3 bucket name for managing Terraform state (bucket needs to exist).`)
+			bucket := prompt.StringRequired("S3 bucket name: ")
+			fmt.Println()
+
+			if err := setupRemoteState(region, bucket); err != nil {
+				return err
+			}
 		}
 
 		help("Setup complete!\n\nNext steps: \n  - apex infra plan - show an execution plan for Terraform configs\n  - apex infra apply - apply Terraform configs\n  - apex deploy - deploy example function")
@@ -108,6 +127,14 @@ func initInfra() error {
 func setupModules() error {
 	logf("fetching modules")
 	return shell(modulesCommand, infra.Dir)
+}
+
+// setupRemoteState performs a `terraform remote config`.
+func setupRemoteState(region, bucket string) error {
+	logf("setting up remote state in bucket %q", bucket)
+	cmd := fmt.Sprintf(remoteStateCommand, region, bucket)
+	dir := infra.Dir
+	return shell(cmd, dir)
 }
 
 // shell executes `command` in a shell within `dir`.

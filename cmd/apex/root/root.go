@@ -36,6 +36,9 @@ var Session *session.Session
 // Project instance.
 var Project *project.Project
 
+// Config for AWS.
+var Config *aws.Config
+
 // Register `cmd`.
 func Register(cmd *cobra.Command) {
 	Command.AddCommand(cmd)
@@ -86,11 +89,11 @@ func Prepare(c *cobra.Command, args []string) error {
 	}
 
 	// credential defaults
-	config := aws.NewConfig()
+	Config = aws.NewConfig()
 
 	// explicit profile
 	if profile != "" {
-		config = config.WithCredentials(credentials.NewSharedCredentials(creds, profile))
+		Config = Config.WithCredentials(credentials.NewSharedCredentials(creds, profile))
 	}
 
 	// support region from ~/.aws/config for AWS_PROFILE
@@ -100,10 +103,10 @@ func Prepare(c *cobra.Command, args []string) error {
 
 	// region from ~/.aws/config
 	if region, _ := utils.GetRegion(profile); region != "" {
-		config = config.WithRegion(region)
+		Config = Config.WithRegion(region)
 	}
 
-	Session = session.New(config)
+	Session = session.New(Config)
 
 	Project = &project.Project{
 		Log:  log.Log,
