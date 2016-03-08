@@ -15,6 +15,9 @@ import (
 	"github.com/apex/apex/cmd/apex/root"
 )
 
+// alias.
+var alias string
+
 // includeLogs in output.
 var includeLogs bool
 
@@ -23,7 +26,10 @@ var name string
 
 // example output.
 const example = `  Invoke a function with input json
-  $ apex invoke foo < request.json`
+  $ apex invoke foo < request.json
+
+  Invoke canary alias
+  $ apex invoke foo < request.json --alias canary`
 
 // Command config.
 var Command = &cobra.Command{
@@ -40,6 +46,7 @@ func init() {
 
 	f := Command.Flags()
 	f.BoolVarP(&includeLogs, "logs", "L", false, "Print logs")
+	f.StringVarP(&alias, "alias", "a", "current", "Function alias")
 }
 
 // PreRun errors if the name argument is missing.
@@ -55,6 +62,8 @@ func preRun(c *cobra.Command, args []string) error {
 // Run command.
 func run(c *cobra.Command, args []string) error {
 	dec := json.NewDecoder(input())
+
+	root.Project.Alias = alias
 
 	if err := root.Project.LoadFunctions(name); err != nil {
 		return err

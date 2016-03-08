@@ -107,11 +107,16 @@ type Function struct {
 	Log          log.Interface
 	IgnoreFile   []byte
 	Plugins      []string
+	Alias        string
 }
 
 // Open the function.json file and prime the config.
 func (f *Function) Open() error {
 	f.Log = f.Log.WithField("function", f.Name)
+
+	if f.Alias == "" {
+		f.Alias = CurrentAlias
+	}
 
 	if f.Plugins == nil {
 		f.Plugins = defaultPlugins
@@ -254,7 +259,7 @@ func (f *Function) GetConfigQualifier(s string) (*lambda.GetFunctionOutput, erro
 
 // GetConfigCurrent returns the function configuration for the current version.
 func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
-	return f.GetConfigQualifier(CurrentAlias)
+	return f.GetConfigQualifier(f.Alias)
 }
 
 // Update the function with the given `zip`.
@@ -275,15 +280,8 @@ func (f *Function) Update(zip []byte) error {
 		return err
 	}
 
-	f.Log.Info("updating alias")
-
-	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &f.FunctionName,
-		Name:            aws.String(CurrentAlias),
-		FunctionVersion: updated.Version,
-	})
-	if err != nil {
-		return nil
+	if err := f.CreateOrUpdateAlias(f.Alias, *updated.Version); err != nil {
+		return err
 	}
 
 	f.Log.WithFields(log.Fields{
@@ -320,15 +318,7 @@ func (f *Function) Create(zip []byte) error {
 		return err
 	}
 
-	f.Log.Info("creating alias")
-
-	_, err = f.Service.CreateAlias(&lambda.CreateAliasInput{
-		FunctionName:    &f.FunctionName,
-		FunctionVersion: created.Version,
-		Name:            aws.String(CurrentAlias),
-	})
-
-	if err != nil {
+	if err := f.CreateOrUpdateAlias(f.Alias, *created.Version); err != nil {
 		return err
 	}
 
@@ -337,6 +327,37 @@ func (f *Function) Create(zip []byte) error {
 		"name":    f.FunctionName,
 	}).Info("function created")
 
+	return nil
+}
+
+// CreateOrUpdateAlias attempts creating the alias, or updates if it already exists.
+func (f *Function) CreateOrUpdateAlias(alias, version string) error {
+	_, err := f.Service.CreateAlias(&lambda.CreateAliasInput{
+		FunctionName:    &f.FunctionName,
+		FunctionVersion: &version,
+		Name:            &alias,
+	})
+
+	if err == nil {
+		f.Log.WithField("version", version).Infof("created alias %s", alias)
+		return nil
+	}
+
+	if e, ok := err.(awserr.Error); !ok || e.Code() != "ResourceConflictException" {
+		return err
+	}
+
+	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &f.FunctionName,
+		FunctionVersion: &version,
+		Name:            &alias,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	f.Log.WithField("version", version).Infof("updated alias %s", alias)
 	return nil
 }
 
@@ -357,7 +378,7 @@ func (f *Function) Invoke(event, context interface{}) (reply, logs io.Reader, er
 		FunctionName:   &f.FunctionName,
 		InvocationType: aws.String(string(RequestResponse)),
 		LogType:        aws.String("Tail"),
-		Qualifier:      aws.String(CurrentAlias),
+		Qualifier:      &f.Alias,
 		Payload:        eventBytes,
 	})
 
@@ -415,7 +436,7 @@ func (f *Function) Rollback() error {
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
-		Name:            aws.String(CurrentAlias),
+		Name:            &f.Alias,
 		FunctionVersion: &rollback,
 	})
 
@@ -441,7 +462,7 @@ func (f *Function) RollbackVersion(version string) error {
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
-		Name:            aws.String(CurrentAlias),
+		Name:            &f.Alias,
 		FunctionVersion: &version,
 	})
 
@@ -570,7 +591,7 @@ func (f *Function) removeVersions(versions []*lambda.FunctionConfiguration) erro
 func (f *Function) currentVersionAlias() (*lambda.AliasConfiguration, error) {
 	return f.Service.GetAlias(&lambda.GetAliasInput{
 		FunctionName: &f.FunctionName,
-		Name:         aws.String(CurrentAlias),
+		Name:         &f.Alias,
 	})
 }
 

@@ -9,6 +9,9 @@ import (
 	"github.com/apex/apex/cmd/apex/root"
 )
 
+// alias.
+var alias string
+
 // name of function.
 var name string
 
@@ -18,6 +21,9 @@ var version string
 // example output.
 const example = `  Rollback a function to the previous version
   $ apex rollback foo
+
+  Rollback canary alias
+  $ apex rollback foo --alias canary
 
   Rollback a function to the specified version
   $ apex rollback bar -v 3`
@@ -36,6 +42,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
+	f.StringVarP(&alias, "alias", "a", "current", "Function alias")
 	f.StringVarP(&version, "version", "v", "", "version to which rollback is done")
 }
 
@@ -51,6 +58,8 @@ func preRun(c *cobra.Command, args []string) error {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
+	root.Project.Alias = alias
+
 	if err := root.Project.LoadFunctions(name); err != nil {
 		return err
 	}

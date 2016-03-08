@@ -1,7 +1,7 @@
 {
   "name": "node",
   "description": "Node.js example project",
-  "role": "arn:aws:iam::293503197324:role/lambda",
+  "role": "arn:aws:iam::293503197324:role/lambda_function",
   "environment": {
     "LOGGLY_TOKEN": "some token defined in project.json"
   }

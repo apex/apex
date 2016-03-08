@@ -15,12 +15,18 @@ var env []string
 // concurrency of deploys.
 var concurrency int
 
+// alias.
+var alias string
+
 // example output.
 const example = `  Deploy all functions
   $ apex deploy
 
   Deploy specific functions
   $ apex deploy foo bar
+
+  Deploy canary alias
+  $ apex deploy foo --alias canary
 
   Deploy functions in a different project
   $ apex deploy -C ~/dev/myapp`
@@ -39,12 +45,15 @@ func init() {
 
 	f := Command.Flags()
 	f.StringSliceVarP(&env, "env", "e", nil, "Environment variable")
+	f.StringVarP(&alias, "alias", "a", "current", "Function alias")
 	f.IntVarP(&concurrency, "concurrency", "c", 5, "Concurrent deploys")
 }
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
 	root.Project.Concurrency = concurrency
+	root.Project.Alias = alias
+
 	c.Root().PersistentFlags().Lookup("name string")
 
 	if err := root.Project.LoadFunctions(args...); err != nil {

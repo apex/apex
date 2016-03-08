@@ -53,6 +53,7 @@ type Config struct {
 type Project struct {
 	Config
 	Path         string
+	Alias        string
 	Concurrency  int
 	Log          log.Interface
 	Service      lambdaiface.LambdaAPI
@@ -285,6 +286,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 		Service:    p.Service,
 		Log:        p.Log,
 		IgnoreFile: p.IgnoreFile,
+		Alias:      p.Alias,
 	}
 
 	if name, err := p.name(fn); err == nil {
