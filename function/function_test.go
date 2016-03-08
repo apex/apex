@@ -121,6 +121,7 @@ func TestFunction_Rollback_GetAlias_failed(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -141,6 +142,7 @@ func TestFunction_Rollback_ListVersions_failed(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -161,6 +163,7 @@ func TestFunction_Rollback_fewVersions(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -191,6 +194,7 @@ func TestFunction_Rollback_previousVersion(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -221,6 +225,7 @@ func TestFunction_Rollback_latestVersion(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -246,6 +251,7 @@ func TestFunction_Rollback_UpdateAlias_failed(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -266,6 +272,7 @@ func TestFunction_RollbackVersion_GetAlias_failed(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
@@ -307,6 +314,7 @@ func TestFunction_RollbackVersion_success(t *testing.T) {
 
 	fn := &function.Function{
 		FunctionName: "testfn",
+		Alias:        "current",
 		Service:      serviceMock,
 		Log:          log.Log,
 	}
