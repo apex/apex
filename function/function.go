@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"time"
 
@@ -112,19 +111,8 @@ type Function struct {
 
 // Open the function.json file and prime the config.
 func (f *Function) Open() error {
+	f.defaults()
 	f.Log = f.Log.WithField("function", f.Name)
-
-	if f.Alias == "" {
-		f.Alias = CurrentAlias
-	}
-
-	if f.Plugins == nil {
-		f.Plugins = defaultPlugins
-	}
-
-	if f.Environment == nil {
-		f.Environment = make(map[string]string)
-	}
 
 	p, err := os.Open(filepath.Join(f.Path, "function.json"))
 	if err == nil {
@@ -149,6 +137,29 @@ func (f *Function) Open() error {
 	f.IgnoreFile = append(f.IgnoreFile, ignoreFile...)
 
 	return nil
+}
+
+// defaults applies configuration defaults.
+func (f *Function) defaults() {
+	if f.Alias == "" {
+		f.Alias = CurrentAlias
+	}
+
+	if f.Plugins == nil {
+		f.Plugins = defaultPlugins
+	}
+
+	if f.Environment == nil {
+		f.Environment = make(map[string]string)
+	}
+
+	if f.VPC.Subnets == nil {
+		f.VPC.Subnets = []string{}
+	}
+
+	if f.VPC.SecurityGroups == nil {
+		f.VPC.SecurityGroups = []string{}
+	}
 }
 
 // Setenv sets environment variable `name` to `value`.
@@ -597,39 +608,40 @@ func (f *Function) currentVersionAlias() (*lambda.AliasConfiguration, error) {
 
 // configChanged checks if function configuration differs from configuration stored in AWS Lambda
 func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
-	// TODO(tj): maybe we should just serialize both here and compare the blob?
-
-	if f.Description != *config.Configuration.Description {
-		return true
+	type diffConfig struct {
+		Description string
+		Memory      int64
+		Timeout     int64
+		Role        string
+		Handler     string
+		VPC         vpc.VPC
 	}
 
-	if f.Memory != *config.Configuration.MemorySize {
-		return true
-	}
+	localConfig, _ := json.Marshal(diffConfig{
+		Description: f.Description,
+		Memory:      f.Memory,
+		Timeout:     f.Timeout,
+		Role:        f.Role,
+		Handler:     f.Handler,
+		VPC: vpc.VPC{
+			Subnets:        f.VPC.Subnets,
+			SecurityGroups: f.VPC.SecurityGroups,
+		},
+	})
 
-	if f.Timeout != *config.Configuration.Timeout {
-		return true
-	}
+	remoteConfig, _ := json.Marshal(diffConfig{
+		Description: *config.Configuration.Description,
+		Memory:      *config.Configuration.MemorySize,
+		Timeout:     *config.Configuration.Timeout,
+		Role:        *config.Configuration.Role,
+		Handler:     *config.Configuration.Handler,
+		VPC: vpc.VPC{
+			Subnets:        aws.StringValueSlice(config.Configuration.VpcConfig.SubnetIds),
+			SecurityGroups: aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds),
+		},
+	})
 
-	if f.Role != *config.Configuration.Role {
-		return true
-	}
-
-	if f.Handler != *config.Configuration.Handler {
-		return true
-	}
-
-	if config.Configuration.VpcConfig != nil {
-		if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SubnetIds), f.Config.VPC.Subnets) {
-			return true
-		}
-
-		if !reflect.DeepEqual(aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds), f.Config.VPC.SecurityGroups) {
-			return true
-		}
-	}
-
-	return false
+	return string(localConfig) != string(remoteConfig)
 }
 
 // hookOpen calls Openers.
