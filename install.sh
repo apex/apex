@@ -5,7 +5,7 @@ install () {
 set -eu
 
 UNAME=$(uname)
-if [ "$UNAME" != "Linux" -a "$UNAME" != "Darwin" ] ; then
+if [ "$UNAME" != "Linux" -a "$UNAME" != "Darwin" -a "$UNAME" != "OpenBSD" ] ; then
     echo "Sorry, OS not supported: ${UNAME}. Download binary from https://github.com/apex/apex/releases"
     exit 1
 fi
@@ -28,6 +28,15 @@ elif [ "$UNAME" = "Linux" ] ; then
     echo "Sorry, architecture not supported: ${LINUX_ARCH}. Download binary from https://github.com/apex/apex/releases"
     exit 1
   fi
+elif [ "$UNAME" = "OpenBSD" ] ; then
+    OPENBSD_ARCH=$(uname -m)
+  if [ "${OPENBSD_ARCH}" = "amd64" ] ; then
+      PLATFORM="openbsd_amd64"
+  else
+      echo "Sorry, architecture not supported: ${OPENBSD_ARCH}. Download binary from https://github.com/apex/apex/releases"
+      exit 1
+  fi
+
 fi
 
 LATEST=$(curl -s https://api.github.com/repos/apex/apex/tags | grep name | head -n 1 | sed 's/[," ]//g' | cut -d ':' -f 2)
