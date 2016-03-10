@@ -44,7 +44,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
-	f.StringSliceVarP(&env, "env", "e", nil, "Environment variable")
+	f.StringSliceVarP(&env, "set", "s", nil, "Set environment variable")
 	f.StringVarP(&alias, "alias", "a", "current", "Function alias")
 	f.IntVarP(&concurrency, "concurrency", "c", 5, "Concurrent deploys")
 }

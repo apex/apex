@@ -1,6 +1,6 @@
 
 module "iam" {
-  source = "./modules/iam"
+  source = "../modules/iam"
 }
 
 output "lambda_function_role_id" {

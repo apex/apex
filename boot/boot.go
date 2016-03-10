@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/apex/apex/boot/boilerplate"
@@ -40,7 +41,7 @@ var remoteStateCommand = `
     -backend=s3 \
     -backend-config="region=%s" \
     -backend-config="bucket=%s" \
-    -backend-config="key=terraform/state"
+    -backend-config="key=terraform/state/%s"
 `
 
 // All bootstraps a project.
@@ -58,17 +59,21 @@ func All(region string) error {
 			return err
 		}
 
-		if err := initInfra(); err != nil {
+		help("List the environments you would like (comma separated, e.g.: 'dev, test, prod')")
+		envs := readEnvs(prompt.String(indent("  Environments: ")))
+
+		fmt.Println()
+		if err := initInfra(envs); err != nil {
 			return err
 		}
 
 		fmt.Println()
 		if prompt.Confirm(indent("Would you like to store Terraform state on S3? (yes/no) ")) {
-			help("Enter the S3 bucket name for managing Terraform state (bucket needs\nto exist).")
+			help("Enter the S3 bucket name for managing Terraform state (bucket needs\nto exist, use separate bucket for each project).")
 			bucket := prompt.StringRequired(indent("  S3 bucket name: "))
 			fmt.Println()
 
-			if err := setupRemoteState(region, bucket); err != nil {
+			if err := setupRemoteState(region, bucket, envs); err != nil {
 				return err
 			}
 		}
@@ -109,31 +114,74 @@ func initProject(name, description, iamRole string) error {
 }
 
 // infra bootstraps terraform for infrastructure management.
-func initInfra() error {
+func initInfra(envs []string) error {
 	if _, err := exec.LookPath("terraform"); err != nil {
 		return fmt.Errorf("terraform is not installed")
 	}
 
 	logf("creating ./infrastructure")
-	if err := boilerplate.RestoreAssets(".", infra.Dir); err != nil {
+
+	if err := boilerplate.RestoreAssets(".", filepath.Join(infra.Dir, "modules")); err != nil {
 		return err
 	}
 
-	return setupModules()
+	for _, env := range envs {
+		if err := setupEnv(env); err != nil {
+			return err
+		}
+
+		if err := setupModules(env); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// setupEnv creates environment dir
+func setupEnv(env string) error {
+	logf("creating %s environment", env)
+
+	if err := os.MkdirAll(filepath.Join(infra.Dir, env), 0755); err != nil {
+		return err
+	}
+
+	maintf := filepath.Join(infra.Dir, "_env", "main.tf")
+	data, err := boilerplate.Asset(maintf)
+	if err != nil {
+		return err
+	}
+	info, err := boilerplate.AssetInfo(maintf)
+	if err != nil {
+		return err
+	}
+
+	if err := ioutil.WriteFile(filepath.Join(infra.Dir, env, "main.tf"), data, info.Mode()); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // setupModules performs a `terraform get`.
-func setupModules() error {
-	logf("fetching modules")
-	return shell(modulesCommand, infra.Dir)
+func setupModules(env string) error {
+	logf("fetching %s modules", env)
+	dir := filepath.Join(infra.Dir, env)
+	return shell(modulesCommand, dir)
 }
 
 // setupRemoteState performs a `terraform remote config`.
-func setupRemoteState(region, bucket string) error {
-	logf("setting up remote state in bucket %q", bucket)
-	cmd := fmt.Sprintf(remoteStateCommand, region, bucket)
-	dir := infra.Dir
-	return shell(cmd, dir)
+func setupRemoteState(region, bucket string, envs []string) error {
+	for _, env := range envs {
+		logf("setting up remote %s state in bucket %q", env, bucket)
+		cmd := fmt.Sprintf(remoteStateCommand, region, bucket, env)
+		dir := infra.Dir
+		if err := shell(cmd, dir); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // shell executes `command` in a shell within `dir`.
@@ -147,6 +195,18 @@ func shell(command, dir string) error {
 	}
 
 	return nil
+}
+
+// readEnvs splits string and removes whitespaces
+func readEnvs(env string) (envs []string) {
+	for _, e := range strings.Split(env, ",") {
+		e := strings.TrimSpace(e)
+		if e != "" {
+			envs = append(envs, e)
+		}
+	}
+
+	return
 }
 
 // help string output.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/apex/apex/function"
@@ -16,10 +17,14 @@ import (
 // Dir in which Terraform configs are stored
 const Dir = "infrastructure"
 
+// DefaultEnvironment used for infra
+const DefaultEnvironment = "dev"
+
 // Proxy is a wrapper around Terraform commands.
 type Proxy struct {
-	Functions []*function.Function
-	Region    string
+	Functions   []*function.Function
+	Region      string
+	Environment string
 }
 
 // Run terraform command in infrastructure directory.
@@ -37,7 +42,7 @@ func (p *Proxy) Run(args ...string) error {
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Dir = Dir
+	cmd.Dir = filepath.Join(Dir, p.Environment)
 
 	return cmd.Run()
 }
@@ -68,9 +73,9 @@ func (p *Proxy) shouldInjectVars(args []string) bool {
 }
 
 // Output fetches output variable `name` from terraform.
-func Output(name string) (string, error) {
+func Output(environment, name string) (string, error) {
 	cmd := exec.Command("sh", "-c", fmt.Sprintf("terraform output %s", name))
-	cmd.Dir = Dir
+	cmd.Dir = filepath.Join(Dir, environment)
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {

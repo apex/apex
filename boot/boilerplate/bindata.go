@@ -2,7 +2,7 @@
 // sources:
 // _boilerplate/functions/hello/index.js
 // _boilerplate/infrastructure/.gitignore
-// _boilerplate/infrastructure/main.tf
+// _boilerplate/infrastructure/_env/main.tf
 // _boilerplate/infrastructure/modules/iam/iam.tf
 // _boilerplate/infrastructure/modules/iam/outputs.tf
 // DO NOT EDIT!
@@ -87,7 +87,7 @@ func functionsHelloIndexJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "functions/hello/index.js", size: 146, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
+	info := bindataFileInfo{name: "functions/hello/index.js", size: 146, mode: os.FileMode(420), modTime: time.Unix(1456944518, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,27 +107,27 @@ func infrastructureGitignore() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/.gitignore", size: 10, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
+	info := bindataFileInfo{name: "infrastructure/.gitignore", size: 10, mode: os.FileMode(420), modTime: time.Unix(1457019469, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
-var _infrastructureMainTf = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x74\xcc\x31\x0e\x82\x21\x0c\x40\xe1\xbd\xa7\x68\x1a\x67\xfe\x13\x78\x16\x52\x01\x13\x92\x42\x0d\x50\x17\xc2\xdd\x45\x99\x9d\x5f\xbe\x07\x45\xa3\x49\x42\xca\x5c\x08\x27\x20\x76\xb5\x16\x12\xde\x91\xdc\x75\x62\xbf\xbe\x11\x16\x80\xda\x78\xd9\x40\x12\x2e\x8f\xc8\xfe\x69\x35\x8c\xac\xd5\x37\x95\xe4\x73\x3c\x83\x37\x8b\xfd\xfc\x6d\x1e\xef\x36\x77\x7f\xc8\xda\xdf\x4f\x00\x00\x00\xff\xff\xbc\x09\xfc\x80\x84\x00\x00\x00")
+var _infrastructure_envMainTf = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x74\xcc\x41\x0e\x02\x21\x0c\x40\xd1\x7d\x4f\xd1\x34\xae\x3b\x27\xf0\x2c\xa4\x0e\x98\x90\x94\xa9\x01\xea\x86\x70\x77\x51\xd6\xae\x7f\xfe\x83\x62\xd1\x35\x21\x65\x29\x84\x03\x10\x9b\x79\x3d\x13\xde\x91\x98\x8f\x5d\xdb\xf1\xad\x30\x01\xcc\xfb\xcb\x3b\x92\x4a\x79\x44\x09\x4f\xbf\xce\x9e\xed\x0a\xd5\x34\x85\x1c\xb7\xf0\x16\xf5\x1f\x70\x1b\xfb\xe7\xb5\xf3\x9f\x65\x2e\xf7\x13\x00\x00\xff\xff\x52\x50\x48\x14\x85\x00\x00\x00")
 
-func infrastructureMainTfBytes() ([]byte, error) {
+func infrastructure_envMainTfBytes() ([]byte, error) {
 	return bindataRead(
-		_infrastructureMainTf,
-		"infrastructure/main.tf",
+		_infrastructure_envMainTf,
+		"infrastructure/_env/main.tf",
 	)
 }
 
-func infrastructureMainTf() (*asset, error) {
-	bytes, err := infrastructureMainTfBytes()
+func infrastructure_envMainTf() (*asset, error) {
+	bytes, err := infrastructure_envMainTfBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/main.tf", size: 132, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
+	info := bindataFileInfo{name: "infrastructure/_env/main.tf", size: 133, mode: os.FileMode(420), modTime: time.Unix(1458142461, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func infrastructureModulesIamIamTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/modules/iam/iam.tf", size: 626, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
+	info := bindataFileInfo{name: "infrastructure/modules/iam/iam.tf", size: 626, mode: os.FileMode(420), modTime: time.Unix(1457019469, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -167,7 +167,7 @@ func infrastructureModulesIamOutputsTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/modules/iam/outputs.tf", size: 85, mode: os.FileMode(420), modTime: time.Unix(1456962277, 0)}
+	info := bindataFileInfo{name: "infrastructure/modules/iam/outputs.tf", size: 85, mode: os.FileMode(420), modTime: time.Unix(1457019469, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -226,7 +226,7 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"functions/hello/index.js": functionsHelloIndexJs,
 	"infrastructure/.gitignore": infrastructureGitignore,
-	"infrastructure/main.tf": infrastructureMainTf,
+	"infrastructure/_env/main.tf": infrastructure_envMainTf,
 	"infrastructure/modules/iam/iam.tf": infrastructureModulesIamIamTf,
 	"infrastructure/modules/iam/outputs.tf": infrastructureModulesIamOutputsTf,
 }
@@ -278,7 +278,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	}},
 	"infrastructure": &bintree{nil, map[string]*bintree{
 		".gitignore": &bintree{infrastructureGitignore, map[string]*bintree{}},
-		"main.tf": &bintree{infrastructureMainTf, map[string]*bintree{}},
+		"_env": &bintree{nil, map[string]*bintree{
+			"main.tf": &bintree{infrastructure_envMainTf, map[string]*bintree{}},
+		}},
 		"modules": &bintree{nil, map[string]*bintree{
 			"iam": &bintree{nil, map[string]*bintree{
 				"iam.tf": &bintree{infrastructureModulesIamIamTf, map[string]*bintree{}},
