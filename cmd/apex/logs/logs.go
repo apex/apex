@@ -28,6 +28,9 @@ const example = `  Print logs for all functions
   Follow the output
   $ apex logs -f
 
+  Follow output with no historical logs
+  $ apex logs -f --start 0
+
   Print logs for a single function
   $ apex logs api
 
