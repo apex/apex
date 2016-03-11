@@ -460,7 +460,7 @@ func (f *Function) Rollback() error {
 		return err
 	}
 
-	f.Log.WithFields(log.Fields{"current version": rollback}).Info("function rolled back")
+	f.Log.WithField("current version", rollback).Info("function rolled back")
 
 	return nil
 }
@@ -491,7 +491,7 @@ func (f *Function) RollbackVersion(version string) error {
 		return err
 	}
 
-	f.Log.WithFields(log.Fields{"current version": version}).Info("function rolled back")
+	f.Log.WithField("current version", version).Info("function rolled back")
 
 	return nil
 }
