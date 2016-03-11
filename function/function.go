@@ -197,7 +197,7 @@ func (f *Function) Deploy() error {
 		return f.DeployConfigAndCode(zip)
 	}
 
-	f.Log.Debug("config unchanged")
+	f.Log.Info("config unchanged")
 	return f.DeployCode(zip, config)
 }
 
@@ -207,7 +207,7 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 	localHash := utils.Sha256(zip)
 
 	if localHash == remoteHash {
-		f.Log.Debug("code unchanged")
+		f.Log.Info("code unchanged")
 		return nil
 	}
 
@@ -221,7 +221,7 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 
 // DeployConfigAndCode updates config and updates function code.
 func (f *Function) DeployConfigAndCode(zip []byte) error {
-	f.Log.Debug("updating config")
+	f.Log.Info("updating config")
 
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &f.FunctionName,
@@ -235,6 +235,7 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 			SubnetIds:        aws.StringSlice(f.VPC.Subnets),
 		},
 	})
+
 	if err != nil {
 		return err
 	}
@@ -244,10 +245,11 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 
 // Delete the function including all its versions
 func (f *Function) Delete() error {
-	f.Log.Debug("deleting")
+	f.Log.Info("deleting")
 	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
 		FunctionName: &f.FunctionName,
 	})
+
 	if err != nil {
 		return err
 	}
@@ -281,7 +283,7 @@ func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
 
 // Update the function with the given `zip`.
 func (f *Function) Update(zip []byte) error {
-	f.Log.Debug("updating function")
+	f.Log.Info("updating function")
 
 	versionsToCleanup, err := f.versionsToCleanup()
 	if err != nil {
@@ -293,6 +295,7 @@ func (f *Function) Update(zip []byte) error {
 		Publish:      aws.Bool(true),
 		ZipFile:      zip,
 	})
+
 	if err != nil {
 		return err
 	}
@@ -311,7 +314,7 @@ func (f *Function) Update(zip []byte) error {
 
 // Create the function with the given `zip`.
 func (f *Function) Create(zip []byte) error {
-	f.Log.Debug("creating function")
+	f.Log.Info("creating function")
 
 	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &f.FunctionName,
@@ -356,7 +359,7 @@ func (f *Function) CreateOrUpdateAlias(alias, version string) error {
 	})
 
 	if err == nil {
-		f.Log.WithField("version", version).Debugf("created alias %s", alias)
+		f.Log.WithField("version", version).Infof("created alias %s", alias)
 		return nil
 	}
 
@@ -374,7 +377,7 @@ func (f *Function) CreateOrUpdateAlias(alias, version string) error {
 		return err
 	}
 
-	f.Log.WithField("version", version).Debugf("updated alias %s", alias)
+	f.Log.WithField("version", version).Infof("updated alias %s", alias)
 	return nil
 }
 
@@ -423,7 +426,7 @@ func (f *Function) Invoke(event, context interface{}) (reply, logs io.Reader, er
 
 // Rollback the function to the previous.
 func (f *Function) Rollback() error {
-	f.Log.Debug("rolling back")
+	f.Log.Info("rolling back")
 
 	alias, err := f.currentVersionAlias()
 	if err != nil {
@@ -449,13 +452,14 @@ func (f *Function) Rollback() error {
 		rollback = prev
 	}
 
-	f.Log.Debugf("rollback to version: %s", rollback)
+	f.Log.Infof("rollback to version: %s", rollback)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
 		Name:            &f.Alias,
 		FunctionVersion: &rollback,
 	})
+
 	if err != nil {
 		return err
 	}
@@ -467,7 +471,7 @@ func (f *Function) Rollback() error {
 
 // RollbackVersion the function to the specified version.
 func (f *Function) RollbackVersion(version string) error {
-	f.Log.Debug("rolling back")
+	f.Log.Info("rolling back")
 
 	alias, err := f.currentVersionAlias()
 	if err != nil {
@@ -480,13 +484,14 @@ func (f *Function) RollbackVersion(version string) error {
 		return errors.New("Specified version currently deployed.")
 	}
 
-	f.Log.Debugf("rollback to version: %s", version)
+	f.Log.Infof("rollback to version: %s", version)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
 		Name:            &f.Alias,
 		FunctionVersion: &version,
 	})
+
 	if err != nil {
 		return err
 	}
