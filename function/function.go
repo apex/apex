@@ -171,7 +171,7 @@ func (f *Function) Setenv(name, value string) {
 // If the configuration hasn't been changed it will deploy only code,
 // otherwise it will deploy both configuration and code.
 func (f *Function) Deploy() error {
-	f.Log.Info("deploying")
+	f.Log.Debug("deploying")
 
 	zip, err := f.BuildBytes()
 	if err != nil {
@@ -193,11 +193,11 @@ func (f *Function) Deploy() error {
 	}
 
 	if f.configChanged(config) {
-		f.Log.Info("config changed")
+		f.Log.Debug("config changed")
 		return f.DeployConfigAndCode(zip)
 	}
 
-	f.Log.Info("config unchanged")
+	f.Log.Debug("config unchanged")
 	return f.DeployCode(zip, config)
 }
 
@@ -207,7 +207,7 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 	localHash := utils.Sha256(zip)
 
 	if localHash == remoteHash {
-		f.Log.Info("code unchanged")
+		f.Log.Debug("code unchanged")
 		return nil
 	}
 
@@ -221,7 +221,7 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 
 // DeployConfigAndCode updates config and updates function code.
 func (f *Function) DeployConfigAndCode(zip []byte) error {
-	f.Log.Info("updating config")
+	f.Log.Debug("updating config")
 
 	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &f.FunctionName,
@@ -244,11 +244,17 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 
 // Delete the function including all its versions
 func (f *Function) Delete() error {
-	f.Log.Info("deleting")
+	f.Log.Debug("deleting")
 	_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
 		FunctionName: &f.FunctionName,
 	})
-	return err
+	if err != nil {
+		return err
+	}
+
+	f.Log.Info("function deleted")
+
+	return nil
 }
 
 // GetConfig returns the function configuration.
@@ -275,7 +281,7 @@ func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
 
 // Update the function with the given `zip`.
 func (f *Function) Update(zip []byte) error {
-	f.Log.Info("updating function")
+	f.Log.Debug("updating function")
 
 	versionsToCleanup, err := f.versionsToCleanup()
 	if err != nil {
@@ -305,7 +311,7 @@ func (f *Function) Update(zip []byte) error {
 
 // Create the function with the given `zip`.
 func (f *Function) Create(zip []byte) error {
-	f.Log.Info("creating function")
+	f.Log.Debug("creating function")
 
 	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &f.FunctionName,
@@ -350,7 +356,7 @@ func (f *Function) CreateOrUpdateAlias(alias, version string) error {
 	})
 
 	if err == nil {
-		f.Log.WithField("version", version).Infof("created alias %s", alias)
+		f.Log.WithField("version", version).Debugf("created alias %s", alias)
 		return nil
 	}
 
@@ -368,7 +374,7 @@ func (f *Function) CreateOrUpdateAlias(alias, version string) error {
 		return err
 	}
 
-	f.Log.WithField("version", version).Infof("updated alias %s", alias)
+	f.Log.WithField("version", version).Debugf("updated alias %s", alias)
 	return nil
 }
 
@@ -417,14 +423,14 @@ func (f *Function) Invoke(event, context interface{}) (reply, logs io.Reader, er
 
 // Rollback the function to the previous.
 func (f *Function) Rollback() error {
-	f.Log.Info("rolling back")
+	f.Log.Debug("rolling back")
 
 	alias, err := f.currentVersionAlias()
 	if err != nil {
 		return err
 	}
 
-	f.Log.Infof("current version: %s", *alias.FunctionVersion)
+	f.Log.Debugf("current version: %s", *alias.FunctionVersion)
 
 	versions, err := f.versions()
 	if err != nil {
@@ -443,41 +449,51 @@ func (f *Function) Rollback() error {
 		rollback = prev
 	}
 
-	f.Log.Infof("rollback to version: %s", rollback)
+	f.Log.Debugf("rollback to version: %s", rollback)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
 		Name:            &f.Alias,
 		FunctionVersion: &rollback,
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	f.Log.WithFields(log.Fields{"current version": rollback}).Info("function rolled back")
+
+	return nil
 }
 
 // RollbackVersion the function to the specified version.
 func (f *Function) RollbackVersion(version string) error {
-	f.Log.Info("rolling back")
+	f.Log.Debug("rolling back")
 
 	alias, err := f.currentVersionAlias()
 	if err != nil {
 		return err
 	}
 
-	f.Log.Infof("current version: %s", *alias.FunctionVersion)
+	f.Log.Debugf("current version: %s", *alias.FunctionVersion)
 
 	if version == *alias.FunctionVersion {
 		return errors.New("Specified version currently deployed.")
 	}
 
-	f.Log.Infof("rollback to version: %s", version)
+	f.Log.Debugf("rollback to version: %s", version)
 
 	_, err = f.Service.UpdateAlias(&lambda.UpdateAliasInput{
 		FunctionName:    &f.FunctionName,
 		Name:            &f.Alias,
 		FunctionVersion: &version,
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	f.Log.WithFields(log.Fields{"current version": version}).Info("function rolled back")
+
+	return nil
 }
 
 // BuildBytes returns the generated zip as bytes.
@@ -492,7 +508,7 @@ func (f *Function) BuildBytes() ([]byte, error) {
 		return nil, err
 	}
 
-	f.Log.Infof("created build (%s)", humanize.Bytes(uint64(len(b))))
+	f.Log.Debugf("created build (%s)", humanize.Bytes(uint64(len(b))))
 	return b, nil
 }
 
@@ -584,7 +600,7 @@ func (f *Function) versionsToCleanup() ([]*lambda.FunctionConfiguration, error) 
 // removeVersions removes specifed function's versions
 func (f *Function) removeVersions(versions []*lambda.FunctionConfiguration) error {
 	for _, v := range versions {
-		f.Log.Infof("cleaning up version: %s", *v.Version)
+		f.Log.Debugf("cleaning up version: %s", *v.Version)
 
 		_, err := f.Service.DeleteFunction(&lambda.DeleteFunctionInput{
 			FunctionName: &f.FunctionName,
