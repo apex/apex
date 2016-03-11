@@ -42,9 +42,13 @@ fi
 LATEST=$(curl -s https://api.github.com/repos/apex/apex/tags | grep name | head -n 1 | sed 's/[," ]//g' | cut -d ':' -f 2)
 URL="https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM"
 
-curl -sL https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM -o /usr/local/bin/apex
-chmod +x $_
-
+if [ -z $LATEST ] ; then
+  echo "Error requesting. Download binary from https://github.com/apex/apex/releases"
+  exit 1
+else
+  curl -sL https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM -o /usr/local/bin/apex
+  chmod +x $_
+fi
 }
 
 install
