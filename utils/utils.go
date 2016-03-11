@@ -56,17 +56,6 @@ func LoadFiles(root string, ignoreFile []byte) (files []string, err error) {
 	return
 }
 
-// GetProfile attempts to load the profile from AWS_PROFILE otherwise defaults to "default"
-func GetProfile() string {
-	profile := os.Getenv("AWS_PROFILE")
-
-	if profile == "" {
-		return "default"
-	}
-
-	return profile
-}
-
 // GetRegion attempts loading the AWS region from ~/.aws/config.
 func GetRegion(profile string) (string, error) {
 	home, err := homedir.Dir()

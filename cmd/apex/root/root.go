@@ -5,7 +5,6 @@ import (
 
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/spf13/cobra"
@@ -24,11 +23,11 @@ var dryRun bool
 // logLevel specified.
 var logLevel string
 
-// credentials file for AWS SDK.
-var creds string
-
-// profile for AWS creds.
+// profile for AWS.
 var profile string
+
+// region for AWS.
+var region string
 
 // Session instance.
 var Session *session.Session
@@ -59,8 +58,8 @@ func init() {
 	f.StringVarP(&chdir, "chdir", "C", "", "Working directory")
 	f.BoolVarP(&dryRun, "dry-run", "D", false, "Perform a dry-run")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
-	f.StringVarP(&profile, "profile", "p", "", "AWS profile to use")
-	f.StringVar(&creds, "credentials", "", "AWS credentials file to use (~/.aws/credentials)")
+	f.StringVarP(&profile, "profile", "p", "", "AWS profile")
+	f.StringVarP(&region, "region", "r", "", "AWS region")
 
 	Command.SetHelpTemplate("\n" + Command.HelpTemplate())
 }
@@ -83,26 +82,41 @@ func preRun(c *cobra.Command, args []string) error {
 
 // Prepare handles the global CLI flags and shared functionality without
 // the assumption that a Project has already been initialized.
+//
+// Precedence is currently:
+//
+//  - flags such as --profile
+//  - env vars such as AWS_PROFILE
+//  - files such as ~/.aws/config
+//
 func Prepare(c *cobra.Command, args []string) error {
 	if l, err := log.ParseLevel(logLevel); err == nil {
 		log.SetLevel(l)
 	}
 
-	// credential defaults
+	// config defaults
 	Config = aws.NewConfig()
 
-	// explicit profile
-	if profile != "" {
-		Config = Config.WithCredentials(credentials.NewSharedCredentials(creds, profile))
-	}
-
-	// support region from ~/.aws/config for AWS_PROFILE
+	// profile from flag, env, "default"
 	if profile == "" {
-		profile = utils.GetProfile()
+		profile = os.Getenv("AWS_PROFILE")
+		if profile == "" {
+			profile = "default"
+		}
 	}
 
-	// region from ~/.aws/config
-	if region, _ := utils.GetRegion(profile); region != "" {
+	// the default SharedCredentialsProvider checks the env
+	os.Setenv("AWS_PROFILE", profile)
+
+	// region from flag, env, file
+	if region == "" {
+		region = os.Getenv("AWS_REGION")
+		if region == "" {
+			region, _ = utils.GetRegion(profile)
+		}
+	}
+
+	if region != "" {
 		Config = Config.WithRegion(region)
 	}
 
