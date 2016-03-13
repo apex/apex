@@ -1,7 +1,6 @@
 # Requirements
 
-Apex expects `pom.xml` file to be in function directory. Requirements for `pom.xml` to work with apex:
+Apex expects that your JVM project generate a fat jar, with all dependencies included. Requirements for your jar to work with Apex:
 
-- `mvn package` produces valid jar
-- `jar.finalName` prop has to set name jar name
+- `apex.jar` has to be in either `target/` or `build/libs/`
 - has AWS Lambda dependencies (`com.amazonaws.aws-lambda-java-core`)
