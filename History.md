@@ -1,4 +1,17 @@
 
+v0.7.1 / 2016-03-14
+===================
+
+  * add error message to install.sh if GitHub API call fails
+  * add example of following logs with no historical output
+  * add deploy, rollback, and invoke --alias support. Closes #7
+  * add remote Terraform state init. Closes #299
+  * add openbsd. Closes #307
+  * add DEBUG_SHIM to out stdout output
+  * refactor logging in function. Closes #84
+  * fix detecting config changes. Closes #311
+  * fix AWS config precedence
+
 v0.7.0 / 2016-03-03
 ===================
 
