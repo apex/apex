@@ -638,7 +638,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		VPC         vpc.VPC
 	}
 
-	localConfig, _ := json.Marshal(diffConfig{
+	localConfig := &diffConfig{
 		Description: f.Description,
 		Memory:      f.Memory,
 		Timeout:     f.Timeout,
@@ -648,21 +648,28 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 			Subnets:        f.VPC.Subnets,
 			SecurityGroups: f.VPC.SecurityGroups,
 		},
-	})
+	}
 
-	remoteConfig, _ := json.Marshal(diffConfig{
+	remoteConfig := &diffConfig{
 		Description: *config.Configuration.Description,
 		Memory:      *config.Configuration.MemorySize,
 		Timeout:     *config.Configuration.Timeout,
 		Role:        *config.Configuration.Role,
 		Handler:     *config.Configuration.Handler,
-		VPC: vpc.VPC{
+	}
+
+	// SDK is inconsistent here. VpcConfig can be nil or empty struct.
+	remoteConfig.VPC = vpc.VPC{Subnets: []string{}, SecurityGroups: []string{}}
+	if config.Configuration.VpcConfig != nil {
+		remoteConfig.VPC = vpc.VPC{
 			Subnets:        aws.StringValueSlice(config.Configuration.VpcConfig.SubnetIds),
 			SecurityGroups: aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds),
-		},
-	})
+		}
+	}
 
-	return string(localConfig) != string(remoteConfig)
+	localConfigJSON, _ := json.Marshal(localConfig)
+	remoteConfigJSON, _ := json.Marshal(remoteConfig)
+	return string(localConfigJSON) != string(remoteConfigJSON)
 }
 
 // hookOpen calls Openers.
