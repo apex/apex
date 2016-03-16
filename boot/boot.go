@@ -5,10 +5,10 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/apex/apex/boot/boilerplate"
 	"github.com/apex/apex/infra"
-	"github.com/mitchellh/go-wordwrap"
 	"github.com/tj/go-prompt"
 )
 
@@ -45,14 +45,14 @@ var remoteStateCommand = `
 
 // All bootstraps a project.
 func All(region string) error {
-	help(`Enter the name of your project. It should be machine-friendly, as this is used to prefix your functions in Lambda.`)
-	name := prompt.StringRequired("  Project name: ")
+	help("Enter the name of your project. It should be machine-friendly, as this\nis used to prefix your functions in Lambda.")
+	name := prompt.StringRequired(indent("  Project name: "))
 
-	help(`Enter an optional description of your project.`)
-	description := prompt.String("  Project description: ")
+	help("Enter an optional description of your project.")
+	description := prompt.String(indent("  Project description: "))
 
 	fmt.Println()
-	if prompt.Confirm("Would you like to manage infrastructure with Terraform? (yes/no) ") {
+	if prompt.Confirm(indent("Would you like to manage infrastructure with Terraform? (yes/no) ")) {
 		fmt.Println()
 		if err := initProject(name, description, ""); err != nil {
 			return err
@@ -63,9 +63,9 @@ func All(region string) error {
 		}
 
 		fmt.Println()
-		if prompt.Confirm("Would you like to store Terraform state on S3? (yes/no) ") {
-			help(`Enter the S3 bucket name for managing Terraform state (bucket needs to exist).`)
-			bucket := prompt.StringRequired("S3 bucket name: ")
+		if prompt.Confirm(indent("Would you like to store Terraform state on S3? (yes/no) ")) {
+			help("Enter the S3 bucket name for managing Terraform state (bucket needs\nto exist).")
+			bucket := prompt.StringRequired(indent("  S3 bucket name: "))
 			fmt.Println()
 
 			if err := setupRemoteState(region, bucket); err != nil {
@@ -77,9 +77,8 @@ func All(region string) error {
 		return nil
 	}
 
-	fmt.Println()
-	help(`Enter IAM role used by Lambda functions.`)
-	iamRole := prompt.StringRequired("  IAM role: ")
+	help("Enter IAM role used by Lambda functions.")
+	iamRole := prompt.StringRequired(indent("  IAM role: "))
 
 	fmt.Println()
 	if err := initProject(name, description, iamRole); err != nil {
@@ -153,8 +152,17 @@ func shell(command, dir string) error {
 // help string output.
 func help(s string) {
 	os.Stdout.WriteString("\n")
-	os.Stdout.WriteString(wordwrap.WrapString(s, 70))
+	os.Stdout.WriteString(indent(s))
 	os.Stdout.WriteString("\n\n")
+}
+
+// indent multiline string with 2 spaces.
+func indent(s string) (out string) {
+	for _, l := range strings.SplitAfter(s, "\n") {
+		out += fmt.Sprintf("  %s", l)
+	}
+
+	return
 }
 
 // logf outputs a log message.
