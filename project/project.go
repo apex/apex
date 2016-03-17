@@ -55,6 +55,7 @@ type Project struct {
 	Path         string
 	Alias        string
 	Concurrency  int
+	Environment  string
 	Log          log.Interface
 	Service      lambdaiface.LambdaAPI
 	Functions    []*function.Function
@@ -73,8 +74,8 @@ func (p *Project) defaults() {
 		p.Concurrency = 5
 	}
 
-	if p.Environment == nil {
-		p.Environment = make(map[string]string)
+	if p.Config.Environment == nil {
+		p.Config.Environment = make(map[string]string)
 	}
 
 	if p.NameTemplate == "" {
@@ -277,7 +278,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 			Handler:          p.Handler,
 			Shim:             p.Shim,
 			Hooks:            p.Hooks,
-			Environment:      copyStringMap(p.Environment),
+			Environment:      copyStringMap(p.Config.Environment),
 			RetainedVersions: p.RetainedVersions,
 			VPC:              p.VPC,
 		},
@@ -322,7 +323,7 @@ func (p *Project) name(fn *function.Function) (string, error) {
 
 // readInfraRole reads lambda function IAM role from infrastructure
 func (p *Project) readInfraRole() string {
-	role, err := infra.Output("lambda_function_role_id")
+	role, err := infra.Output(p.Environment, "lambda_function_role_id")
 	if err != nil {
 		p.Log.Debugf("couldn't read role from infrastructure: %s", err)
 		return ""
