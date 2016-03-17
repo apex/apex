@@ -14,12 +14,10 @@ import (
 )
 
 const (
-	none   = 0
 	red    = 31
 	green  = 32
 	yellow = 33
 	blue   = 34
-	gray   = 37
 )
 
 // Lambda is a partially implemented Lambda API implementation used to perform a dry-run.

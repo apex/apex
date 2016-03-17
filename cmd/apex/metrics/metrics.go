@@ -13,9 +13,6 @@ import (
 	"github.com/apex/apex/metrics"
 )
 
-// name of function.
-var name string
-
 // duration of results.
 var duration time.Duration
 
