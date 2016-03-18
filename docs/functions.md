@@ -58,6 +58,13 @@ AWS Lambda role used.
 - required
 - inherited
 
+### environment
+
+Environment variables.
+
+- type: `object`
+- inherited
+
 ### retainedVersions
 
 Number of retained function's versions on AWS Lambda. If not specified `deploy` command will leave 10 versions.
