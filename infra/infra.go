@@ -49,6 +49,9 @@ func (p *Proxy) Run(args ...string) error {
 
 // functionVars returns the function ARN's as terraform -var arguments.
 func (p *Proxy) functionVars() (args []string) {
+	args = append(args, "-var")
+	args = append(args, fmt.Sprintf("aws_region=%s", p.Region))
+
 	for _, fn := range p.Functions {
 		config, err := fn.GetConfig()
 		if err != nil {
@@ -69,7 +72,7 @@ func (p *Proxy) shouldInjectVars(args []string) bool {
 		return false
 	}
 
-	return args[0] == "plan" || args[0] == "apply"
+	return args[0] == "plan" || args[0] == "apply" || args[0] == "destroy"
 }
 
 // Output fetches output variable `name` from terraform.
