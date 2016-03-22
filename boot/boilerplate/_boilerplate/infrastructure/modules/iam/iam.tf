@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "lambda_function" {
-  name = "lambda_function"
+  name = "apex_lambda_function"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
