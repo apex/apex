@@ -1,4 +1,13 @@
 
+v0.7.3 / 2016-03-23
+===================
+
+  * add passing aws_region var to Terraform
+  * add API Gateway integration example. Closes #339
+  * add env switch. Closes #304
+  * add indent in init command. Closes #303
+  * fix prompt.Confirm on Windows
+
 v0.7.2 / 2016-03-15
 ===================
 
