@@ -29,13 +29,13 @@ const example = `  Print logs for all functions
   $ apex logs -f
 
   Follow output with no historical logs
-  $ apex logs -f --start 0
+  $ apex logs -f --since 0
 
   Print logs for a single function
   $ apex logs api
 
   Print logs for functions with a specified start time, e.g. 5 minutes
-  $ apex logs foo bar --start 5m`
+  $ apex logs foo bar --since 5m`
 
 // Command config.
 var Command = &cobra.Command{
@@ -50,7 +50,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
-	f.DurationVarP(&duration, "start", "s", 5*time.Minute, "Start time of the search")
+	f.DurationVarP(&duration, "since", "s", 5*time.Minute, "Start time of the search")
 	f.StringVarP(&filter, "filter", "F", "", "Filter logs with pattern")
 	f.BoolVarP(&follow, "follow", "f", false, "Follow tails logs for updates")
 }

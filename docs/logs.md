@@ -37,6 +37,6 @@ $ apex logs -f foo -F error
 Output the last hour of logs:
 
 ```sh
-$ apex logs --start 1h
+$ apex logs --since 1h
 $ apex logs -s 1h
 ```
