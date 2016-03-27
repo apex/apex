@@ -25,7 +25,7 @@ lowercase
 View metrics for the last 15 minutes:
 
 ```sh
-$ apex metrics --start 15m
+$ apex metrics --since 15m
 
 uppercase
   invocations: 16
