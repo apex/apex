@@ -3,13 +3,11 @@ package java
 
 import (
 	azip "archive/zip"
-
+	"errors"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
-
-	"errors"
+	"strings"
 
 	"github.com/apex/apex/function"
 	"github.com/jpillora/archive"
@@ -20,51 +18,58 @@ const (
 	Runtime = "java"
 	// RuntimeCanonical represents names used by AWS Lambda
 	RuntimeCanonical = "java8"
-	// targetJarFile mvn target jar file name
-	targetJarFile = "apex-plugin-target"
+	// jarFile
+	jarFile = "apex.jar"
 )
 
-func init() {
-	function.RegisterPlugin("java", &Plugin{})
+var jarSearchPaths = []string{
+	"target",
+	"build/libs",
 }
 
-// Plugin implementation.
+func init() {
+	function.RegisterPlugin(Runtime, &Plugin{})
+}
+
+// Plugin implementation
 type Plugin struct{}
 
-// Open adds java defaults.
+// Open adds java-jar defaults. No clean operation is implemented, as it is
+// assumed that the build tool generating the fat JAR will handle that workflow
+// on its own.
 func (p *Plugin) Open(fn *function.Function) error {
 	if fn.Runtime != Runtime {
 		return nil
 	}
 
-	fn.Runtime = RuntimeCanonical
-
 	if fn.Handler == "" {
 		fn.Handler = "lambda.Main::handler"
 	}
 
-	fn.Hooks.Clean = "mvn clean"
+	if len(fn.IgnoreFile) == 0 {
+		// Since we're deploying a fat jar, we don't need anything else.
+		fn.IgnoreFile = []byte(`
+*
+!**/apex.jar
+`)
+	}
 
 	return nil
 }
 
-// Build calls mvn package, add jar contents to zipfile.
+// Build adds the jar contents to zipfile.
 func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
-	if fn.Runtime != RuntimeCanonical {
+	if fn.Runtime != Runtime {
 		return nil
 	}
+	fn.Runtime = RuntimeCanonical
 
-	fn.Log.Debug("creating jar")
-	mvnCmd := exec.Command("mvn", "package", "-Djar.finalName="+targetJarFile)
-	mvnCmd.Dir = fn.Path
-	if err := mvnCmd.Run(); err != nil {
-		return err
-	}
-
-	expectedJarPath := filepath.Join(fn.Path, "target", targetJarFile+".jar")
-	if _, err := os.Stat(expectedJarPath); err != nil {
+	fn.Log.Debugf("searching for JAR (%s) in directories: %s", jarFile, strings.Join(jarSearchPaths, ", "))
+	expectedJarPath := findJar(fn.Path)
+	if expectedJarPath == "" {
 		return errors.New("Expected jar file not found")
 	}
+	fn.Log.Debugf("found jar path: %s", expectedJarPath)
 
 	fn.Log.Debug("appending compiled files")
 	reader, err := azip.OpenReader(expectedJarPath)
@@ -89,4 +94,14 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	}
 
 	return nil
+}
+
+func findJar(fnPath string) string {
+	for _, path := range jarSearchPaths {
+		jarPath := filepath.Join(fnPath, path, jarFile)
+		if _, err := os.Stat(jarPath); err == nil {
+			return jarPath
+		}
+	}
+	return ""
 }
