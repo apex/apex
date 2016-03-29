@@ -34,7 +34,7 @@ func init() {
 // Plugin implementation
 type Plugin struct{}
 
-// Open adds java-jar defaults. No clean operation is implemented, as it is
+// Open adds java defaults. No clean operation is implemented, as it is
 // assumed that the build tool generating the fat JAR will handle that workflow
 // on its own.
 func (p *Plugin) Open(fn *function.Function) error {
