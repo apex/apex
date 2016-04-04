@@ -1,0 +1,7 @@
+{
+  "name": "envMerge",
+  "role": "testrole",
+  "environment": {
+    "PROJECT_ENV": "projectEnv"
+  }
+}

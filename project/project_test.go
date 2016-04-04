@@ -82,3 +82,15 @@ func TestProject_LoadFunctions_noFunctionLoaded(t *testing.T) {
 
 	assert.EqualError(t, err, "no function loaded")
 }
+
+func TestProject_LoadFunctionByPath_mergeEnvWithFunctionEnv(t *testing.T) {
+	p := &project.Project{
+		Path: "_fixtures/envMerge",
+		Log:  log.Log,
+	}
+
+	p.Open()
+	p.LoadFunctions("foo")
+
+	assert.Equal(t, map[string]string{"PROJECT_ENV": "projectEnv", "FUNCTION_ENV": "functionEnv"}, p.Functions[0].Environment)
+}
