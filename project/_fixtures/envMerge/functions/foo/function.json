@@ -1,0 +1,5 @@
+{
+  "environment": {
+    "FUNCTION_ENV": "functionEnv"
+  }
+}
