@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/dryrun"
-	"github.com/apex/apex/infra"
 	"github.com/apex/apex/project"
 	"github.com/apex/apex/utils"
 )
@@ -59,7 +58,7 @@ var Command = &cobra.Command{
 func init() {
 	f := Command.PersistentFlags()
 
-	f.StringVarP(&environment, "env", "e", infra.DefaultEnvironment, "Project environment")
+	f.StringVarP(&environment, "env", "e", "", "Infastructure environment (default: \"defaultEnvironment\" from project.json)")
 	f.StringVarP(&chdir, "chdir", "C", "", "Working directory")
 	f.BoolVarP(&dryRun, "dry-run", "D", false, "Perform a dry-run")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")

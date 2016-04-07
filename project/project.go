@@ -34,19 +34,20 @@ const (
 
 // Config for project.
 type Config struct {
-	Name             string            `json:"name" validate:"nonzero"`
-	Description      string            `json:"description"`
-	Runtime          string            `json:"runtime"`
-	Memory           int64             `json:"memory"`
-	Timeout          int64             `json:"timeout"`
-	Role             string            `json:"role"`
-	Handler          string            `json:"handler"`
-	Shim             bool              `json:"shim"`
-	NameTemplate     string            `json:"nameTemplate"`
-	RetainedVersions int               `json:"retainedVersions"`
-	Environment      map[string]string `json:"environment"`
-	Hooks            hooks.Hooks       `json:"hooks"`
-	VPC              vpc.VPC           `json:"vpc"`
+	Name               string            `json:"name" validate:"nonzero"`
+	Description        string            `json:"description"`
+	Runtime            string            `json:"runtime"`
+	Memory             int64             `json:"memory"`
+	Timeout            int64             `json:"timeout"`
+	Role               string            `json:"role"`
+	Handler            string            `json:"handler"`
+	Shim               bool              `json:"shim"`
+	NameTemplate       string            `json:"nameTemplate"`
+	RetainedVersions   int               `json:"retainedVersions"`
+	DefaultEnvironment string            `json:"defaultEnvironment"`
+	Environment        map[string]string `json:"environment"`
+	Hooks              hooks.Hooks       `json:"hooks"`
+	VPC                vpc.VPC           `json:"vpc"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -68,7 +69,6 @@ func (p *Project) defaults() {
 	p.Memory = DefaultMemory
 	p.Timeout = DefaultTimeout
 	p.IgnoreFile = []byte(".apexignore\nfunction.json\n")
-	p.Role = p.readInfraRole()
 
 	if p.Concurrency == 0 {
 		p.Concurrency = 5
@@ -98,6 +98,13 @@ func (p *Project) Open() error {
 
 	if err := json.NewDecoder(f).Decode(&p.Config); err != nil {
 		return err
+	}
+
+	if p.Environment == "" {
+		p.Environment = p.Config.DefaultEnvironment
+	}
+	if p.Role == "" {
+		p.Role = p.readInfraRole()
 	}
 
 	if err := validator.Validate(&p.Config); err != nil {

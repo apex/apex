@@ -17,9 +17,6 @@ import (
 // Dir in which Terraform configs are stored
 const Dir = "infrastructure"
 
-// DefaultEnvironment used for infra
-const DefaultEnvironment = "dev"
-
 // Proxy is a wrapper around Terraform commands.
 type Proxy struct {
 	Functions   []*function.Function

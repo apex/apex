@@ -24,6 +24,7 @@ var projectConfig = `
   "memory": 128,
   "timeout": 5,
   "role": "%s",
+	"defaultEnvironment": "dev",
   "environment": {}
 }`
 
