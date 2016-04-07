@@ -55,6 +55,12 @@ Default role of function(s) unless specified in their function.json configuratio
 
 - type: `string`
 
+### defaultEnvironment
+
+Default infrastructure environment.
+
+- type: `string`
+
 ### environment
 
 Default environment variables of function(s) unless specified in their function.json configuration.
