@@ -1,0 +1,9 @@
+{
+  "name": "node",
+  "description": "Node.js 0.10 example project",
+  "role": "arn:aws:iam::293503197324:role/lambda_function",
+  "runtime": "nodejs",
+  "environment": {
+    "LOGGLY_TOKEN": "some token defined in project.json"
+  }
+}

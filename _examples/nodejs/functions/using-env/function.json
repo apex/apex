@@ -1,0 +1,6 @@
+{
+  "description": "Node.js example function using environment variables",
+  "environment": {
+    "LOGGLY_TOKEN": "some token defined in function.json"
+  }
+}
