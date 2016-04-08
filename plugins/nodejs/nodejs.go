@@ -13,8 +13,16 @@ import (
 	"github.com/apex/apex/plugins/env"
 )
 
+const (
+	// Runtime name used by Apex and by AWS Lambda for Node.js 0.10
+	Runtime = "nodejs"
+	// Runtime43 name used by Apex and by AWS Lambda for Node.js 4.3.2
+	Runtime43 = "nodejs4.3"
+)
+
 func init() {
-	function.RegisterPlugin("nodejs", &Plugin{})
+	function.RegisterPlugin(Runtime, &Plugin{})
+	function.RegisterPlugin(Runtime43, &Plugin{})
 }
 
 // prelude script template.
@@ -30,17 +38,12 @@ var prelude = template.Must(template.New("prelude").Parse(`try {
 exports.handle = require('./{{.HandleFile}}').{{.HandleMethod}}
 `))
 
-const (
-	// Runtime name used by Apex and by AWS Lambda
-	Runtime = "nodejs"
-)
-
 // Plugin implementation.
 type Plugin struct{}
 
 // Open adds nodejs defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != Runtime {
+	if !p.runtimeSupported(fn) {
 		return nil
 	}
 
@@ -53,7 +56,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 
 // Build injects a script for loading the environment.
 func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
-	if fn.Runtime != Runtime || len(fn.Environment) == 0 {
+	if !p.runtimeSupported(fn) || len(fn.Environment) == 0 {
 		return nil
 	}
 
@@ -80,4 +83,8 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 	fn.Handler = "_apex_index.handle"
 
 	return zip.AddBytesMTime("_apex_index.js", buf.Bytes(), time.Unix(0, 0))
+}
+
+func (p *Plugin) runtimeSupported(fn *function.Function) bool {
+	return fn.Runtime == Runtime || fn.Runtime == Runtime43
 }
