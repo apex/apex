@@ -1,5 +1,5 @@
 
 console.log 'start bar'
-exports.handle = (e, ctx) ->
+exports.handle = (e, ctx, cb) ->
   console.log 'processing event: %j', e
-  ctx.succeed value: e.value.toUpperCase()
+  cb null, value: e.value.toUpperCase()
