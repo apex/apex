@@ -1,4 +1,14 @@
 
+v0.8.0 / 2016-04-08
+===================
+
+  * add nodejs 4.3.2 support. Closes #356
+  * add `defaultEnvironment` in project.json. Closes #338
+  * add test for merging envs. Closes #348
+  * rename --start to --since [breaking change]
+  * refactor java plugin to expect a JAR file, rather than building one based on a pom file. [breaking change]
+  * fix: api-gateway example Internal server error
+
 v0.7.3 / 2016-03-23
 ===================
 
