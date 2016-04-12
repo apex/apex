@@ -49,6 +49,9 @@ func (p *Proxy) functionVars() (args []string) {
 	args = append(args, "-var")
 	args = append(args, fmt.Sprintf("aws_region=%s", p.Region))
 
+	args = append(args, "-var")
+	args = append(args, fmt.Sprintf("apex_environment=%s", p.Environment))
+
 	for _, fn := range p.Functions {
 		config, err := fn.GetConfig()
 		if err != nil {
