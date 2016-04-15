@@ -29,7 +29,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 	}
 
 	fn.Shim = true
-	fn.Runtime = nodejs.Runtime
+	fn.Runtime = nodejs.Runtime43
 	fn.Hooks.Clean = "rm -f main"
 
 	return nil
