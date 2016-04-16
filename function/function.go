@@ -160,6 +160,9 @@ func (f *Function) defaults() {
 	if f.VPC.SecurityGroups == nil {
 		f.VPC.SecurityGroups = []string{}
 	}
+
+	f.Setenv("APEX_FUNCTION_NAME", f.Name)
+	f.Setenv("LAMBDA_FUNCTION_NAME", f.FunctionName)
 }
 
 // Setenv sets environment variable `name` to `value`.
