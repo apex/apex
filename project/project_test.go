@@ -92,5 +92,5 @@ func TestProject_LoadFunctionByPath_mergeEnvWithFunctionEnv(t *testing.T) {
 	p.Open()
 	p.LoadFunctions("foo")
 
-	assert.Equal(t, map[string]string{"PROJECT_ENV": "projectEnv", "FUNCTION_ENV": "functionEnv"}, p.Functions[0].Environment)
+	assert.Equal(t, map[string]string{"PROJECT_ENV": "projectEnv", "FUNCTION_ENV": "functionEnv", "APEX_FUNCTION_NAME": "foo", "LAMBDA_FUNCTION_NAME": "envMerge_foo"}, p.Functions[0].Environment)
 }
