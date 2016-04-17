@@ -43,6 +43,27 @@ type cloudWatchMetric struct {
 	Value []*cloudwatch.Datapoint
 }
 
+// stats for function `name`.
+func (m *Metric) stats(name string) (*cloudwatch.GetMetricStatisticsOutput, error) {
+	return m.Service.GetMetricStatistics(&cloudwatch.GetMetricStatisticsInput{
+		StartTime:  &m.StartDate,
+		EndTime:    &m.EndDate,
+		MetricName: &name,
+		Namespace:  aws.String("AWS/Lambda"),
+		Period:     aws.Int64(int64(period(m.StartDate, m.EndDate).Seconds())),
+		Statistics: []*string{
+			aws.String("Sum"),
+		},
+		Dimensions: []*cloudwatch.Dimension{
+			{
+				Name:  aws.String("FunctionName"),
+				Value: &m.FunctionName,
+			},
+		},
+		Unit: aws.String(unit(name)),
+	})
+}
+
 // collect starts a new cloudwatch session and requests the key metrics.
 func (m *Metric) collect(in <-chan string) <-chan cloudWatchMetric {
 	var wg sync.WaitGroup
@@ -54,26 +75,8 @@ func (m *Metric) collect(in <-chan string) <-chan cloudWatchMetric {
 
 		go func() {
 			defer wg.Done()
-			params := &cloudwatch.GetMetricStatisticsInput{
-				StartTime:  &m.StartDate,
-				EndTime:    &m.EndDate,
-				MetricName: &name,
-				Namespace:  aws.String("AWS/Lambda"),
-				Period:     aws.Int64(int64(period(m.StartDate, m.EndDate).Seconds())),
-				Statistics: []*string{
-					aws.String("Sum"),
-				},
-				Dimensions: []*cloudwatch.Dimension{
-					{
-						Name:  aws.String("FunctionName"),
-						Value: &m.FunctionName,
-					},
-				},
-				Unit: aws.String(unit(name)),
-			}
 
-			res, err := m.Service.GetMetricStatistics(params)
-
+			res, err := m.stats(name)
 			if err != nil {
 				// TODO: refactor so that errors are reported in cmd
 				fmt.Println(err.Error())
