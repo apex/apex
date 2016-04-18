@@ -232,6 +232,7 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 		Timeout:      &f.Timeout,
 		Description:  &f.Description,
 		Role:         &f.Role,
+		Runtime:      &f.Runtime,
 		Handler:      &f.Handler,
 		VpcConfig: &lambda.VpcConfig{
 			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
@@ -637,6 +638,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Memory      int64
 		Timeout     int64
 		Role        string
+		Runtime     string
 		Handler     string
 		VPC         vpc.VPC
 	}
@@ -646,6 +648,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Memory:      f.Memory,
 		Timeout:     f.Timeout,
 		Role:        f.Role,
+		Runtime:     f.Runtime,
 		Handler:     f.Handler,
 		VPC: vpc.VPC{
 			Subnets:        f.VPC.Subnets,
@@ -658,6 +661,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Memory:      *config.Configuration.MemorySize,
 		Timeout:     *config.Configuration.Timeout,
 		Role:        *config.Configuration.Role,
+		Runtime:     *config.Configuration.Runtime,
 		Handler:     *config.Configuration.Handler,
 	}
 
