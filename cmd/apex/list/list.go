@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/apex/log"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -69,7 +70,14 @@ func outputTFvars() {
 func outputList() {
 	fmt.Println()
 	for _, fn := range root.Project.Functions {
-		fmt.Printf("  \033[%dm%s\033[0m\n", colors.Blue, fn.Name)
+		config, err := fn.GetConfigCurrent()
+
+		if awserr, ok := err.(awserr.Error); ok && awserr.Code() == "ResourceNotFoundException" {
+			fmt.Printf("  \033[%dm%s\033[0m (not deployed) \n", colors.Blue, fn.Name)
+		} else {
+			fmt.Printf("  \033[%dm%s\033[0m\n", colors.Blue, fn.Name)
+		}
+
 		if fn.Description != "" {
 			fmt.Printf("    description: %v\n", fn.Description)
 		}
@@ -79,7 +87,6 @@ func outputList() {
 		fmt.Printf("    role: %v\n", fn.Role)
 		fmt.Printf("    handler: %v\n", fn.Handler)
 
-		config, err := fn.GetConfigCurrent()
 		if err != nil {
 			fmt.Println()
 			continue // ignore
