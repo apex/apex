@@ -2,8 +2,6 @@
 package rollback
 
 import (
-	"errors"
-
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -12,17 +10,14 @@ import (
 // alias.
 var alias string
 
-// name of function.
-var name string
-
 // version target.
 var version string
 
 // example output.
-const example = `  Rollback a function to the previous version
-  $ apex rollback foo
+const example = `  Rollback all functions to the previous version
+  $ apex rollback
 
-  Rollback canary alias
+  Rollback canary alias for a function
   $ apex rollback foo --alias canary
 
   Rollback a function to the specified version
@@ -30,10 +25,9 @@ const example = `  Rollback a function to the previous version
 
 // Command config.
 var Command = &cobra.Command{
-	Use:     "rollback <name>",
-	Short:   "Rollback a function",
+	Use:     "rollback [<name>...]",
+	Short:   "Rollback functions",
 	Example: example,
-	PreRunE: preRun,
 	RunE:    run,
 }
 
@@ -46,29 +40,17 @@ func init() {
 	f.StringVarP(&version, "version", "v", "", "version to which rollback is done")
 }
 
-// PreRun errors if the name is missing.
-func preRun(c *cobra.Command, args []string) error {
-	if len(args) < 1 {
-		return errors.New("Missing name argument")
-	}
-
-	name = args[0]
-	return nil
-}
-
 // Run command.
 func run(c *cobra.Command, args []string) error {
 	root.Project.Alias = alias
 
-	if err := root.Project.LoadFunctions(name); err != nil {
+	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}
 
-	fn := root.Project.Functions[0]
-
 	if version == "" {
-		return fn.Rollback()
+		return root.Project.Rollback()
 	}
 
-	return fn.RollbackVersion(version)
+	return root.Project.RollbackVersion(version)
 }

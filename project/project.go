@@ -242,6 +242,32 @@ func (p *Project) Delete() error {
 	return nil
 }
 
+// Rollback project functions to previous version.
+func (p *Project) Rollback() error {
+	p.Log.Debugf("rolling back %d functions", len(p.Functions))
+
+	for _, fn := range p.Functions {
+		if err := fn.Rollback(); err != nil {
+			return fmt.Errorf("function %s: %s", fn.Name, err)
+		}
+	}
+
+	return nil
+}
+
+// RollbackVersion project functions to the specified version.
+func (p *Project) RollbackVersion(version string) error {
+	p.Log.Debugf("rolling back %d functions to version %s", len(p.Functions), version)
+
+	for _, fn := range p.Functions {
+		if err := fn.RollbackVersion(version); err != nil {
+			return fmt.Errorf("function %s: %s", fn.Name, err)
+		}
+	}
+
+	return nil
+}
+
 // FunctionDirNames returns a list of function directory names.
 func (p *Project) FunctionDirNames() (list []string, err error) {
 	dir := filepath.Join(p.Path, functionsDir)
