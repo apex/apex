@@ -540,12 +540,26 @@ func (f *Function) Build() (io.Reader, error) {
 	for _, path := range files {
 		f.Log.WithField("file", path).Debug("add file to zip")
 
-		f, err := os.Open(filepath.Join(f.Path, path))
+		info, err := os.Lstat(filepath.Join(f.Path, path))
 		if err != nil {
 			return nil, err
 		}
 
-		info, err := f.Stat()
+		realPath := path
+		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
+			linkPath, err := os.Readlink(filepath.Join(f.Path, path))
+			if err != nil {
+				return nil, err
+			}
+			realPath = linkPath
+		}
+
+		f, err := os.Open(filepath.Join(f.Path, realPath))
+		if err != nil {
+			return nil, err
+		}
+
+		info, err = f.Stat()
 		if err != nil {
 			return nil, err
 		}
