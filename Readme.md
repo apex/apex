@@ -181,7 +181,7 @@ See the [Documentation](docs) for more information.
 [![Slack Status](https://apex-dev.azurewebsites.net/badge.svg)](https://apex-dev.azurewebsites.net/)
 [![GoDoc](https://godoc.org/github.com/apex/apex?status.svg)](https://godoc.org/github.com/apex/apex)
 ![](https://img.shields.io/badge/license-MIT-blue.svg)
-![](https://img.shields.io/badge/status-experimental-orange.svg) [![OpenCollective](https://opencollective.com/apex/backers/badge.svg)](https://opencollective.com/apex#backer) [![OpenCollective](https://opencollective.com/apex/sponsors/badge.svg)](https://opencollective.com/apex#sponsor)
+![](https://img.shields.io/badge/status-experimental-orange.svg) [![OpenCollective](https://opencollective.com/apex/backers/badge.svg)](#backers) [![OpenCollective](https://opencollective.com/apex/sponsors/badge.svg)](#sponsors)
 
 ---
 
