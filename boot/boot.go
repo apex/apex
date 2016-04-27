@@ -24,7 +24,7 @@ var projectConfig = `
   "memory": 128,
   "timeout": 5,
   "role": "%s",
-	"defaultEnvironment": "dev",
+  "defaultEnvironment": "dev",
   "environment": {}
 }`
 
@@ -34,6 +34,7 @@ var projectConfigWithoutRole = `
   "description": "%s",
   "memory": 128,
   "timeout": 5,
+  "defaultEnvironment": "dev",
   "environment": {}
 }`
 
