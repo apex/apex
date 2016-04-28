@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 
@@ -32,8 +34,48 @@ import (
 	_ "github.com/apex/apex/plugins/shim"
 )
 
+// Terraform commands.
+var tf = []string{
+	"apply",
+	"destroy",
+	"get",
+	"graph",
+	"init",
+	"output",
+	"plan",
+	"refresh",
+	"remote",
+	"show",
+	"taint",
+	"untaint",
+	"validate",
+	"version",
+}
+
 func main() {
 	log.SetHandler(cli.Default)
+	args := os.Args[1:]
+
+	// Cobra does not (currently) allow us to pass flags for a sub-command
+	// as if they were arguments, so we inject -- here after the first TF command.
+	// TODO(tj): replace with a real solution and send PR to Cobra #251
+	if len(os.Args) > 1 && os.Args[1] == "infra" {
+		off := 1
+
+	out:
+		for i, a := range args {
+			for _, cmd := range tf {
+				if a == cmd {
+					off = i
+					break out
+				}
+			}
+		}
+
+		args = append(args[0:off], append([]string{"--"}, args[off:]...)...)
+	}
+
+	root.Command.SetArgs(args)
 
 	if err := root.Command.Execute(); err != nil {
 		log.Fatalf("Error: %s", err)
