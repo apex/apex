@@ -1,13 +1,9 @@
 
-Apex supports the notion of hooks, which allow you to execute shell commands throughout
-a function's lifecycle. For example you may use these hooks to run tests or linting before
-a deploy, or to transpile source code using Babel, CoffeeScript, or similar.
+Apex supports the notion of hooks, which allow you to execute shell commands throughout a function's lifecycle. For example you may use these hooks to run tests or linting before a deploy, or to transpile source code using Babel, CoffeeScript, or similar.
 
-Hooks may be specified in project.json or function.json. Hooks are executed in the function's
-directory, not the project's directory.
+Hooks may be specified in project.json or function.json. Hooks are executed in the function's directory, not the project's directory.
 
-Internally Apex uses these hooks to implement out-of-the-box support for Golang and other
-compiled languages.
+Internally Apex uses these hooks to implement out-of-the-box support for Golang and other compiled languages.
 
 ## Supported hooks
 
