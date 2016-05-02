@@ -1,6 +1,5 @@
-
 console.log('starting function')
-exports.handle = function(e, ctx) {
+exports.handle = function(e, ctx, cb) {
   console.log('processing event: %j', e)
-  ctx.succeed({ hello: 'world' })
+  cb(null, { hello: 'world' })
 }
