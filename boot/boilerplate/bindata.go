@@ -72,7 +72,7 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _functionsHelloIndexJs = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x54\xcc\x51\x0a\x83\x30\x0c\x80\xe1\xf7\x9e\x22\x2f\xa3\x2d\x48\x0f\x20\xec\x30\x92\x66\xea\x08\x89\x34\x71\x2b\x88\x77\x1f\xbe\x0c\x7c\xfe\x7f\xbe\x80\x2a\xa6\x4c\x85\x75\x4e\xd1\x7c\x6a\xbe\xca\x0c\xaf\x5d\xd0\x57\x95\x98\x03\xf5\x4d\x9b\x5b\x59\x26\xa9\x4c\xf0\xfc\xb7\x44\x03\xa0\xf7\x0c\x47\x00\xb8\x31\x5b\x53\x24\xb3\x0b\xa2\x0f\x89\x8f\xf0\x78\xc7\x01\x28\x5f\xa3\xf7\x62\x3b\x22\x51\x4d\x07\x2c\xc4\xac\x23\xc4\xaf\x36\xae\x11\xce\x1c\xce\x5f\x00\x00\x00\xff\xff\x4b\xf0\xa8\x46\x92\x00\x00\x00")
+var _functionsHelloIndexJs = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x54\xcc\x41\x0a\x83\x30\x10\x85\xe1\x7d\x4e\xf1\x36\x25\x06\x82\x07\x10\x7a\x18\x8d\x53\xb5\x0c\x33\x92\x19\x5b\x41\xbc\x7b\xeb\xa6\xd0\xcd\xdb\xbc\x9f\xaf\xa8\x98\x32\xb5\xac\x53\x13\xcd\xfb\xea\x8b\x4c\x78\x6c\x52\x7c\x51\x89\x29\xd0\xbe\x6a\x75\x6b\xe7\x5e\x46\x26\xdc\x7f\x5f\x43\x19\xc5\xf7\xef\x0c\x09\x47\x00\xfe\xa8\xb5\x6a\x21\xb3\x0b\xa3\x17\x89\x77\xb8\x3d\x63\x06\xa5\x2b\x1c\x1a\xd9\x98\x33\x0e\xcc\xc4\xac\x1d\xe2\x5b\x2b\x8f\x11\x67\x0a\x67\xf8\x04\x00\x00\xff\xff\x92\xa4\x17\xbd\x93\x00\x00\x00")
 
 func functionsHelloIndexJsBytes() ([]byte, error) {
 	return bindataRead(
@@ -87,7 +87,7 @@ func functionsHelloIndexJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "functions/hello/index.js", size: 146, mode: os.FileMode(420), modTime: time.Unix(1459213032, 0)}
+	info := bindataFileInfo{name: "functions/hello/index.js", size: 147, mode: os.FileMode(420), modTime: time.Unix(1462198236, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -107,7 +107,7 @@ func infrastructureGitignore() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/.gitignore", size: 10, mode: os.FileMode(420), modTime: time.Unix(1459213032, 0)}
+	info := bindataFileInfo{name: "infrastructure/.gitignore", size: 10, mode: os.FileMode(420), modTime: time.Unix(1457019469, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -127,7 +127,7 @@ func infrastructure_envMainTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/_env/main.tf", size: 159, mode: os.FileMode(420), modTime: time.Unix(1459213032, 0)}
+	info := bindataFileInfo{name: "infrastructure/_env/main.tf", size: 159, mode: os.FileMode(420), modTime: time.Unix(1459260005, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -147,7 +147,7 @@ func infrastructureModulesIamIamTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/modules/iam/iam.tf", size: 631, mode: os.FileMode(420), modTime: time.Unix(1459213032, 0)}
+	info := bindataFileInfo{name: "infrastructure/modules/iam/iam.tf", size: 631, mode: os.FileMode(420), modTime: time.Unix(1459260005, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -167,7 +167,7 @@ func infrastructureModulesIamOutputsTf() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "infrastructure/modules/iam/outputs.tf", size: 85, mode: os.FileMode(420), modTime: time.Unix(1459213032, 0)}
+	info := bindataFileInfo{name: "infrastructure/modules/iam/outputs.tf", size: 85, mode: os.FileMode(420), modTime: time.Unix(1457019469, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
