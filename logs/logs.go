@@ -40,14 +40,8 @@ func (l *Logs) Start() <-chan *Event {
 	}
 
 	go func() {
-		defer close(ch)
-
-		for range l.GroupNames {
-			if err := <-done; err != nil {
-				l.err = err
-				break
-			}
-		}
+		l.wait(done)
+		close(ch)
 	}()
 
 	return ch
@@ -56,6 +50,16 @@ func (l *Logs) Start() <-chan *Event {
 // Err returns the error, if any, during processing.
 func (l *Logs) Err() error {
 	return l.err
+}
+
+// wait for each log group to complete.
+func (l *Logs) wait(done <-chan error) {
+	for range l.GroupNames {
+		if err := <-done; err != nil {
+			l.err = err
+			return
+		}
+	}
 }
 
 // consume logs for group `name`.

@@ -25,7 +25,7 @@ func (l *Log) Start() <-chan *Event {
 	return ch
 }
 
-// start consuming and exit if Follow is not enabled.
+// start consuming and exit after pagination if Follow is not enabled.
 func (l *Log) start(ch chan<- *Event) {
 	defer close(ch)
 
@@ -37,7 +37,7 @@ func (l *Log) start(ch chan<- *Event) {
 	var err error
 
 	for {
-		l.Log.WithField("start", start).Debug("poll")
+		l.Log.WithField("start", start).Debug("request")
 		nextToken, start, err = l.fetch(nextToken, start, ch)
 
 		if err != nil {
@@ -45,11 +45,15 @@ func (l *Log) start(ch chan<- *Event) {
 			break
 		}
 
-		if !l.Follow {
-			break
+		if nextToken == nil && l.Follow {
+			time.Sleep(l.PollInterval)
+			l.Log.WithField("start", start).Debug("poll")
+			continue
 		}
 
-		time.Sleep(l.PollInterval)
+		if nextToken == nil {
+			break
+		}
 	}
 }
 

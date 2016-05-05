@@ -64,7 +64,7 @@ func run(c *cobra.Command, args []string) error {
 	config := logs.Config{
 		Service:       cloudwatchlogs.New(root.Session),
 		StartTime:     time.Now().Add(-duration).UTC(),
-		PollInterval:  2 * time.Second,
+		PollInterval:  5 * time.Second,
 		Follow:        follow,
 		FilterPattern: filter,
 	}
