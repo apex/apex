@@ -174,6 +174,7 @@ See the [Documentation](docs) for more information.
 
 - [Website](http://apex.run)
 - [Twitter](https://twitter.com/apexserverless)
+- [Medium](https://medium.com/apex-serverless)
 
 ## Notes
 
