@@ -542,34 +542,37 @@ func (f *Function) Build() (io.Reader, error) {
 
 		info, err := os.Lstat(filepath.Join(f.Path, path))
 		if err != nil {
+			f.Log.Debugf("Lstat error: %v", err)
 			return nil, err
 		}
 
-		realPath := path
+		realPath := filepath.Join(f.Path, path)
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
-			linkPath, err := os.Readlink(filepath.Join(f.Path, path))
+			linkPath, err := filepath.EvalSymlinks(filepath.Join(f.Path, path))
 			if err != nil {
+				f.Log.Debugf("EvalSymlinks error: %v", err)
 				return nil, err
 			}
 			realPath = linkPath
 		}
 
-		f, err := os.Open(filepath.Join(f.Path, realPath))
+		fh, err := os.Open(realPath)
 		if err != nil {
+			f.Log.Debugf("Open error: %v", err)
 			return nil, err
 		}
 
-		info, err = f.Stat()
+		info, err = fh.Stat()
 		if err != nil {
 			return nil, err
 		}
 
 		unixPath := strings.Replace(path, "\\", "/", -1)
-		if err := zip.AddInfoFile(unixPath, timelessInfo{info}, f); err != nil {
+		if err := zip.AddInfoFile(unixPath, timelessInfo{info}, fh); err != nil {
 			return nil, err
 		}
 
-		if err := f.Close(); err != nil {
+		if err := fh.Close(); err != nil {
 			return nil, err
 		}
 	}
