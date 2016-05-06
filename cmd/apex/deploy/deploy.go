@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
+	"github.com/apex/apex/stats"
 )
 
 // env supplied.
@@ -52,6 +53,13 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
+	stats.Track("Deploy", map[string]interface{}{
+		"concurrency": concurrency,
+		"has_alias":   alias != "",
+		"env":         len(env),
+		"args":        len(args),
+	})
+
 	root.Project.Concurrency = concurrency
 	root.Project.Alias = alias
 
@@ -59,6 +67,14 @@ func run(c *cobra.Command, args []string) error {
 
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
+	}
+
+	for _, fn := range root.Project.Functions {
+		stats.Track("Deploy Function", map[string]interface{}{
+			"runtime":   fn.Runtime,
+			"has_alias": alias != "",
+			"env":       len(env),
+		})
 	}
 
 	for _, s := range env {

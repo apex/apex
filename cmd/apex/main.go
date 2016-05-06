@@ -2,11 +2,13 @@ package main
 
 import (
 	"os"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 
 	"github.com/apex/apex/cmd/apex/root"
+	"github.com/apex/apex/stats"
 
 	// commands
 	_ "github.com/apex/apex/cmd/apex/build"
@@ -54,6 +56,7 @@ var tf = []string{
 
 func main() {
 	log.SetHandler(cli.Default)
+
 	args := os.Args[1:]
 
 	// Cobra does not (currently) allow us to pass flags for a sub-command
@@ -80,4 +83,6 @@ func main() {
 	if err := root.Command.Execute(); err != nil {
 		log.Fatalf("Error: %s", err)
 	}
+
+	stats.Client.ConditionalFlush(500, 24*time.Hour)
 }

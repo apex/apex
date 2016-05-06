@@ -8,6 +8,7 @@ import (
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/infra"
+	"github.com/apex/apex/stats"
 )
 
 // example output.
@@ -32,6 +33,8 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
+	stats.Track("Infra", nil)
+
 	err := root.Project.LoadFunctions()
 
 	// Hack to prevent initial `apex infra apply` from failing,

@@ -14,6 +14,7 @@ import (
 	"github.com/apex/apex/colors"
 	"github.com/apex/apex/cost"
 	"github.com/apex/apex/metrics"
+	"github.com/apex/apex/stats"
 )
 
 // duration of results.
@@ -47,6 +48,10 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
+	stats.Track("Metrics", map[string]interface{}{
+		"since": duration,
+	})
+
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}

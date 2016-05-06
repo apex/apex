@@ -10,6 +10,7 @@ import (
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/logs"
+	"github.com/apex/apex/stats"
 )
 
 // filter pattern.
@@ -57,6 +58,12 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
+	stats.Track("Logs", map[string]interface{}{
+		"has_filter": filter != "",
+		"since":      duration,
+		"follow":     follow,
+	})
+
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}

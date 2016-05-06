@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
+	"github.com/apex/apex/stats"
 )
 
 // name of function.
@@ -49,6 +50,10 @@ func run(c *cobra.Command, args []string) error {
 	}
 
 	fn := root.Project.Functions[0]
+
+	stats.Track("Build", map[string]interface{}{
+		"runtime": fn.Runtime,
+	})
 
 	zip, err := fn.Build()
 	if err != nil {

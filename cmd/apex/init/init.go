@@ -8,6 +8,7 @@ import (
 
 	"github.com/apex/apex/boot"
 	"github.com/apex/apex/cmd/apex/root"
+	"github.com/apex/apex/stats"
 )
 
 // example output.
@@ -30,6 +31,8 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
+	stats.Track("Init", nil)
+
 	if err := root.Prepare(c, args); err != nil {
 		return err
 	}
