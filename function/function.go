@@ -542,7 +542,6 @@ func (f *Function) Build() (io.Reader, error) {
 
 		info, err := os.Lstat(filepath.Join(f.Path, path))
 		if err != nil {
-			f.Log.Debugf("Lstat error: %v", err)
 			return nil, err
 		}
 
@@ -550,7 +549,6 @@ func (f *Function) Build() (io.Reader, error) {
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
 			linkPath, err := filepath.EvalSymlinks(filepath.Join(f.Path, path))
 			if err != nil {
-				f.Log.Debugf("EvalSymlinks error: %v", err)
 				return nil, err
 			}
 			realPath = linkPath
@@ -558,7 +556,6 @@ func (f *Function) Build() (io.Reader, error) {
 
 		fh, err := os.Open(realPath)
 		if err != nil {
-			f.Log.Debugf("Open error: %v", err)
 			return nil, err
 		}
 
