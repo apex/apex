@@ -31,7 +31,10 @@ const example = `  Deploy all functions
   $ apex deploy foo --alias canary
 
   Deploy functions in a different project
-  $ apex deploy -C ~/dev/myapp`
+  $ apex deploy -C ~/dev/myapp
+
+  Deploy all functions starting with "auth"
+  $ apex deploy auth*`
 
 // Command config.
 var Command = &cobra.Command{

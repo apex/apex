@@ -19,7 +19,10 @@ const example = `  Delete all functions
   $ apex delete
 
   Delete specified functions
-  $ apex delete foo bar`
+  $ apex delete foo bar
+
+  Delete all functions starting with "auth"
+  $ apex delete auth*`
 
 // Command config.
 var Command = &cobra.Command{

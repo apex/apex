@@ -35,6 +35,9 @@ const example = `  Print logs for all functions
   Print logs for a single function
   $ apex logs api
 
+  Print logs for all functions starting with "auth"
+  $ apex logs auth*
+
   Print logs for functions with a specified start time, e.g. 5 minutes
   $ apex logs foo bar --since 5m`
 

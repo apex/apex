@@ -127,23 +127,23 @@ func (p *Project) Open() error {
 }
 
 // LoadFunctions reads the ./functions directory, populating the Functions field.
-// If no `names` are specified, all functions are loaded.
-func (p *Project) LoadFunctions(names ...string) error {
+// If no `patterns` are specified, all functions are loaded.
+func (p *Project) LoadFunctions(patterns ...string) error {
 	dir := filepath.Join(p.Path, functionsDir)
 	p.Log.Debugf("loading functions in %s", dir)
 
-	existing, err := p.FunctionDirNames()
+	names, err := p.FunctionDirNames()
 	if err != nil {
 		return err
 	}
 
-	if len(names) == 0 {
-		names = existing
-	}
-
 	for _, name := range names {
-		if !utils.ContainsString(existing, name) {
-			p.Log.Warnf("function %q does not exist in project", name)
+		match, err := matches(name, patterns)
+		if err != nil {
+			return err
+		}
+
+		if !match {
 			continue
 		}
 
@@ -385,4 +385,25 @@ func copyStringMap(in map[string]string) map[string]string {
 		out[k] = v
 	}
 	return out
+}
+
+// matches returns true if `name` is matched by any of the given `patterns`,
+// or if zero `patterns` are provided.
+func matches(name string, patterns []string) (bool, error) {
+	if len(patterns) == 0 {
+		return true, nil
+	}
+
+	for _, pattern := range patterns {
+		match, err := filepath.Match(pattern, name)
+		if err != nil {
+			return false, err
+		}
+
+		if match {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }

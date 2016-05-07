@@ -40,3 +40,9 @@ Output the last hour of logs:
 $ apex logs --since 1h
 $ apex logs -s 1h
 ```
+
+Log all functions which name starts with "auth":
+
+```sh
+$ apex logs auth*
+```

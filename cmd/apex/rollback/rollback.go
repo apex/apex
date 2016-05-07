@@ -21,6 +21,9 @@ const example = `  Rollback all functions to the previous version
   Rollback canary alias for a function
   $ apex rollback foo --alias canary
 
+  Rollback all functions starting with "auth"
+  $ apex rollback auth*
+
   Rollback a function to the specified version
   $ apex rollback bar -v 3`
 

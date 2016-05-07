@@ -26,3 +26,9 @@ For delete of specific functions:
 ```sh
 $ apex delete -f foo bar
 ```
+
+Delete all functions which name starts with "auth":
+
+```sh
+$ apex delete auth*
+```

@@ -6,7 +6,7 @@ it's not deployed.
 After deploy Apex will cleanup old function's versions stored on AWS Lambda leaving only few. Number of retained versions
 can be specified in project or function configuration.
 
-If you prefer to be explicit you can pass one or more function names to `apex deploy`.
+If you prefer to be explicit you can pass one or more function names to `apex deploy`. You may also perform shell-style globbing matches with any command accepting function names, such as `deploy`, `logs`, and `rollback`.
 
 ## Examples
 
@@ -27,4 +27,16 @@ Deploy specific functions:
 ```sh
 $ apex deploy auth
 $ apex deploy auth api
+```
+
+Deploy all functions which name starts with "auth":
+
+```sh
+$ apex deploy auth*
+```
+
+Deploy all functions ending with "_reporter".
+
+```sh
+$ apex deploy *_reporter
 ```
