@@ -547,7 +547,7 @@ func (f *Function) Build() (io.Reader, error) {
 
 		realPath := filepath.Join(f.Path, path)
 		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
-			linkPath, err := filepath.EvalSymlinks(filepath.Join(f.Path, path))
+			linkPath, err := filepath.EvalSymlinks(realPath)
 			if err != nil {
 				return nil, err
 			}
