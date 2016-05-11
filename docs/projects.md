@@ -16,6 +16,10 @@ defaults for functions, if desired. Here's an example of a project.json file dec
 }
 ```
 
+## Symlinks
+
+It's important to note that Apex supports symlinked files and directories. Apex will read the links and pull in these files, even if the links aren't to files within your function. This enables the use of `npm link`, shared configuration and so on.
+
 ## Fields
 
 ### name
