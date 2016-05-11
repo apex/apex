@@ -20,12 +20,15 @@ var tfvars bool
 const example = `  List all functions
   $ apex list
 
+  List functions based on glob
+  $ apex list api_*
+
   Output list as Terraform variables (.tfvars)
   $ apex list --tfvars`
 
 // Command config.
 var Command = &cobra.Command{
-	Use:     "list",
+	Use:     "list [<name>...]",
 	Short:   "Output functions list",
 	Example: example,
 	RunE:    run,
@@ -45,7 +48,7 @@ func run(c *cobra.Command, args []string) error {
 		"tfvars": tfvars,
 	})
 
-	if err := root.Project.LoadFunctions(); err != nil {
+	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}
 
