@@ -1,8 +1,6 @@
 package function
 
-import (
-	"github.com/jpillora/archive"
-)
+import "github.com/apex/apex/archive"
 
 // A Plugin is a chunk of isolated(ish) logic which reacts to various
 // hooks within the system in order to implement specific features
@@ -16,7 +14,7 @@ type Opener interface {
 
 // Builder reacts to the Build hook.
 type Builder interface {
-	Build(*Function, *archive.Archive) error
+	Build(*Function, *archive.Zip) error
 }
 
 // Cleaner reacts to the Clean hook.

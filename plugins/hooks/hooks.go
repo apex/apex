@@ -7,8 +7,8 @@ import (
 	"os/exec"
 
 	"github.com/apex/log"
-	"github.com/jpillora/archive"
 
+	"github.com/apex/apex/archive"
 	"github.com/apex/apex/function"
 )
 
@@ -32,7 +32,7 @@ func (e *HookError) Error() string {
 type Plugin struct{}
 
 // Build runs the "build" hook commands.
-func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	return p.run("build", fn.Hooks.Build, fn)
 }
 

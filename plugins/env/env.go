@@ -3,10 +3,8 @@ package env
 
 import (
 	"encoding/json"
-	"time"
 
-	"github.com/jpillora/archive"
-
+	"github.com/apex/apex/archive"
 	"github.com/apex/apex/function"
 )
 
@@ -21,7 +19,7 @@ const FileName = ".env.json"
 type Plugin struct{}
 
 // Build hook adds .env.json populate with Function.Enironment.
-func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if len(fn.Environment) == 0 {
 		return nil
 	}
@@ -33,5 +31,5 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 		return err
 	}
 
-	return zip.AddBytesMTime(FileName, env, time.Unix(0, 0))
+	return zip.AddBytes(FileName, env)
 }

@@ -5,11 +5,10 @@ import (
 	"bytes"
 	"strings"
 	"text/template"
-	"time"
 
+	"github.com/apex/apex/archive"
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/env"
-	"github.com/jpillora/archive"
 )
 
 func init() {
@@ -57,7 +56,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 }
 
 // Build injects a script for loading the environment.
-func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if fn.Runtime != RuntimeCanonical || len(fn.Environment) == 0 {
 		return nil
 	}
@@ -84,5 +83,5 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 
 	fn.Handler = "_apex_main.handle"
 
-	return zip.AddBytesMTime("_apex_main.py", buf.Bytes(), time.Unix(0, 0))
+	return zip.AddBytes("_apex_main.py", buf.Bytes())
 }

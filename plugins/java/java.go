@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/apex/apex/archive"
 	"github.com/apex/apex/function"
-	"github.com/jpillora/archive"
 )
 
 const (
@@ -58,7 +58,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 }
 
 // Build adds the jar contents to zipfile.
-func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if fn.Runtime != Runtime {
 		return nil
 	}

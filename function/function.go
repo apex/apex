@@ -3,7 +3,6 @@ package function
 
 import (
 	"bytes"
-	"compress/flate"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -21,9 +20,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/dustin/go-humanize"
-	"github.com/jpillora/archive"
 	"gopkg.in/validator.v2"
 
+	"github.com/apex/apex/archive"
 	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/utils"
 	"github.com/apex/apex/vpc"
@@ -526,47 +525,46 @@ func (f *Function) Build() (io.Reader, error) {
 	f.Log.Debugf("creating build")
 
 	buf := new(bytes.Buffer)
-	zip := archive.NewCompressedZipWriter(buf, flate.DefaultCompression)
+	zip := archive.NewZip(buf)
 
 	if err := f.hookBuild(zip); err != nil {
 		return nil, err
 	}
 
-	files, err := utils.LoadFiles(f.Path, f.IgnoreFile)
+	paths, err := utils.LoadFiles(f.Path, f.IgnoreFile)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, path := range files {
+	for _, path := range paths {
 		f.Log.WithField("file", path).Debug("add file to zip")
 
-		info, err := os.Lstat(filepath.Join(f.Path, path))
+		fullPath := filepath.Join(f.Path, path)
+
+		fh, err := os.Open(fullPath)
 		if err != nil {
 			return nil, err
 		}
 
-		realPath := filepath.Join(f.Path, path)
-		if info.Mode()&os.ModeSymlink == os.ModeSymlink {
-			linkPath, err := filepath.EvalSymlinks(realPath)
+		info, err := fh.Stat()
+		if err != nil {
+			return nil, err
+		}
+
+		if info.IsDir() {
+			// It's a symlink, otherwise it shouldn't be returned by LoadFiles
+			linkPath, err := filepath.EvalSymlinks(fullPath)
 			if err != nil {
 				return nil, err
 			}
-			realPath = linkPath
-		}
 
-		fh, err := os.Open(realPath)
-		if err != nil {
-			return nil, err
-		}
-
-		info, err = fh.Stat()
-		if err != nil {
-			return nil, err
-		}
-
-		unixPath := strings.Replace(path, "\\", "/", -1)
-		if err := zip.AddInfoFile(unixPath, timelessInfo{info}, fh); err != nil {
-			return nil, err
+			if err := zip.AddDir(linkPath, path); err != nil {
+				return nil, err
+			}
+		} else {
+			if err := zip.AddFile(path, fh); err != nil {
+				return nil, err
+			}
 		}
 
 		if err := fh.Close(); err != nil {
@@ -706,7 +704,7 @@ func (f *Function) hookOpen() error {
 }
 
 // hookBuild calls Builders.
-func (f *Function) hookBuild(zip *archive.Archive) error {
+func (f *Function) hookBuild(zip *archive.Zip) error {
 	for _, name := range f.Plugins {
 		if p, ok := plugins[name].(Builder); ok {
 			if err := p.Build(f, zip); err != nil {

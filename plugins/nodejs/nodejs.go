@@ -5,10 +5,8 @@ import (
 	"bytes"
 	"strings"
 	"text/template"
-	"time"
 
-	"github.com/jpillora/archive"
-
+	"github.com/apex/apex/archive"
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/env"
 )
@@ -55,7 +53,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 }
 
 // Build injects a script for loading the environment.
-func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
+func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if !p.runtimeSupported(fn) || len(fn.Environment) == 0 {
 		return nil
 	}
@@ -82,7 +80,7 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Archive) error {
 
 	fn.Handler = "_apex_index.handle"
 
-	return zip.AddBytesMTime("_apex_index.js", buf.Bytes(), time.Unix(0, 0))
+	return zip.AddBytes("_apex_index.js", buf.Bytes())
 }
 
 func (p *Plugin) runtimeSupported(fn *function.Function) bool {
