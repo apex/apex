@@ -38,9 +38,11 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Project level function and resource management
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
-- Command & function autocompletion
+- Command & function name autocompletion
+- Function name globbing (ex: `apex deploy api_*`)
 - Transparently generates a zip for your deploy
 - Project bootstrapping with optional Terraform support
+- Function metrics and cost analysis
 - Ignore deploying files with .apexignore
 - Function rollback support
 - Tail function logs
