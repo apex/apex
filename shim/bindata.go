@@ -86,7 +86,7 @@ func bindataGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1460166860, 0)}
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1462933043, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -106,7 +106,7 @@ func bylineJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "byline.js", size: 4710, mode: os.FileMode(420), modTime: time.Unix(1450569510, 0)}
+	info := bindataFileInfo{name: "byline.js", size: 4710, mode: os.FileMode(420), modTime: time.Unix(1453577995, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func indexJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "index.js", size: 837, mode: os.FileMode(420), modTime: time.Unix(1459213032, 0)}
+	info := bindataFileInfo{name: "index.js", size: 837, mode: os.FileMode(420), modTime: time.Unix(1460833316, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -146,7 +146,7 @@ func shimGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "shim.go", size: 126, mode: os.FileMode(420), modTime: time.Unix(1450570798, 0)}
+	info := bindataFileInfo{name: "shim.go", size: 126, mode: os.FileMode(420), modTime: time.Unix(1453577996, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

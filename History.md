@@ -1,4 +1,28 @@
 
+v0.9.0 / 2016-05-10
+===================
+
+  * add symlink docs
+  * add autocomplete docs
+  * add dynamic auto-completion (#403)
+  * add function globbing (#397)
+  * add basic Segment analytics
+  * add support for symlinks. Closes #320 (#375)
+  * add marking not deployed functions on list (#374)
+  * add multiple funcs rollback. Closes #372 (#373)
+  * add support for updating function runtimes (apex deploy). Closes #369
+  * add metric price (#368)
+  * add implicit APEX_FUNCTION_NAME and LAMBDA_FUNCTION_NAME env vars
+  * add apex environment as tfvar `apex_environment`
+  * fix symlink support. Closes #401 #288 (#404)
+  * fix install script, parse Github tag JSON with no newlines fixes #400 (#402)
+  * fix missing logs. Closes #393
+  * fix new lines in Hooks docs. Closes #390
+  * fix generated boilerplate package
+  * fix panic when trying to set incomplete -s var (#379)
+  * fix infra command terraform flags pass-through. Closes #325 (#386)
+  * fix missing defaultEnvironment in project.json. Closes #382
+
 v0.8.0 / 2016-04-08
 ===================
 
