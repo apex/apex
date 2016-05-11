@@ -38,6 +38,7 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Project level function and resource management
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
+- Command & function autocompletion
 - Transparently generates a zip for your deploy
 - Project bootstrapping with optional Terraform support
 - Ignore deploying files with .apexignore
