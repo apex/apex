@@ -15,17 +15,19 @@ When creating a pull-request you should:
 
 Currently Apex does not vendor deps, so you should update them with:
 
-  $ go get -u ./...
+    $ go get -u ./...
 
 # Running Apex in development
 
+Apex requires Go 1.6 or higher.
+
 To run Apex in development execute:
 
-  $ go run cmd/apex/main.go <args>
+    $ go run cmd/apex/main.go <args>
 
 To install Apex from the repo, execute:
 
-  $ go install ./...
+    $ go install ./...
 
 Note that this will install to $GOPATH/bin, which must be in your $PATH.
 
