@@ -11,6 +11,7 @@ import (
 	"github.com/apex/apex/stats"
 
 	// commands
+	_ "github.com/apex/apex/cmd/apex/autocomplete"
 	_ "github.com/apex/apex/cmd/apex/build"
 	_ "github.com/apex/apex/cmd/apex/delete"
 	_ "github.com/apex/apex/cmd/apex/deploy"
