@@ -58,9 +58,10 @@ type InvocationType string
 
 // Invocation types.
 const (
-	RequestResponse InvocationType = "RequestResponse"
-	Event                          = "Event"
-	DryRun                         = "DryRun"
+	RequestResponse         InvocationType = "RequestResponse"
+	Event                                  = "Event"
+	DryRun                                 = "DryRun"
+	DefaultRetainedVersions                = 10
 )
 
 // CurrentAlias name.
@@ -90,7 +91,7 @@ type Config struct {
 	Shim             bool              `json:"shim"`
 	Environment      map[string]string `json:"environment"`
 	Hooks            hooks.Hooks       `json:"hooks"`
-	RetainedVersions int               `json:"retainedVersions"`
+	RetainedVersions *int              `json:"retainedVersions"`
 	VPC              vpc.VPC           `json:"vpc"`
 }
 
@@ -158,6 +159,10 @@ func (f *Function) defaults() {
 
 	if f.VPC.SecurityGroups == nil {
 		f.VPC.SecurityGroups = []string{}
+	}
+
+	if f.RetainedVersions == nil {
+		f.RetainedVersions = aws.Int(DefaultRetainedVersions)
 	}
 
 	f.Setenv("APEX_FUNCTION_NAME", f.Name)
@@ -284,14 +289,19 @@ func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
 	return f.GetConfigQualifier(f.Alias)
 }
 
-// Update the function with the given `zip`.
-func (f *Function) Update(zip []byte) error {
-	f.Log.Info("updating function")
-
+// cleanup removes any deployed functions beyond the configured `RetainedVersions` value
+func (f *Function) cleanup() error {
 	versionsToCleanup, err := f.versionsToCleanup()
 	if err != nil {
 		return err
 	}
+
+	return f.removeVersions(versionsToCleanup)
+}
+
+// Update the function with the given `zip`.
+func (f *Function) Update(zip []byte) error {
+	f.Log.Info("updating function")
 
 	updated, err := f.Service.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &f.FunctionName,
@@ -312,7 +322,7 @@ func (f *Function) Update(zip []byte) error {
 		"name":    f.FunctionName,
 	}).Info("function updated")
 
-	return f.removeVersions(versionsToCleanup)
+	return f.cleanup()
 }
 
 // Create the function with the given `zip`.
@@ -600,7 +610,6 @@ func (f *Function) versions() ([]*lambda.FunctionConfiguration, error) {
 	}
 
 	versions := list.Versions[1:] // remove $LATEST
-
 	return versions, nil
 }
 
@@ -611,8 +620,12 @@ func (f *Function) versionsToCleanup() ([]*lambda.FunctionConfiguration, error) 
 		return nil, err
 	}
 
-	if len(versions) > f.RetainedVersions {
-		return versions[:len(versions)-f.RetainedVersions], nil
+	if *f.RetainedVersions == 0 {
+		return versions, nil
+	}
+
+	if len(versions) > *f.RetainedVersions {
+		return versions[:len(versions)-*f.RetainedVersions], nil
 	}
 
 	return nil, nil

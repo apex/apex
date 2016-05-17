@@ -22,13 +22,14 @@ import (
 	"github.com/apex/apex/infra"
 	"github.com/apex/apex/utils"
 	"github.com/apex/apex/vpc"
+	"github.com/aws/aws-sdk-go/aws"
 )
 
 const (
-	// DefaultMemory defines default memory value (MB) for every function in a project
+// DefaultMemory defines default memory value (MB) for every function in a project
 	DefaultMemory = 128
 
-	// DefaultTimeout defines default timeout value (s) for every function in a project
+// DefaultTimeout defines default timeout value (s) for every function in a project
 	DefaultTimeout = 3
 )
 
@@ -43,7 +44,7 @@ type Config struct {
 	Handler            string            `json:"handler"`
 	Shim               bool              `json:"shim"`
 	NameTemplate       string            `json:"nameTemplate"`
-	RetainedVersions   int               `json:"retainedVersions"`
+	RetainedVersions   *int               `json:"retainedVersions"`
 	DefaultEnvironment string            `json:"defaultEnvironment"`
 	Environment        map[string]string `json:"environment"`
 	Hooks              hooks.Hooks       `json:"hooks"`
@@ -82,8 +83,8 @@ func (p *Project) defaults() {
 		p.NameTemplate = "{{.Project.Name}}_{{.Function.Name}}"
 	}
 
-	if p.RetainedVersions == 0 {
-		p.RetainedVersions = 10
+	if p.RetainedVersions == nil {
+		p.RetainedVersions = aws.Int(function.DefaultRetainedVersions)
 	}
 }
 
