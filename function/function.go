@@ -58,10 +58,9 @@ type InvocationType string
 
 // Invocation types.
 const (
-	RequestResponse         InvocationType = "RequestResponse"
-	Event                                  = "Event"
-	DryRun                                 = "DryRun"
-	DefaultRetainedVersions                = 10
+	RequestResponse InvocationType = "RequestResponse"
+	Event                          = "Event"
+	DryRun                         = "DryRun"
 )
 
 // CurrentAlias name.
@@ -159,10 +158,6 @@ func (f *Function) defaults() {
 
 	if f.VPC.SecurityGroups == nil {
 		f.VPC.SecurityGroups = []string{}
-	}
-
-	if f.RetainedVersions == nil {
-		f.RetainedVersions = aws.Int(DefaultRetainedVersions)
 	}
 
 	f.Setenv("APEX_FUNCTION_NAME", f.Name)
@@ -287,16 +282,6 @@ func (f *Function) GetConfigQualifier(s string) (*lambda.GetFunctionOutput, erro
 // GetConfigCurrent returns the function configuration for the current version.
 func (f *Function) GetConfigCurrent() (*lambda.GetFunctionOutput, error) {
 	return f.GetConfigQualifier(f.Alias)
-}
-
-// cleanup removes any deployed functions beyond the configured `RetainedVersions` value
-func (f *Function) cleanup() error {
-	versionsToCleanup, err := f.versionsToCleanup()
-	if err != nil {
-		return err
-	}
-
-	return f.removeVersions(versionsToCleanup)
 }
 
 // Update the function with the given `zip`.
@@ -597,6 +582,16 @@ func (f *Function) Clean() error {
 // GroupName returns the CloudWatchLogs group name.
 func (f *Function) GroupName() string {
 	return fmt.Sprintf("/aws/lambda/%s", f.FunctionName)
+}
+
+// cleanup removes any deployed functions beyond the configured `RetainedVersions` value
+func (f *Function) cleanup() error {
+	versionsToCleanup, err := f.versionsToCleanup()
+	if err != nil {
+		return err
+	}
+
+	return f.removeVersions(versionsToCleanup)
 }
 
 // versions returns list of all versions deployed to AWS Lambda

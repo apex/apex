@@ -26,11 +26,14 @@ import (
 )
 
 const (
-// DefaultMemory defines default memory value (MB) for every function in a project
+	// DefaultMemory defines default memory value (MB) for every function in a project
 	DefaultMemory = 128
 
-// DefaultTimeout defines default timeout value (s) for every function in a project
+	// DefaultTimeout defines default timeout value (s) for every function in a project
 	DefaultTimeout = 3
+
+	// DefaultRetainedVersions defines numbers of retained versions
+	DefaultRetainedVersions = 10
 )
 
 // Config for project.
@@ -44,7 +47,7 @@ type Config struct {
 	Handler            string            `json:"handler"`
 	Shim               bool              `json:"shim"`
 	NameTemplate       string            `json:"nameTemplate"`
-	RetainedVersions   *int               `json:"retainedVersions"`
+	RetainedVersions   *int              `json:"retainedVersions"`
 	DefaultEnvironment string            `json:"defaultEnvironment"`
 	Environment        map[string]string `json:"environment"`
 	Hooks              hooks.Hooks       `json:"hooks"`
@@ -84,7 +87,7 @@ func (p *Project) defaults() {
 	}
 
 	if p.RetainedVersions == nil {
-		p.RetainedVersions = aws.Int(function.DefaultRetainedVersions)
+		p.RetainedVersions = aws.Int(DefaultRetainedVersions)
 	}
 }
 
