@@ -1,5 +1,5 @@
 
-Hello! Please include the following when creating an issue:
+If you have a bug report please let us know the following:
 
   - Operating system
   - Version (`apex version`)
