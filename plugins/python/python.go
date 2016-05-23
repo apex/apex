@@ -81,7 +81,7 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 		return err
 	}
 
-	fn.Handler = "_apex_main.handle"
+	fn.Handler = "_apex_main." + method
 
 	return zip.AddBytes("_apex_main.py", buf.Bytes())
 }
