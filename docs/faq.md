@@ -3,6 +3,8 @@
 
 It's highly recommended to create separate AWS accounts for staging and production environments. This provides complete isolation of resources, and allows you to easily provide granular access to environments as required. See [AWS credentials](#aws-credentials) for supplying an account profile.
 
+AWS IAM roles can be used to provide quick access to each environment using a drop-down in the AWS Console.
+
 ## How is this different than Serverless?
 
 Serverless uses CloudFormation to bootstrap resources, which can be great for getting started, but is generally less robust than [Terraform](https://www.terraform.io/) for managing infrastructure throughout its lifetime. For this reason Apex does not currently provide resource management. This may change in the future for light bootstrapping, likely in an optional form.
@@ -10,6 +12,8 @@ Serverless uses CloudFormation to bootstrap resources, which can be great for ge
 At the time of writing Serverless does not support shimming for languages which are not supported natively by Lambda, such as Golang. Apex does this for you out of the box.
 
 The structures imposed by each project are different, as well as varying features, see the documentation for each project to see what either supports.
+
+Serverless aims to be provider agnostic, which can be both a pro and a con depending on the level of abstraction you're comfortable with, and if you desire to have a tool modelled closer to a single provider's capabilities. This similar to the contention around ORM vs "raw" queries.
 
 Serverless is written using Node.js, Apex is written in Go.
 
