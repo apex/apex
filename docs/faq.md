@@ -5,6 +5,10 @@ It's highly recommended to create separate AWS accounts for staging and producti
 
 AWS IAM roles can be used to provide quick access to each environment using a drop-down in the AWS Console.
 
+## Can I test functions locally?
+
+Currently there is no way to run functions locally, it would be a very large task to emulate the AWS. We recommend writing the bulk of your logic as libraries or packages native to your chosen language, using only thing connective layers in the Lambda functions themselves. This makes it easy to unit-test your functions, and makes them more portable if you're worried about vendor lock-in.
+
 ## How is this different than Serverless?
 
 Serverless uses CloudFormation to bootstrap resources, which can be great for getting started, but is generally less robust than [Terraform](https://www.terraform.io/) for managing infrastructure throughout its lifetime. For this reason Apex does not currently provide resource management. This may change in the future for light bootstrapping, likely in an optional form.
@@ -15,7 +19,7 @@ The structures imposed by each project are different, as well as varying feature
 
 Serverless aims to be provider agnostic, which can be both a pro and a con depending on the level of abstraction you're comfortable with, and if you desire to have a tool modelled closer to a single provider's capabilities. This similar to the contention around ORM vs "raw" queries.
 
-Serverless is written using Node.js, Apex is written in Go.
+Serverless is written using Node.js, Apex is written in Go. Apex aims to be a simple and robust solution, while Serverless intends on providing a more feature-rich solution, pick your poison.
 
 ## Is using the Node.js shim slow?
 
