@@ -97,7 +97,7 @@ func run(c *cobra.Command, args []string) error {
 			reply, logs, err = fn.Invoke(v, nil)
 		}
 
-		if includeLogs {
+		if includeLogs && logs != nil {
 			io.Copy(os.Stderr, logs)
 		}
 
