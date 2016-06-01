@@ -20,8 +20,9 @@ const Dir = "infrastructure"
 // Proxy is a wrapper around Terraform commands.
 type Proxy struct {
 	Functions   []*function.Function
-	Region      string
 	Environment string
+	Region      string
+	Role        string
 }
 
 // Run terraform command in infrastructure directory.
@@ -51,6 +52,11 @@ func (p *Proxy) functionVars() (args []string) {
 
 	args = append(args, "-var")
 	args = append(args, fmt.Sprintf("apex_environment=%s", p.Environment))
+
+	if p.Role != "" {
+		args = append(args, "-var")
+		args = append(args, fmt.Sprintf("apex_function_role=%s", p.Role))
+	}
 
 	for _, fn := range p.Functions {
 		config, err := fn.GetConfig()

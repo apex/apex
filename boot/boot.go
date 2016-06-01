@@ -8,10 +8,28 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/aws/aws-sdk-go/service/iam/iamiface"
+	"github.com/tj/go-prompt"
+
 	"github.com/apex/apex/boot/boilerplate"
 	"github.com/apex/apex/infra"
-	"github.com/tj/go-prompt"
 )
+
+// TODO(tj): attempt creation of S3 bucket to streamline that as well
+// TODO(tj): idempotency, if the project exists then skip all this, or provision AWS
+// TODO(tj): validate the name, \w+ or similar should be fine
+
+var logo = `
+
+             _    ____  _______  __
+            / \  |  _ \| ____\ \/ /
+           / _ \ | |_) |  _|  \  /
+          / ___ \|  __/| |___ /  \
+         /_/   \_\_|   |_____/_/\_\
+
+`
 
 var modulesCommand = `
   terraform get
@@ -28,16 +46,6 @@ var projectConfig = `
   "environment": {}
 }`
 
-var projectConfigWithoutRole = `
-{
-  "name": "%s",
-  "description": "%s",
-  "memory": 128,
-  "timeout": 5,
-  "defaultEnvironment": "dev",
-  "environment": {}
-}`
-
 var remoteStateCommand = `
   terraform remote config \
     -backend=s3 \
@@ -46,66 +54,183 @@ var remoteStateCommand = `
     -backend-config="key=terraform/state/%s"
 `
 
-// All bootstraps a project.
-func All(region string) error {
-	help("Enter the name of your project. It should be machine-friendly, as this\nis used to prefix your functions in Lambda.")
-	name := prompt.StringRequired(indent("  Project name: "))
+var setupCompleteVanilla = `
+  Setup complete, deploy those functions!
 
-	help("Enter an optional description of your project.")
-	description := prompt.String(indent("  Project description: "))
+    $ apex deploy
+`
 
-	fmt.Println()
-	if prompt.Confirm(indent("Would you like to manage infrastructure with Terraform? (yes/no) ")) {
-		fmt.Println()
-		if err := initProject(name, description, ""); err != nil {
-			return err
-		}
+var setupCompleteTerraform = `
+  Setup complete, preview the infrastructure plan,
+  apply it, then deploy those functions. Later you can
+  change the environment with the --env flag.
 
-		help("List the environments you would like (comma separated, e.g.: 'dev, test, prod')")
-		envs := readEnvs(prompt.String(indent("  Environments: ")))
+    $ apex infra plan
+    $ apex infra apply
+    $ apex deploy
+`
 
-		fmt.Println()
-		if err := initInfra(envs); err != nil {
-			return err
-		}
+var iamAssumeRolePolicy = `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}`
 
-		fmt.Println()
-		if prompt.Confirm(indent("Would you like to store Terraform state on S3? (yes/no) ")) {
-			help("Enter the S3 bucket name for managing Terraform state (bucket needs\nto exist, use separate bucket for each project).")
-			bucket := prompt.StringRequired(indent("  S3 bucket name: "))
-			fmt.Println()
+var iamLogsPolicy = `{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}`
 
-			if err := setupRemoteState(region, bucket, envs); err != nil {
-				return err
-			}
-		}
+// Bootstrapper initializes a project and AWS account for the user.
+type Bootstrapper struct {
+	IAM    iamiface.IAMAPI
+	Region string
 
-		help("Setup complete!\n\nNext steps: \n  - apex infra plan - show an execution plan for Terraform configs\n  - apex infra apply - apply Terraform configs\n  - apex deploy - deploy example function")
+	name        string
+	description string
+}
+
+// Boot the project.
+func (b *Bootstrapper) Boot() error {
+	fmt.Println(logo)
+
+	if b.isProject() {
+		help("I've detected a ./project.json file, this seems to already be a project!")
 		return nil
 	}
 
-	help("Enter IAM role used by Lambda functions.")
-	iamRole := prompt.StringRequired(indent("  IAM role: "))
+	help("Enter the name of your project. It should be machine-friendly, as this\nis used to prefix your functions in Lambda.")
+	b.name = prompt.StringRequired(indent("  Project name: "))
+
+	help("Enter an optional description of your project.")
+	b.description = prompt.String(indent("  Project description: "))
 
 	fmt.Println()
-	if err := initProject(name, description, iamRole); err != nil {
+	if prompt.Confirm(indent("Would you like to manage infrastructure with Terraform? (yes/no) ")) {
+		return b.bootTerraform()
+	}
+
+	fmt.Println()
+	return b.bootVanilla()
+}
+
+// check if there's a project.
+func (b *Bootstrapper) isProject() bool {
+	_, err := os.Stat("project.json")
+	return err == nil
+}
+
+// Bootstrap Terraform.
+func (b *Bootstrapper) bootTerraform() error {
+	fmt.Println()
+
+	iamRole, err := b.createRole()
+	if err != nil {
 		return err
 	}
 
-	help("Setup complete!\n\nNext step: \n  - apex deploy - deploy example function")
+	if err := b.initProjectFiles(iamRole); err != nil {
+		return err
+	}
+
+	help("List the environments you would like (comma separated, e.g.: 'dev, test, prod')")
+	envs := readEnvs(prompt.String(indent("  Environments: ")))
+
+	fmt.Println()
+	if err := initInfra(envs); err != nil {
+		return err
+	}
+
+	fmt.Println()
+	if prompt.Confirm(indent("Would you like to store Terraform state on S3? (yes/no) ")) {
+		help("Enter the S3 bucket name for managing Terraform state (bucket needs\nto exist, use separate bucket for each project).")
+		bucket := prompt.StringRequired(indent("  S3 bucket name: "))
+		fmt.Println()
+
+		if err := setupRemoteState(b.Region, bucket, envs); err != nil {
+			return err
+		}
+	}
+
+	fmt.Println(setupCompleteTerraform)
+	return nil
+
+}
+
+// Bootstrap without Terraform.
+func (b *Bootstrapper) bootVanilla() error {
+	iamRole, err := b.createRole()
+	if err != nil {
+		return err
+	}
+
+	if err := b.initProjectFiles(iamRole); err != nil {
+		return err
+	}
+
+	fmt.Println(setupCompleteVanilla)
 	return nil
 }
 
-// Project bootstraps a project.
-func initProject(name, description, iamRole string) error {
+// Create IAM role, returning the ARN.
+func (b *Bootstrapper) createRole() (string, error) {
+	roleName := fmt.Sprintf("%s_lambda_function", b.name)
+	policyName := fmt.Sprintf("%s_lambda_logs", b.name)
+
+	logf("creating IAM %s role", roleName)
+	role, err := b.IAM.CreateRole(&iam.CreateRoleInput{
+		RoleName:                 &roleName,
+		AssumeRolePolicyDocument: aws.String(iamAssumeRolePolicy),
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("creating role: %s", err)
+	}
+
+	logf("creating IAM %s policy", policyName)
+	policy, err := b.IAM.CreatePolicy(&iam.CreatePolicyInput{
+		PolicyName:     &policyName,
+		Description:    aws.String("Allow lambda_function to utilize CloudWatchLogs. Created by apex(1)."),
+		PolicyDocument: aws.String(iamLogsPolicy),
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("creating policy: %s", err)
+	}
+
+	logf("attaching policy to lambda_function role.")
+	_, err = b.IAM.AttachRolePolicy(&iam.AttachRolePolicyInput{
+		RoleName:  &roleName,
+		PolicyArn: policy.Policy.Arn,
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("creating policy: %s", err)
+	}
+
+	return *role.Role.Arn, nil
+}
+
+// Initialize project files such as project.json and ./functions.
+func (b *Bootstrapper) initProjectFiles(iamRole string) error {
 	logf("creating ./project.json")
 
-	var project string
-	if iamRole == "" {
-		project = fmt.Sprintf(projectConfigWithoutRole, name, description)
-	} else {
-		project = fmt.Sprintf(projectConfig, name, description, iamRole)
-	}
+	project := fmt.Sprintf(projectConfig, b.name, b.description, iamRole)
 
 	if err := ioutil.WriteFile("project.json", []byte(project), 0644); err != nil {
 		return err
@@ -177,7 +302,7 @@ func setupRemoteState(region, bucket string, envs []string) error {
 	for _, env := range envs {
 		logf("setting up remote %s state in bucket %q", env, bucket)
 		cmd := fmt.Sprintf(remoteStateCommand, region, bucket, env)
-		dir := infra.Dir
+		dir := filepath.Join(infra.Dir, env)
 		if err := shell(cmd, dir); err != nil {
 			return err
 		}

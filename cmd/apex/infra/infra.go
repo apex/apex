@@ -49,6 +49,7 @@ func run(c *cobra.Command, args []string) error {
 		Functions:   root.Project.Functions,
 		Region:      *root.Session.Config.Region,
 		Environment: root.Project.Environment,
+		Role:        root.Project.Role,
 	}
 
 	return p.Run(args...)
