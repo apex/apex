@@ -55,6 +55,23 @@ var tf = []string{
 	"version",
 }
 
+// TODO(tj): remove this evil hack, necessary for now for cases such as:
+//
+//   $ apex --env prod infra deploy
+//
+// instead of:
+//
+//   $ apex infra --env prod deploy
+//
+func isInfra(args []string) bool {
+	for _, arg := range args {
+		if arg == "infra" {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	log.SetHandler(cli.Default)
 
@@ -63,7 +80,7 @@ func main() {
 	// Cobra does not (currently) allow us to pass flags for a sub-command
 	// as if they were arguments, so we inject -- here after the first TF command.
 	// TODO(tj): replace with a real solution and send PR to Cobra #251
-	if len(os.Args) > 1 && os.Args[1] == "infra" {
+	if len(os.Args) > 1 && isInfra(os.Args) {
 		off := 1
 
 	out:
