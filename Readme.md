@@ -36,6 +36,7 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Hook support for running commands (transpile code, lint, etc)
 - Batteries included but optional (opt-in to higher level abstractions)
 - Project level function and resource management
+- Idempotent deployments (checksums skip already-deployed code)
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
 - Command & function name autocompletion
