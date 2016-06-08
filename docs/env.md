@@ -26,3 +26,5 @@ Specify environment variables in project.json or function.json:
   }
 }
 ```
+
+Environment variables in json configuration are must be string.
