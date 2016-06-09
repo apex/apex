@@ -1,5 +1,5 @@
 {
   "name": "python",
   "description": "Python example project",
-  "role": "arn:aws:iam::293503197324:role/lambda"
+  "role": "arn:aws:iam::293503197324:role/apex_lambda_function"
 }

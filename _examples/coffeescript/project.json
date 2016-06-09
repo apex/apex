@@ -1,8 +1,8 @@
 {
   "name": "coffeescript",
   "description": "Coffeescript example using hooks",
-  "role": "arn:aws:iam::293503197324:role/lambda",
-  "runtime": "nodejs",
+  "role": "arn:aws:iam::293503197324:role/apex_lambda_function",
+  "runtime": "nodejs4.3",
   "hooks": {
     "build": "coffee -cs < index.coffee > index.js",
     "clean": "rm index.js"
