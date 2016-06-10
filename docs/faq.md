@@ -33,7 +33,7 @@ The shim currently operates using JSON over stdout, because of this you must use
 
 Apex is not designed to handle legacy cases, or functions created by other software. For most operations Apex references the local functions, if it is not defined locally, then you cannot operate against it. This is by-design and is unlikely to change.
 
-## Why does Apex use _apex_index.handle when environment variables are used?
+## What is _apex_index.handle?
 
 Apex provides environment to runtimes by "wrapping" the existing user-defined handlers. For example in the Node.js case an `_apex_index.js` file is created in order to populate `process.env` before requiring the original such as `index.js`.
 
