@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
@@ -15,23 +14,16 @@ import (
 	"github.com/apex/apex/stats"
 )
 
-// topic name.
-var topic string
-
 // example output.
-const example = `  Output documentation topics
-  $ apex docs
-
-  Output documentation for a topic
-  $ apex docs project.json`
+const example = `  Output documentation
+  $ apex docs`
 
 // Command config.
 var Command = &cobra.Command{
-	Use:              "docs [<topic>]",
+	Use:              "docs",
 	Short:            "Output documentation",
 	Example:          example,
 	PersistentPreRun: root.PreRunNoop,
-	PreRun:           preRun,
 	RunE:             run,
 }
 
@@ -40,18 +32,9 @@ func init() {
 	root.Register(Command)
 }
 
-// PreRun joins args to form the topic.
-func preRun(c *cobra.Command, args []string) {
-	if len(args) >= 1 {
-		topic = strings.Join(args, " ")
-	}
-}
-
 // Run command.
 func run(c *cobra.Command, args []string) (err error) {
-	stats.Track("Docs", map[string]interface{}{
-		"topic": topic,
-	})
+	stats.Track("Docs", nil)
 
 	var w io.WriteCloser = os.Stdout
 
