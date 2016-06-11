@@ -119,7 +119,7 @@ func ParseEnv(env []string) (map[string]string, error) {
 		if len(parts) == 2 {
 			m[parts[0]] = parts[1]
 		} else {
-			return nil, fmt.Errorf("environment variable %s is missing a value", parts[0])
+			return nil, fmt.Errorf("environment variable %q is missing a value", parts[0])
 		}
 	}
 
