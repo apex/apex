@@ -10,10 +10,14 @@ import (
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/stats"
+	"github.com/apex/apex/utils"
 )
 
 // name of function.
 var name string
+
+// env supplied.
+var env []string
 
 // example output.
 const example = `  Build zip output for a function
@@ -31,6 +35,9 @@ var Command = &cobra.Command{
 // Initialize.
 func init() {
 	root.Register(Command)
+
+	f := Command.Flags()
+	f.StringSliceVarP(&env, "set", "s", nil, "Set environment variable")
 }
 
 // PreRun errors if argument is missing.
@@ -53,7 +60,17 @@ func run(c *cobra.Command, args []string) error {
 
 	stats.Track("Build", map[string]interface{}{
 		"runtime": fn.Runtime,
+		"env":     len(env),
 	})
+
+	vars, err := utils.ParseEnv(env)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range vars {
+		root.Project.Setenv(k, v)
+	}
 
 	zip, err := fn.Build()
 	if err != nil {

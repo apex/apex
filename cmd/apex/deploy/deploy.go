@@ -2,13 +2,11 @@
 package deploy
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/stats"
+	"github.com/apex/apex/utils"
 )
 
 // env supplied.
@@ -80,13 +78,13 @@ func run(c *cobra.Command, args []string) error {
 		})
 	}
 
-	for _, s := range env {
-		parts := strings.SplitN(s, "=", 2)
-		if len(parts) == 2 {
-			root.Project.Setenv(parts[0], parts[1])
-		} else {
-			return fmt.Errorf("environment variable %s needs a value", parts[0])
-		}
+	vars, err := utils.ParseEnv(env)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range vars {
+		root.Project.Setenv(k, v)
 	}
 
 	return root.Project.DeployAndClean()

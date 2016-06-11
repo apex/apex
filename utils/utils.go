@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Unknwon/goconfig"
 	"github.com/mitchellh/go-homedir"
@@ -107,4 +108,20 @@ func ContainsString(array []string, element string) bool {
 		}
 	}
 	return false
+}
+
+// ParseEnv accepts an `env` slice from the command-line and returns a map.
+func ParseEnv(env []string) (map[string]string, error) {
+	m := make(map[string]string)
+
+	for _, s := range env {
+		parts := strings.SplitN(s, "=", 2)
+		if len(parts) == 2 {
+			m[parts[0]] = parts[1]
+		} else {
+			return nil, fmt.Errorf("environment variable %s is missing a value", parts[0])
+		}
+	}
+
+	return m, nil
 }
