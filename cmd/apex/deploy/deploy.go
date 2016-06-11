@@ -64,8 +64,6 @@ func run(c *cobra.Command, args []string) error {
 	root.Project.Concurrency = concurrency
 	root.Project.Alias = alias
 
-	c.Root().PersistentFlags().Lookup("name string")
-
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}
