@@ -113,11 +113,12 @@ func (f *Function) Open(environment string) error {
 	f.defaults()
 	f.Log = f.Log.WithField("function", f.Name)
 
-	functionConfigFileName := "function.json"
+	configFile := "function.json"
 	if environment != "" {
-		functionConfigFileName = fmt.Sprintf("function.%s.json", environment)
+		configFile = fmt.Sprintf("function.%s.json", environment)
 	}
-	p, err := os.Open(filepath.Join(f.Path, functionConfigFileName))
+
+	p, err := os.Open(filepath.Join(f.Path, configFile))
 	if err == nil {
 		if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
 			return err
@@ -129,7 +130,7 @@ func (f *Function) Open(environment string) error {
 	}
 
 	if err := validator.Validate(&f.Config); err != nil {
-		return fmt.Errorf("error opening function %s: %s from file: %s", f.Name, err.Error(), functionConfigFileName)
+		return fmt.Errorf("error opening function %s: %s from file: %s", f.Name, err.Error(), configFile)
 	}
 
 	ignoreFile, err := utils.ReadIgnoreFile(f.Path)

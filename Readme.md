@@ -173,26 +173,6 @@ $ echo '{ "name": "Tobi" }' | apex invoke bar
 { "hello": "Tobi" }
 ```
 
-## Multiple environments
-
-Apex supports multiple environments with flag --env. Multiple project.ENV.json and function.ENV.json files can be created, to support deployment of single lambda function to different AWS regions and accounts without code duplication. Without --env flag Apex will use project.json and function.json default files.
-
-The directory structure for multiple environments would be:
-
-```
-project.development.json
-project.production.json
-functions
-├── bar
-│   ├── function.development.json
-│   ├── function.production.json
-│   └── index.js
-└── foo
-    ├── function.development.json
-    ├── function.production.json
-    └── index.js
-```
-
 See the [Documentation](docs) for more information.
 
 ## Links

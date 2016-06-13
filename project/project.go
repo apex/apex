@@ -95,11 +95,12 @@ func (p *Project) defaults() {
 func (p *Project) Open() error {
 	p.defaults()
 
-	projectConfigFileName := "project.json"
+	configFile := "project.json"
 	if p.Environment != "" {
-		projectConfigFileName = fmt.Sprintf("project.%s.json", p.Environment)
+		configFile = fmt.Sprintf("project.%s.json", p.Environment)
 	}
-	f, err := os.Open(filepath.Join(p.Path, projectConfigFileName))
+
+	f, err := os.Open(filepath.Join(p.Path, configFile))
 	if err != nil {
 		return err
 	}

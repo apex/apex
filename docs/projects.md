@@ -4,7 +4,7 @@ all `apex(1)` operations have access to these functions.
 
 ## Configuration
 
-Projects must have a project.json file in the root directory. This file contains details about your project, as well as
+Projects have a project.json file in the root directory. This file contains details about your project, as well as
 defaults for functions, if desired. Here's an example of a project.json file declaring a default AWS IAM "role" and "memory" for all functions.
 
 ```json
@@ -14,6 +14,24 @@ defaults for functions, if desired. Here's an example of a project.json file dec
   "role": "arn:aws:iam::293503197324:role/lambda",
   "memory": 512
 }
+```
+
+## Multiple Environments
+
+Multiple environments are supported with the --env flag. By default project.json and function.json are used, however when --env is specified project.ENV.json and function.ENV.json will be used. For example your directory structure may look something like the following:
+
+```
+project.stage.json
+project.prod.json
+functions
+├── bar
+│   ├── function.stage.json
+│   ├── function.prod.json
+│   └── index.js
+└── foo
+    ├── function.stage.json
+    ├── function.prod.json
+    └── index.js
 ```
 
 ## Symlinks
