@@ -14,14 +14,14 @@ import (
 
 var credentialsError = `
 
-  AWS region missing, are your credentials set up? Try one of the following:
+  AWS region missing, are your credentials set up? Try:
 
-  $ export AWS_PROFILE=<profile-name>
+  $ export AWS_PROFILE=myapp-stage
   $ apex init
 
-  $ apex init --profile <profile-name>
-
-  Visit http://apex.run/#aws-credentials for more details.
+  Visit http://apex.run/#aws-credentials for more details on
+  setting up AWS credentials and specifying which profile to
+  use.
 
 `
 

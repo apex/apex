@@ -86,7 +86,7 @@ func bindataGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1462933043, 0)}
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1465860238, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
