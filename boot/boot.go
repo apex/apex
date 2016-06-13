@@ -148,7 +148,7 @@ func (b *Bootstrapper) bootTerraform() error {
 		return err
 	}
 
-	help("List the environments you would like (comma separated, e.g.: 'dev, test, prod')")
+	help("List the environments you would like (comma separated, e.g.: 'stage, prod')")
 	envs := readEnvs(prompt.String(indent("  Environments: ")))
 
 	fmt.Println()
