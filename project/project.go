@@ -95,7 +95,11 @@ func (p *Project) defaults() {
 func (p *Project) Open() error {
 	p.defaults()
 
-	f, err := os.Open(filepath.Join(p.Path, "project.json"))
+	projectConfigFileName := "project.json"
+	if p.Environment != "" {
+		projectConfigFileName = fmt.Sprintf("project.%s.json", p.Environment)
+	}
+	f, err := os.Open(filepath.Join(p.Path, projectConfigFileName))
 	if err != nil {
 		return err
 	}
@@ -333,7 +337,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 		return nil, err
 	}
 
-	if err := fn.Open(); err != nil {
+	if err := fn.Open(p.Environment); err != nil {
 		return nil, err
 	}
 

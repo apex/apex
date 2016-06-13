@@ -109,11 +109,15 @@ type Function struct {
 }
 
 // Open the function.json file and prime the config.
-func (f *Function) Open() error {
+func (f *Function) Open(environment string) error {
 	f.defaults()
 	f.Log = f.Log.WithField("function", f.Name)
 
-	p, err := os.Open(filepath.Join(f.Path, "function.json"))
+	functionConfigFileName := "function.json"
+	if environment != "" {
+		functionConfigFileName = fmt.Sprintf("function.%s.json", environment)
+	}
+	p, err := os.Open(filepath.Join(f.Path, functionConfigFileName))
 	if err == nil {
 		if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
 			return err
@@ -125,7 +129,7 @@ func (f *Function) Open() error {
 	}
 
 	if err := validator.Validate(&f.Config); err != nil {
-		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
+		return fmt.Errorf("error opening function %s: %s from file: %s", f.Name, err.Error(), functionConfigFileName)
 	}
 
 	ignoreFile, err := utils.ReadIgnoreFile(f.Path)

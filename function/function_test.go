@@ -32,28 +32,28 @@ func TestFunction_Open_requireConfigValues(t *testing.T) {
 		Path: "_fixtures/invalidRuntime",
 		Log:  log.Log,
 	}
-	runtimeErr := fn.Open()
+	runtimeErr := fn.Open("")
 	assert.Contains(t, runtimeErr.Error(), "Runtime: zero value")
 
 	fn = &function.Function{
 		Path: "_fixtures/invalidMemory",
 		Log:  log.Log,
 	}
-	memoryErr := fn.Open()
+	memoryErr := fn.Open("")
 	assert.Contains(t, memoryErr.Error(), "Memory: zero value")
 
 	fn = &function.Function{
 		Path: "_fixtures/invalidTimeout",
 		Log:  log.Log,
 	}
-	timeoutErr := fn.Open()
+	timeoutErr := fn.Open("")
 	assert.Contains(t, timeoutErr.Error(), "Timeout: zero value")
 
 	fn = &function.Function{
 		Path: "_fixtures/invalidRole",
 		Log:  log.Log,
 	}
-	roleErr := fn.Open()
+	roleErr := fn.Open("")
 	assert.Contains(t, roleErr.Error(), "Role: zero value")
 
 }
@@ -70,7 +70,7 @@ func TestFunction_Open_detectRuntime(t *testing.T) {
 		Log:  log.Log,
 	}
 
-	assert.Nil(t, fn.Open())
+	assert.Nil(t, fn.Open(""))
 }
 
 func TestFunction_Delete_success(t *testing.T) {
