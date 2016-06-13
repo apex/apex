@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -124,4 +125,29 @@ func ParseEnv(env []string) (map[string]string, error) {
 	}
 
 	return m, nil
+}
+
+// ProfileFromConfig attempts to load the .profile setting from `environment`'s config.
+func ProfileFromConfig(environment string) (string, error) {
+	configFile := "project.json"
+
+	if environment != "" {
+		configFile = fmt.Sprintf("project.%s.json", environment)
+	}
+
+	f, err := os.Open(configFile)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	var v struct {
+		Profile string `json:"profile"`
+	}
+
+	if err := json.NewDecoder(f).Decode(&v); err != nil {
+		return "", err
+	}
+
+	return v.Profile, nil
 }

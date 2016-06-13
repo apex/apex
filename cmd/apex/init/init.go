@@ -12,6 +12,19 @@ import (
 	"github.com/apex/apex/stats"
 )
 
+var credentialsError = `
+
+  AWS region missing, are your credentials set up? Try one of the following:
+
+  $ export AWS_PROFILE=<profile-name>
+  $ apex init
+
+  $ apex init --profile <profile-name>
+
+  Visit http://apex.run/#aws-credentials for more details.
+
+`
+
 // example output.
 const example = `  Initialize a project
   $ apex init`
@@ -40,7 +53,7 @@ func run(c *cobra.Command, args []string) error {
 
 	region := root.Config.Region
 	if region == nil {
-		return errors.New("AWS region missing, are your credentials set up? Visit http://apex.run/#aws-credentials for more details")
+		return errors.New(credentialsError)
 	}
 
 	b := boot.Bootstrapper{

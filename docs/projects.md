@@ -77,6 +77,12 @@ Default role of function(s) unless specified in their function.json configuratio
 
 - type: `string`
 
+### profile
+
+Name of the AWS profile to use, this is the name used to locate AWS credentials in ~/.aws/credentials. Use this if you'd prefer not to specify `AWS_PROFILE` or `--profile`.
+
+- type: `string`
+
 ### defaultEnvironment
 
 Default infrastructure environment.

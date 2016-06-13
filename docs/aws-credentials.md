@@ -20,3 +20,22 @@ If you have both ~/.aws/credentials and ~/.aws/config you may specify the profil
 ```
 $ apex --profile myapp-prod deploy
 ```
+
+## Via project configuration
+
+You may store the profile name in the project.json file itself as shown in the following snippet. This is ideal since it ensures that you do not accidentally have a different environment set.
+
+```json
+{
+  "project": "myapp-prod"
+}
+```
+
+## Precedence
+
+Precedence for loading the AWS credentials is:
+
+- profile from flag
+- profile from JSON config
+- profile from env variables
+- profile named "default"

@@ -101,11 +101,14 @@ func Prepare(c *cobra.Command, args []string) error {
 	// config defaults
 	Config = aws.NewConfig()
 
-	// profile from flag, env, "default"
+	// profile from flag, config, env, "default"
 	if profile == "" {
-		profile = os.Getenv("AWS_PROFILE")
+		profile, _ = utils.ProfileFromConfig(environment)
 		if profile == "" {
-			profile = "default"
+			profile = os.Getenv("AWS_PROFILE")
+			if profile == "" {
+				profile = "default"
+			}
 		}
 	}
 
