@@ -1,4 +1,21 @@
 
+v0.10.0 / 2016-06-14
+====================
+
+  * add getting-started docs with init command
+  * add infra docs
+  * add role bootstrapping to `apex init` for a smoother experience
+  * add project.json config "profile" support
+  * add `--env-file` support. Closes #387
+  * add multiple deployment targets for different environments (#432)
+  * add missing `-s, --set` environment support to the build command. Closes #447
+  * add retainedVersions as a pointer, letting you zero. Closes #407
+  * refactor project init
+  * remove api-gateway example since it is incomplete. Closes #445
+  * fix flags before infra sub-command. Closes #421
+  * fix panic when 'apex invoke -L' throws an error (#431)
+  * fix setting handler func in Python runtime
+
 v0.9.0 / 2016-05-10
 ===================
 
