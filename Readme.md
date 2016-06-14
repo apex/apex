@@ -36,7 +36,6 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Hook support for running commands (transpile code, lint, etc)
 - Batteries included but optional (opt-in to higher level abstractions)
 - Environment variable population via command-line, file, or inline config
-- Project level function and resource management
 - Idempotent deployments (checksums skip already-deployed code)
 - Multiple environments via project.ENV.json and function.ENV.json files
 - Configuration inheritance and overrides
