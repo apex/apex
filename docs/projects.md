@@ -34,6 +34,22 @@ functions
     └── index.js
 ```
 
+If you prefer your "dev" or "staging" environment to be the implied default then leave the files as project.json and function.json:
+
+```
+project.json
+project.prod.json
+functions
+├── bar
+│   ├── function.json
+│   ├── function.prod.json
+│   └── index.js
+└── foo
+    ├── function.json
+    ├── function.prod.json
+    └── index.js
+```
+
 ## Symlinks
 
 It's important to note that Apex supports symlinked files and directories. Apex will read the links and pull in these files, even if the links aren't to files within your function. This enables the use of `npm link`, shared configuration and so on.

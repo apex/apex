@@ -295,6 +295,28 @@ func (p *Project) FunctionDirNames() (list []string, err error) {
 	return list, nil
 }
 
+// LoadEnvFromFile reads `path` JSON and applies it to the environment.
+func (p *Project) LoadEnvFromFile(path string) error {
+	p.Log.Debugf("load env from file %q", path)
+	var env map[string]string
+
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	if err := json.NewDecoder(f).Decode(&env); err != nil {
+		return err
+	}
+
+	for k, v := range env {
+		p.Setenv(k, v)
+	}
+
+	return nil
+}
+
 // Setenv sets environment variable `name` to `value` on every function in project.
 func (p *Project) Setenv(name, value string) {
 	for _, fn := range p.Functions {

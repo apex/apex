@@ -35,8 +35,10 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Binary install (install apex quickly for continuous deployment in CI etc)
 - Hook support for running commands (transpile code, lint, etc)
 - Batteries included but optional (opt-in to higher level abstractions)
+- Environment variable population via command-line, file, or inline config
 - Project level function and resource management
 - Idempotent deployments (checksums skip already-deployed code)
+- Multiple environments via project.ENV.json and function.ENV.json files
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
 - Command & function name autocompletion
@@ -50,7 +52,6 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Concurrency for quick deploys
 - Dry-run to preview changes
 - VPC support
-- Supports multiple project.ENV.json and function.ENV.json files (--env flag)
 
 ## Sponsors
 

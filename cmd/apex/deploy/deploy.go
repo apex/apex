@@ -2,6 +2,8 @@
 package deploy
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -9,8 +11,11 @@ import (
 	"github.com/apex/apex/utils"
 )
 
-// env supplied.
+// env vars.
 var env []string
+
+// env file.
+var envFile string
 
 // concurrency of deploys.
 var concurrency int
@@ -48,6 +53,7 @@ func init() {
 
 	f := Command.Flags()
 	f.StringSliceVarP(&env, "set", "s", nil, "Set environment variable")
+	f.StringVarP(&envFile, "env-file", "E", "", "Set environment variables from JSON file")
 	f.StringVarP(&alias, "alias", "a", "current", "Function alias")
 	f.IntVarP(&concurrency, "concurrency", "c", 5, "Concurrent deploys")
 }
@@ -70,10 +76,17 @@ func run(c *cobra.Command, args []string) error {
 
 	for _, fn := range root.Project.Functions {
 		stats.Track("Deploy Function", map[string]interface{}{
-			"runtime":   fn.Runtime,
-			"has_alias": alias != "",
-			"env":       len(env),
+			"runtime":      fn.Runtime,
+			"has_alias":    alias != "",
+			"has_env_file": envFile != "",
+			"env":          len(env),
 		})
+	}
+
+	if envFile != "" {
+		if err := root.Project.LoadEnvFromFile(envFile); err != nil {
+			return fmt.Errorf("reading env file %q: %s", envFile, err)
+		}
 	}
 
 	vars, err := utils.ParseEnv(env)
