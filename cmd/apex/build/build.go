@@ -3,6 +3,7 @@ package build
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 
@@ -15,6 +16,9 @@ import (
 
 // name of function.
 var name string
+
+// env file.
+var envFile string
 
 // env supplied.
 var env []string
@@ -37,6 +41,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
+	f.StringVarP(&envFile, "env-file", "E", "", "Set environment variables from JSON file")
 	f.StringSliceVarP(&env, "set", "s", nil, "Set environment variable")
 }
 
@@ -59,9 +64,16 @@ func run(c *cobra.Command, args []string) error {
 	fn := root.Project.Functions[0]
 
 	stats.Track("Build", map[string]interface{}{
-		"runtime": fn.Runtime,
-		"env":     len(env),
+		"runtime":      fn.Runtime,
+		"env":          len(env),
+		"has_env_file": envFile != "",
 	})
+
+	if envFile != "" {
+		if err := root.Project.LoadEnvFromFile(envFile); err != nil {
+			return fmt.Errorf("reading env file %q: %s", envFile, err)
+		}
+	}
 
 	vars, err := utils.ParseEnv(env)
 	if err != nil {
