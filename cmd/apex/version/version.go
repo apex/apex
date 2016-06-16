@@ -10,7 +10,7 @@ import (
 )
 
 // Version of program.
-const Version = "0.10.0"
+const Version = "0.10.2"
 
 // Command config.
 var Command = &cobra.Command{
