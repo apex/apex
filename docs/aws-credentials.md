@@ -27,7 +27,7 @@ You may store the profile name in the project.json file itself as shown in the f
 
 ```json
 {
-  "project": "myapp-prod"
+  "profile": "myapp-prod"
 }
 ```
 
