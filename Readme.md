@@ -4,7 +4,8 @@ Apex lets you build, deploy, and manage [AWS Lambda](https://aws.amazon.com/lamb
 
 ## Installation
 
-On OS X, Linux, or OpenBSD:
+On macOS, Linux, or OpenBSD run the following, note that you may need to `sudo`, or
+alternatively chown `/usr/local`:
 
 ```
 curl https://raw.githubusercontent.com/apex/apex/master/install.sh | sh

@@ -1,5 +1,6 @@
 
-On OS X or Linux:
+On macOS, Linux, or OpenBSD run the following, note that you may need to `sudo`, or
+alternatively chown `/usr/local`:
 
 ```
 curl https://raw.githubusercontent.com/apex/apex/master/install.sh | sh
