@@ -35,7 +35,7 @@ func Upgrade(version string) error {
 		return nil
 	}
 
-	asset := findAsset(&latest)
+	asset := findAsset(latest)
 	if asset == nil {
 		return errors.New("cannot find binary for your system")
 	}
