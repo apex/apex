@@ -30,7 +30,10 @@ func (p *Plugin) Open(fn *function.Function) error {
 
 	fn.Shim = true
 	fn.Runtime = nodejs.Runtime
-	fn.Hooks.Clean = "rm -f main"
+
+	if fn.Hooks.Clean == "" {
+		fn.Hooks.Clean = "rm -f main"
+	}
 
 	return nil
 }
