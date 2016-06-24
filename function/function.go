@@ -384,6 +384,14 @@ func (f *Function) CreateOrUpdateAlias(alias, version string) error {
 	return nil
 }
 
+// GetAliases fetches a list of aliases for the function.
+func (f *Function) GetAliases() (*lambda.ListAliasesOutput, error) {
+	f.Log.Debug("fetching aliases")
+	return f.Service.ListAliases(&lambda.ListAliasesInput{
+		FunctionName: &f.FunctionName,
+	})
+}
+
 // Invoke the remote Lambda function, returning the response and logs, if any.
 func (f *Function) Invoke(event, context interface{}) (reply, logs io.Reader, err error) {
 	eventBytes, err := json.Marshal(event)

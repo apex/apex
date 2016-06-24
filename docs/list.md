@@ -14,7 +14,7 @@ $ apex list
     timeout: 5s
     role: arn:aws:iam::293503197324:role/lambda
     handler: index.handle
-    current version: 3
+    aliases: current@v3, foo@v4
 
   foo
     runtime: nodejs
@@ -22,7 +22,7 @@ $ apex list
     timeout: 10s
     role: arn:aws:iam::293503197324:role/lambda
     handler: index.handle
-    current version: 12
+    aliases: current@v12
 ```
 
 Terraform vars output:

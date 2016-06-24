@@ -78,7 +78,7 @@ func outputTFvars() {
 func outputList() {
 	fmt.Println()
 	for _, fn := range root.Project.Functions {
-		config, err := fn.GetConfigCurrent()
+		_, err := fn.GetConfigCurrent()
 
 		if awserr, ok := err.(awserr.Error); ok && awserr.Code() == "ResourceNotFoundException" {
 			fmt.Printf("  \033[%dm%s\033[0m (not deployed) \n", colors.Blue, fn.Name)
@@ -100,8 +100,22 @@ func outputList() {
 			continue // ignore
 		}
 
-		fmt.Printf("    current version: %s\n", *config.Configuration.Version)
+		aliaslist, err := fn.GetAliases()
+		if err != nil {
+			continue
+		}
 
+		var aliases string
+		for index, alias := range aliaslist.Aliases {
+			if index > 0 {
+				aliases += ", "
+			}
+			aliases += fmt.Sprintf("%s@v%s", *alias.Name, *alias.FunctionVersion)
+		}
+		if aliases == "" {
+			aliases = "<none>"
+		}
+		fmt.Printf("    aliases: %s\n", aliases)
 		fmt.Println()
 	}
 }
