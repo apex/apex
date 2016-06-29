@@ -34,6 +34,14 @@ Runtime of the function. This is used as the runtime in AWS Lambda, or when requ
 - required
 - inherited
 
+### handler
+
+Event handler name, this is the function invoked for a given event. Defaults are:
+
+- nodejs: `index.handle` (index.js file with `handle` exported function)
+- python: `handle`
+- java: `lambda.Main::handler`
+
 ### memory
 
 Memory allocated to the function, in megabytes.
