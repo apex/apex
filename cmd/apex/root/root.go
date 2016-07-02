@@ -58,7 +58,7 @@ var Command = &cobra.Command{
 func init() {
 	f := Command.PersistentFlags()
 
-	f.StringVarP(&environment, "env", "e", "", "Infastructure environment (default: \"defaultEnvironment\" from project.json)")
+	f.StringVarP(&environment, "env", "e", "", "Environment name")
 	f.StringVarP(&chdir, "chdir", "C", "", "Working directory")
 	f.BoolVarP(&dryRun, "dry-run", "D", false, "Perform a dry-run")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
