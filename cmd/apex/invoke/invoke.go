@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/mattn/go-isatty"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/stats"
@@ -26,11 +26,12 @@ var includeLogs bool
 var name string
 
 // example output.
-const example = `  Invoke a function with input json
-  $ apex invoke foo < request.json
+const example = `
+    Invoke a function with input json
+    $ apex invoke foo < request.json
 
-  Invoke canary alias
-  $ apex invoke foo < request.json --alias canary`
+    Invoke canary alias
+    $ apex invoke foo < request.json --alias canary`
 
 // Command config.
 var Command = &cobra.Command{

@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dustin/go-humanize"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/colors"
@@ -21,14 +21,15 @@ import (
 var duration time.Duration
 
 // example output.
-const example = `  Print the last 24 hours of metrics for all functions
-  $ apex metrics
+const example = `
+    Print the last 24 hours of metrics for all functions
+    $ apex metrics
 
-  Print the last 24 hours of metrics for a function
-  $ apex metrics foo
+    Print the last 24 hours of metrics for a function
+    $ apex metrics foo
 
-  Print metrics for a function with a specified start time, e.g. the last 3 days
-  $ apex metrics foo --since 72h`
+    Print metrics for a function with a specified start time, e.g. the last 3 days
+    $ apex metrics foo --since 72h`
 
 // Command config.
 var Command = &cobra.Command{

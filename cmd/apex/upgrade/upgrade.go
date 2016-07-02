@@ -2,7 +2,7 @@
 package upgrade
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/cmd/apex/version"

@@ -7,22 +7,17 @@ import (
 	"os/exec"
 
 	"github.com/mattn/go-isatty"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	doc "github.com/apex/apex/docs"
 	"github.com/apex/apex/stats"
 )
 
-// example output.
-const example = `  Output documentation
-  $ apex docs`
-
 // Command config.
 var Command = &cobra.Command{
 	Use:              "docs",
 	Short:            "Output documentation",
-	Example:          example,
 	PersistentPreRun: root.PreRunNoop,
 	RunE:             run,
 }

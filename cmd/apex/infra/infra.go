@@ -4,7 +4,7 @@ package infra
 import (
 	"strings"
 
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/infra"
@@ -12,11 +12,12 @@ import (
 )
 
 // example output.
-const example = `  View change plan
-  $ apex infra plan
+const example = `
+    View change plan
+    $ apex infra plan
 
-  Apply changes
-  $ apex infra apply`
+    Apply changes
+    $ apex infra apply`
 
 // Command config.
 var Command = &cobra.Command{

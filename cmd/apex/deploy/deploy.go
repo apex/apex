@@ -4,7 +4,7 @@ package deploy
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/stats"
@@ -24,20 +24,21 @@ var concurrency int
 var alias string
 
 // example output.
-const example = `  Deploy all functions
-  $ apex deploy
+const example = `
+    Deploy all functions
+    $ apex deploy
 
-  Deploy specific functions
-  $ apex deploy foo bar
+    Deploy specific functions
+    $ apex deploy foo bar
 
-  Deploy canary alias
-  $ apex deploy foo --alias canary
+    Deploy canary alias
+    $ apex deploy foo --alias canary
 
-  Deploy functions in a different project
-  $ apex deploy -C ~/dev/myapp
+    Deploy functions in a different project
+    $ apex deploy -C ~/dev/myapp
 
-  Deploy all functions starting with "auth"
-  $ apex deploy auth*`
+    Deploy all functions starting with "auth"
+    $ apex deploy auth*`
 
 // Command config.
 var Command = &cobra.Command{

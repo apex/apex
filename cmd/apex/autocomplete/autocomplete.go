@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/spf13/cobra"
-	flag "github.com/spf13/pflag"
+	"github.com/tj/cobra"
+	flag "github.com/tj/pflag"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/utils"

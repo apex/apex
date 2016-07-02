@@ -6,7 +6,7 @@ import (
 
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/colors"
@@ -17,14 +17,15 @@ import (
 var tfvars bool
 
 // example output.
-const example = `  List all functions
-  $ apex list
+const example = `
+    List all functions
+    $ apex list
 
-  List functions based on glob
-  $ apex list api_*
+    List functions based on glob
+    $ apex list api_*
 
-  Output list as Terraform variables (.tfvars)
-  $ apex list --tfvars`
+    Output list as Terraform variables (.tfvars)
+    $ apex list --tfvars`
 
 // Command config.
 var Command = &cobra.Command{

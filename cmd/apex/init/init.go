@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/boot"
 	"github.com/apex/apex/cmd/apex/root"
@@ -25,15 +25,10 @@ var credentialsError = `
 
 `
 
-// example output.
-const example = `  Initialize a project
-  $ apex init`
-
 // Command config.
 var Command = &cobra.Command{
 	Use:              "init",
 	Short:            "Initialize a project",
-	Example:          example,
 	PersistentPreRun: root.PreRunNoop,
 	RunE:             run,
 }

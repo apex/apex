@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/logs"
@@ -23,23 +23,24 @@ var follow bool
 var duration time.Duration
 
 // example output.
-const example = `  Print logs for all functions
-  $ apex logs
+const example = `
+    Print logs for all functions
+    $ apex logs
 
-  Follow the output
-  $ apex logs -f
+    Follow the output
+    $ apex logs -f
 
-  Follow output with no historical logs
-  $ apex logs -f --since 0
+    Follow output with no historical logs
+    $ apex logs -f --since 0
 
-  Print logs for a single function
-  $ apex logs api
+    Print logs for a single function
+    $ apex logs api
 
-  Print logs for all functions starting with "auth"
-  $ apex logs auth*
+    Print logs for all functions starting with "auth"
+    $ apex logs auth*
 
-  Print logs for functions with a specified start time, e.g. 5 minutes
-  $ apex logs foo bar --since 5m`
+    Print logs for functions with a specified start time, e.g. 5 minutes
+    $ apex logs foo bar --since 5m`
 
 // Command config.
 var Command = &cobra.Command{

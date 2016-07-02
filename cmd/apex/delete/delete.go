@@ -4,7 +4,7 @@ package delete
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 	"github.com/tj/go-prompt"
 
 	"github.com/apex/apex/cmd/apex/root"
@@ -15,14 +15,15 @@ import (
 var force bool
 
 // example output.
-const example = `  Delete all functions
-  $ apex delete
+const example = `
+    Delete all functions
+    $ apex delete
 
-  Delete specified functions
-  $ apex delete foo bar
+    Delete specified functions
+    $ apex delete foo bar
 
-  Delete all functions starting with "auth"
-  $ apex delete auth*`
+    Delete all functions starting with "auth"
+    $ apex delete auth*`
 
 // Command config.
 var Command = &cobra.Command{

@@ -2,7 +2,7 @@
 package rollback
 
 import (
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/stats"
@@ -15,17 +15,18 @@ var alias string
 var version string
 
 // example output.
-const example = `  Rollback all functions to the previous version
-  $ apex rollback
+const example = `
+    Rollback all functions to the previous version
+    $ apex rollback
 
-  Rollback canary alias for a function
-  $ apex rollback foo --alias canary
+    Rollback canary alias for a function
+    $ apex rollback foo --alias canary
 
-  Rollback all functions starting with "auth"
-  $ apex rollback auth*
+    Rollback all functions starting with "auth"
+    $ apex rollback auth*
 
-  Rollback a function to the specified version
-  $ apex rollback bar -v 3`
+    Rollback a function to the specified version
+    $ apex rollback bar -v 3`
 
 // Command config.
 var Command = &cobra.Command{

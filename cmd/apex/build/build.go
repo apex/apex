@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/stats"
@@ -24,8 +24,9 @@ var envFile string
 var env []string
 
 // example output.
-const example = `  Build zip output for a function
-  $ apex build foo > /tmp/out.zip`
+const example = `
+    Build zip output for a function
+    $ apex build foo > /tmp/out.zip`
 
 // Command config.
 var Command = &cobra.Command{

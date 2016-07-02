@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/spf13/cobra"
+	"github.com/tj/cobra"
 
 	"github.com/apex/apex/dryrun"
 	"github.com/apex/apex/project"
@@ -64,8 +64,6 @@ func init() {
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
 	f.StringVarP(&profile, "profile", "p", "", "AWS profile")
 	f.StringVarP(&region, "region", "r", "", "AWS region")
-
-	Command.SetHelpTemplate("\n" + Command.HelpTemplate())
 }
 
 // PreRunNoop noop for other commands.
