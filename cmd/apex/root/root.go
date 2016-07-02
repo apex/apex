@@ -130,9 +130,10 @@ func Prepare(c *cobra.Command, args []string) error {
 	Session = session.New(Config)
 
 	Project = &project.Project{
-		Environment: environment,
-		Log:         log.Log,
-		Path:        ".",
+		Environment:      environment,
+		InfraEnvironment: environment,
+		Log:              log.Log,
+		Path:             ".",
 	}
 
 	if dryRun {

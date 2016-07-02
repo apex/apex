@@ -34,6 +34,9 @@ const (
 
 	// DefaultRetainedVersions defines numbers of retained versions
 	DefaultRetainedVersions = 10
+
+	// functions directory
+	functionsDir = "functions"
 )
 
 // Config for project.
@@ -57,15 +60,16 @@ type Config struct {
 // Project represents zero or more Lambda functions.
 type Project struct {
 	Config
-	Path         string
-	Alias        string
-	Concurrency  int
-	Environment  string
-	Log          log.Interface
-	Service      lambdaiface.LambdaAPI
-	Functions    []*function.Function
-	IgnoreFile   []byte
-	nameTemplate *template.Template
+	Path             string
+	Alias            string
+	Concurrency      int
+	Environment      string
+	InfraEnvironment string
+	Log              log.Interface
+	Service          lambdaiface.LambdaAPI
+	Functions        []*function.Function
+	IgnoreFile       []byte
+	nameTemplate     *template.Template
 }
 
 // defaults applies configuration defaults.
@@ -109,9 +113,10 @@ func (p *Project) Open() error {
 		return err
 	}
 
-	if p.Environment == "" {
-		p.Environment = p.Config.DefaultEnvironment
+	if p.InfraEnvironment == "" {
+		p.InfraEnvironment = p.Config.DefaultEnvironment
 	}
+
 	if p.Role == "" {
 		p.Role = p.readInfraRole()
 	}
@@ -387,7 +392,7 @@ func (p *Project) name(fn *function.Function) (string, error) {
 
 // readInfraRole reads lambda function IAM role from infrastructure
 func (p *Project) readInfraRole() string {
-	role, err := infra.Output(p.Environment, "lambda_function_role_id")
+	role, err := infra.Output(p.InfraEnvironment, "lambda_function_role_id")
 	if err != nil {
 		p.Log.Debugf("couldn't read role from infrastructure: %s", err)
 		return ""
@@ -395,8 +400,6 @@ func (p *Project) readInfraRole() string {
 
 	return role
 }
-
-const functionsDir = "functions"
 
 // render returns a string by executing template `t` against the given value `v`.
 func render(t *template.Template, v interface{}) (string, error) {

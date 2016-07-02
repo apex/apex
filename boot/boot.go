@@ -28,8 +28,7 @@ var logo = `
 
 `
 
-var projectConfig = `
-{
+var projectConfig = `{
   "name": "%s",
   "description": "%s",
   "memory": 128,
