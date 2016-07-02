@@ -336,8 +336,6 @@ func (p *Project) LoadFunction(name string) (*function.Function, error) {
 
 // LoadFunctionByPath returns the function in the given directory.
 func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, error) {
-	p.Log.Debugf("loading function in %s", path)
-
 	fn := &function.Function{
 		Config: function.Config{
 			Runtime:          p.Runtime,

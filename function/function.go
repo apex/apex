@@ -111,18 +111,16 @@ type Function struct {
 // Open the function.json file and prime the config.
 func (f *Function) Open(environment string) error {
 	f.defaults()
-	f.Log = f.Log.WithField("function", f.Name)
 
-	configFile := "function.json"
-	if environment != "" {
-		configFile = fmt.Sprintf("function.%s.json", environment)
-	}
+	f.Log = f.Log.WithFields(log.Fields{
+		"function": f.Name,
+		"env":      environment,
+	})
 
-	p, err := os.Open(filepath.Join(f.Path, configFile))
-	if err == nil {
-		if err := json.NewDecoder(p).Decode(&f.Config); err != nil {
-			return err
-		}
+	f.Log.Debug("open")
+
+	if err := f.loadConfig(environment); err != nil {
+		return err
 	}
 
 	if err := f.hookOpen(); err != nil {
@@ -130,7 +128,7 @@ func (f *Function) Open(environment string) error {
 	}
 
 	if err := validator.Validate(&f.Config); err != nil {
-		return fmt.Errorf("error opening function %s: %s from file: %s", f.Name, err.Error(), configFile)
+		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
 	}
 
 	ignoreFile, err := utils.ReadIgnoreFile(f.Path)
@@ -167,6 +165,52 @@ func (f *Function) defaults() {
 
 	f.Setenv("APEX_FUNCTION_NAME", f.Name)
 	f.Setenv("LAMBDA_FUNCTION_NAME", f.FunctionName)
+}
+
+// loadConfig for `environment`, attempt function.ENV.js first, then
+// fall back on function.json if it is available.
+func (f *Function) loadConfig(environment string) error {
+	path := fmt.Sprintf("function.%s.json", environment)
+
+	ok, err := f.tryConfig(path)
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		f.Log.WithField("config", path).Debug("loaded config")
+		return nil
+	}
+
+	ok, err = f.tryConfig("function.json")
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		f.Log.WithField("config", "function.json").Debug("loaded config")
+		return nil
+	}
+
+	return nil
+}
+
+// tryConfig
+func (f *Function) tryConfig(path string) (bool, error) {
+	file, err := os.Open(filepath.Join(f.Path, path))
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	if err := json.NewDecoder(file).Decode(&f.Config); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // Setenv sets environment variable `name` to `value`.
