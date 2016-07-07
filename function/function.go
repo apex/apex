@@ -234,11 +234,13 @@ func (f *Function) Deploy() error {
 	}
 
 	config, err := f.GetConfig()
+
 	if e, ok := err.(awserr.Error); ok {
 		if e.Code() == "ResourceNotFoundException" {
 			return f.Create(zip)
 		}
 	}
+
 	if err != nil {
 		return err
 	}
