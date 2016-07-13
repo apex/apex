@@ -52,7 +52,7 @@ Memory allocated to the function, in megabytes.
 
 ### timeout
 
-Function timeout in sections.
+Function timeout in seconds.
 
 - type: `int`
 - required
