@@ -1,5 +1,5 @@
 
-Apex can help initialize a basic project to get you started. First specify you AWS credentials as mentioned in the previous section, then run `apex init`:
+Apex can help initialize a basic project to get you started. First specify your AWS credentials as mentioned in the previous section, then run `apex init`:
 
 ```
 $ export AWS_PROFILE=sloths-stage
