@@ -44,11 +44,11 @@ func (t timelessInfo) ModTime() time.Time {
 // runtimes.
 var defaultPlugins = []string{
 	"inference",
+	"hooks",
 	"golang",
 	"python",
 	"nodejs",
 	"java",
-	"hooks",
 	"env",
 	"shim",
 }
