@@ -13,6 +13,22 @@ Using environment variables only, you must specify the following:
 
 Using the ~/.aws/credentials and ~/.aws/config files you may specify `AWS_PROFILE` to tell apex which one to reference. However, if you do not have a ~/.aws/config file, or "region" is not defined, you should set it with the `AWS_REGION` environment variable. To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
+Here's an example of ~/.aws/credentials:
+
+```
+[example]
+aws_access_key_id = xxxxxxxx
+aws_secret_access_key = xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Here's an example of ~/.aws/config:
+
+```
+[profile example]
+output = json
+region = us-west-2
+```
+
 ## Via profile flag
 
 If you have both ~/.aws/credentials and ~/.aws/config you may specify the profile directly with `apex --profile <name>` when issuing commands. This means you do not have to specify any environment variables, however you must provide it with each operation:
