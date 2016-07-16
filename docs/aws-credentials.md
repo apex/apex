@@ -9,6 +9,9 @@ Using environment variables only, you must specify the following:
 - `AWS_SECRET_KEY` AWS account secret key
 - `AWS_REGION` AWS region
 
+If you have multiple AWS projects you may want to consider using a tool such as [direnv](http://direnv.net/) to localize and automatically set the variables when
+you're working on a project.
+
 ## Via ~/.aws files
 
 Using the ~/.aws/credentials and ~/.aws/config files you may specify `AWS_PROFILE` to tell apex which one to reference. However, if you do not have a ~/.aws/config file, or "region" is not defined, you should set it with the `AWS_REGION` environment variable. To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
