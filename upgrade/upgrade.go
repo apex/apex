@@ -40,8 +40,15 @@ func Upgrade(version string) error {
 		return errors.New("cannot find binary for your system")
 	}
 
+	// get the executable's path
+	cmdPath, err := exec.LookPath("apex")
+	if err != nil {
+		return err
+	}
+	cmdDir := filepath.Dir(cmdPath)
+
 	// create tmp file
-	tmpPath := filepath.Join(os.TempDir(), "apex-upgrade")
+	tmpPath := filepath.Join(cmdDir, "apex-upgrade")
 	f, err := os.OpenFile(tmpPath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0755)
 	if err != nil {
 		return err
@@ -62,11 +69,6 @@ func Upgrade(version string) error {
 	}
 
 	// replace it
-	cmdPath, err := exec.LookPath("apex")
-	if err != nil {
-		return err
-	}
-
 	log.Infof("replacing %s", cmdPath)
 	err = os.Rename(tmpPath, cmdPath)
 	if err != nil {
