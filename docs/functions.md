@@ -52,7 +52,7 @@ Memory allocated to the function, in megabytes.
 
 ### timeout
 
-Function timeout in seconds.
+Function timeout in seconds. Note that Lambda currently restricts durations to 5 minutes (300s).
 
 - type: `int`
 - required
