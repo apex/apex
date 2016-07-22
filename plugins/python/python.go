@@ -3,6 +3,7 @@ package python
 
 import (
 	"bytes"
+	"errors"
 	"strings"
 	"text/template"
 
@@ -59,6 +60,10 @@ func (p *Plugin) Open(fn *function.Function) error {
 func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if fn.Runtime != RuntimeCanonical || len(fn.Environment) == 0 {
 		return nil
+	}
+
+	if len(strings.Split(fn.Handler, ".")) < 2 {
+		return errors.New("lambda requires handler function name to be of the format 'filename.function_name'")
 	}
 
 	fn.Log.Debug("injecting prelude")
