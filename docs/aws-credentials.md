@@ -5,8 +5,8 @@ Before using Apex you need to first give it your account credentials so that Ape
 
 Using environment variables only, you must specify the following:
 
-- `AWS_ACCESS_KEY` AWS account access key
-- `AWS_SECRET_KEY` AWS account secret key
+- `AWS_ACCESS_KEY_ID` AWS account access key
+- `AWS_SECRET_ACCESS_KEY` AWS account secret key
 - `AWS_REGION` AWS region
 
 If you have multiple AWS projects you may want to consider using a tool such as [direnv](http://direnv.net/) to localize and automatically set the variables when
