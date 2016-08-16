@@ -15,7 +15,7 @@ infrastructure/
 │   └── main.tf
 ```
 
-For example For example `apex infra --env prod plan` is effectively equivalent to the following command, with many `-var`'s passed to expose information from Apex.
+For example `apex infra --env prod plan` is effectively equivalent to the following command, with many `-var`'s passed to expose information from Apex.
 
 ```
 $ cd infrastructure/prod && terraform plan
