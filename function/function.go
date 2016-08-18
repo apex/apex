@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -752,6 +753,12 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 			SecurityGroups: aws.StringValueSlice(config.Configuration.VpcConfig.SecurityGroupIds),
 		}
 	}
+
+	// don't make any assumptions about the order AWS stores the subnets or security groups
+	sort.StringSlice(remoteConfig.VPC.Subnets).Sort()
+	sort.StringSlice(localConfig.VPC.Subnets).Sort()
+	sort.StringSlice(remoteConfig.VPC.SecurityGroups).Sort()
+	sort.StringSlice(localConfig.VPC.SecurityGroups).Sort()
 
 	localConfigJSON, _ := json.Marshal(localConfig)
 	remoteConfigJSON, _ := json.Marshal(remoteConfig)
