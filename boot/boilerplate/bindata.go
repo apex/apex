@@ -83,7 +83,7 @@ func functionsHelloIndexJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "functions/hello/index.js", size: 147, mode: os.FileMode(420), modTime: time.Unix(1462396252, 0)}
+	info := bindataFileInfo{name: "functions/hello/index.js", size: 147, mode: os.FileMode(420), modTime: time.Unix(1467510964, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
