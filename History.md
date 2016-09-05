@@ -1,4 +1,17 @@
 
+v0.10.3 / 2016-09-05
+====================
+
+* add function.json fallback for any env if it is present. Closes #471
+* add aliases to apex list. Closes #430 (#457)
+* fix config comparison function. Closes #528 (#530)
+* fix error handling for incorrect 'handler' definition for python (fixes #498) (#501)
+* fix: use executable's path as the temp path (#488)
+* fix: run hooks before runtime plugins to fix (#491) (#492)
+* fix ignoring of function.json when defaultEnvironment is used. Closes #467
+* fix for go-github api changes. Closes #463 (#465)
+* fix custom clean hook was not working on golang runtime. Closes #461 (#464)
+
 v0.10.2 / 2016-06-16
 ====================
 
