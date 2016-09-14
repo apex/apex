@@ -1,5 +1,5 @@
 
-Apex allows you to invoke functions from the command-line, optionally passing a JSON event or stream to STDIN.
+Apex allows you to invoke functions from the command-line, optionally passing a JSON event or stream to STDIN. It's important to note that `invoke` will execute the remote Lambda function and not locally execute your function. It will execute the $LATEST Lambda function available.
 
 ## Examples
 
