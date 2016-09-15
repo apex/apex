@@ -32,7 +32,7 @@ func LoadFiles(root string, ignoreFile []byte) (files []string, err error) {
 		}
 
 		mode := info.Mode()
-		if !(mode.IsRegular() || mode&os.ModeSymlink == os.ModeSymlink) {
+		if !(mode.IsDir() || mode.IsRegular() || mode&os.ModeSymlink == os.ModeSymlink) {
 			return nil
 		}
 
@@ -46,7 +46,9 @@ func LoadFiles(root string, ignoreFile []byte) (files []string, err error) {
 			return err
 		}
 
-		if matched {
+		if mode.IsDir() && matched {
+			return filepath.SkipDir
+		} else if mode.IsDir() || matched {
 			return nil
 		}
 
