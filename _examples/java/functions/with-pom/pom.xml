@@ -11,7 +11,7 @@
 
     <properties>
         <!-- This prop is set when apex mvn package -->
-        <jar.finalName>apex-plugin-result</jar.finalName>
+        <jar.finalName>apex</jar.finalName>
     </properties>
 
     <dependencies>
