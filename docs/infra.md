@@ -34,4 +34,5 @@ Currently the following variables are exposed to Terraform:
 
 ## Notes
 
-You'll typically need to assign `$(apex_function_myfunction):current` to specify that the "current" alias is referenced.
+- You'll typically need to assign `${apex_function_myfunction}:current` to specify that the "current" alias is referenced.
+- The `apex_function_NAME` variables are not available until the functions have been deployed (via `apex deploy`) at least once.
