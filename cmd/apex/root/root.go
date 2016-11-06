@@ -125,6 +125,11 @@ func Prepare(c *cobra.Command, args []string) error {
 		Config = Config.WithRegion(region)
 	}
 
+	// environment from flag or env
+	if environment == "" {
+		environment = os.Getenv("APEX_ENVIRONMENT")
+	}
+
 	Session = session.New(Config)
 
 	Project = &project.Project{
