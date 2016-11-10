@@ -77,6 +77,7 @@ Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com
         "lambda:DeleteFunction",
         "lambda:InvokeFunction",
         "lambda:GetFunctionConfiguration",
+        "lambda:UpdateFunctionConfiguration",
         "lambda:UpdateFunctionCode",
         "lambda:CreateAlias",
         "lambda:UpdateAlias",
