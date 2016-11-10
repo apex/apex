@@ -41,7 +41,7 @@ fi
 
 LATEST=$(curl -s https://api.github.com/repos/apex/apex/tags | grep -Eo '"name":.*?[^\\]",'  | head -n 1 | sed 's/[," ]//g' | cut -d ':' -f 2)
 URL="https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM"
-DEST=/usr/local/bin/apex
+DEST=${DEST:-/usr/local/bin/apex}
 
 if [ -z $LATEST ] ; then
   echo "Error requesting. Download binary from https://github.com/apex/apex/releases"
