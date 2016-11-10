@@ -8,6 +8,7 @@
     "babel-polyfill": "^6.3.14"
   },
   "devDependencies": {
+    "babel-core": "^6.18.2",
     "babel-loader": "^6.2.3",
     "babel-plugin-syntax-async-functions": "^6.3.13",
     "babel-plugin-transform-async-to-generator": "^6.4.6",
