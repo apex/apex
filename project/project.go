@@ -347,7 +347,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 			Hooks:            p.Hooks,
 			Environment:      copyStringMap(p.Config.Environment),
 			RetainedVersions: p.RetainedVersions,
-			VPC:              p.VPC,
+			VPC:              copyVPC(p.VPC),
 		},
 		Name:       name,
 		Path:       path,
@@ -417,6 +417,19 @@ func copyStringMap(in map[string]string) map[string]string {
 		out[k] = v
 	}
 	return out
+}
+
+// copyVPC returns a copy of `in`.
+func copyVPC(in vpc.VPC) vpc.VPC {
+	securityGroups := make([]string, len(in.SecurityGroups))
+	copy(securityGroups, in.SecurityGroups)
+	subnets := make([]string, len(in.Subnets))
+	copy(subnets, in.Subnets)
+
+	return vpc.VPC{
+		SecurityGroups: securityGroups,
+		Subnets:        subnets,
+	}
 }
 
 // matches returns true if `name` is matched by any of the given `patterns`,

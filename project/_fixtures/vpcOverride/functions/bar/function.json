@@ -1,0 +1,7 @@
+{
+  "vpc": {
+    "securityGroups": [
+      "sg-override"
+    ]
+  }
+}

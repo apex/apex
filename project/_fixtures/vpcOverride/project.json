@@ -1,0 +1,9 @@
+{
+  "name": "vpcOverride",
+  "role": "testrole",
+  "vpc": {
+    "securityGroups": [
+      "sg-default"
+    ]
+  }
+}

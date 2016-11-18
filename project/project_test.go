@@ -94,3 +94,22 @@ func TestProject_LoadFunctionByPath_mergeEnvWithFunctionEnv(t *testing.T) {
 
 	assert.Equal(t, map[string]string{"PROJECT_ENV": "projectEnv", "FUNCTION_ENV": "functionEnv", "APEX_FUNCTION_NAME": "foo", "LAMBDA_FUNCTION_NAME": "envMerge_foo"}, p.Functions[0].Environment)
 }
+
+func TestProject_LoadFunctionByPath_overrideVpcWithFunctionVpc(t *testing.T) {
+	p := &project.Project{
+		Path: "_fixtures/vpcOverride",
+		Log:  log.Log,
+	}
+
+	p.Open()
+
+	assert.Equal(t, "sg-default", p.VPC.SecurityGroups[0])
+
+	bar, _ := p.LoadFunction("bar")
+	assert.Equal(t, "sg-override", bar.VPC.SecurityGroups[0])
+	assert.Equal(t, "sg-default", p.VPC.SecurityGroups[0])
+
+	foo, _ := p.LoadFunction("foo")
+	assert.Equal(t, "sg-default", foo.VPC.SecurityGroups[0])
+	assert.Equal(t, "sg-default", p.VPC.SecurityGroups[0])
+}
