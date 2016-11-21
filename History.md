@@ -1,4 +1,14 @@
 
+v0.11.0 / 2016-11-21
+====================
+
+  * add comparison of environment when performing change check
+  * add support for APEX_ENVIRONMENT=prod apex deploy (#586)
+  * add a minimum IAM policy to the documentation. (#529)
+  * remove env hack, replace with native env support (#600)
+  * fix overrides of VPC in function.json. Closes #597 (#598)
+  * fix .apexignore fails when folder without trailling slash (#550)
+
 v0.10.3 / 2016-09-05
 ====================
 
