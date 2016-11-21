@@ -747,7 +747,10 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Role:        *config.Configuration.Role,
 		Runtime:     *config.Configuration.Runtime,
 		Handler:     *config.Configuration.Handler,
-		Environment: environ(config.Configuration.Environment.Variables),
+	}
+
+	if config.Configuration.Environment != nil {
+		remoteConfig.Environment = environ(config.Configuration.Environment.Variables)
 	}
 
 	// SDK is inconsistent here. VpcConfig can be nil or empty struct.
