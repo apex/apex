@@ -32,9 +32,3 @@ The shim currently operates using JSON over stdout, because of this you must use
 ## Can I manage functions that Apex did not create?
 
 Apex is not designed to handle legacy cases, or functions created by other software. For most operations Apex references the local functions, if it is not defined locally, then you cannot operate against it. This is by-design and is unlikely to change.
-
-## What is _apex_index.handle?
-
-Apex provides environment to runtimes by "wrapping" the existing user-defined handlers. For example in the Node.js case an `_apex_index.js` file is created in order to populate `process.env` before requiring the original such as `index.js`.
-
-To get a better understanding of how this works take a look at the [Node.js plugin implementation](https://github.com/apex/apex/blob/master/plugins/nodejs/nodejs.go#L26).

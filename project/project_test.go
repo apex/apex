@@ -8,7 +8,6 @@ import (
 	"github.com/apex/log/handlers/discard"
 	"github.com/stretchr/testify/assert"
 
-	_ "github.com/apex/apex/plugins/env"
 	_ "github.com/apex/apex/plugins/golang"
 	_ "github.com/apex/apex/plugins/hooks"
 	_ "github.com/apex/apex/plugins/inference"

@@ -27,7 +27,6 @@ import (
 	_ "github.com/apex/apex/cmd/apex/version"
 
 	// plugins
-	_ "github.com/apex/apex/plugins/env"
 	_ "github.com/apex/apex/plugins/golang"
 	_ "github.com/apex/apex/plugins/hooks"
 	_ "github.com/apex/apex/plugins/inference"

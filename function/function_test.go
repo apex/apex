@@ -4,7 +4,6 @@ import (
 	"errors"
 	"testing"
 
-	_ "github.com/apex/apex/plugins/env"
 	_ "github.com/apex/apex/plugins/golang"
 	_ "github.com/apex/apex/plugins/hooks"
 	_ "github.com/apex/apex/plugins/inference"

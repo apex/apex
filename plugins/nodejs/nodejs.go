@@ -1,15 +1,7 @@
 // Package nodejs implements the "nodejs" runtime.
 package nodejs
 
-import (
-	"bytes"
-	"strings"
-	"text/template"
-
-	"github.com/apex/apex/archive"
-	"github.com/apex/apex/function"
-	"github.com/apex/apex/plugins/env"
-)
+import "github.com/apex/apex/function"
 
 const (
 	// Runtime name used by Apex and by AWS Lambda for Node.js 0.10
@@ -23,25 +15,12 @@ func init() {
 	function.RegisterPlugin(Runtime43, &Plugin{})
 }
 
-// prelude script template.
-var prelude = template.Must(template.New("prelude").Parse(`try {
-  var config = require('./{{.EnvFile}}')
-  for (var key in config) {
-    process.env[key] = config[key]
-  }
-} catch (err) {
-  // ignore
-}
-
-exports.handle = require('./{{.HandleFile}}').{{.HandleMethod}}
-`))
-
 // Plugin implementation.
 type Plugin struct{}
 
 // Open adds nodejs defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if !p.runtimeSupported(fn) {
+	if !runtimeSupported(fn) {
 		return nil
 	}
 
@@ -52,37 +31,6 @@ func (p *Plugin) Open(fn *function.Function) error {
 	return nil
 }
 
-// Build injects a script for loading the environment.
-func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
-	if !p.runtimeSupported(fn) || len(fn.Environment) == 0 {
-		return nil
-	}
-
-	fn.Log.Debug("injecting prelude")
-
-	var buf bytes.Buffer
-	file := strings.Split(fn.Handler, ".")[0]
-	method := strings.Split(fn.Handler, ".")[1]
-
-	err := prelude.Execute(&buf, struct {
-		EnvFile      string
-		HandleFile   string
-		HandleMethod string
-	}{
-		EnvFile:      env.FileName,
-		HandleFile:   file,
-		HandleMethod: method,
-	})
-
-	if err != nil {
-		return err
-	}
-
-	fn.Handler = "_apex_index.handle"
-
-	return zip.AddBytes("_apex_index.js", buf.Bytes())
-}
-
-func (p *Plugin) runtimeSupported(fn *function.Function) bool {
+func runtimeSupported(fn *function.Function) bool {
 	return fn.Runtime == Runtime || fn.Runtime == Runtime43
 }

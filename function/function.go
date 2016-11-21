@@ -285,6 +285,7 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 		Role:         &f.Role,
 		Runtime:      &f.Runtime,
 		Handler:      &f.Handler,
+		Environment:  f.environment(),
 		VpcConfig: &lambda.VpcConfig{
 			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
 			SubnetIds:        aws.StringSlice(f.VPC.Subnets),
@@ -375,6 +376,7 @@ func (f *Function) Create(zip []byte) error {
 		Handler:      &f.Handler,
 		Role:         &f.Role,
 		Publish:      aws.Bool(true),
+		Environment:  f.environment(),
 		Code: &lambda.FunctionCode{
 			ZipFile: zip,
 		},
@@ -721,6 +723,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Runtime     string
 		Handler     string
 		VPC         vpc.VPC
+		Environment []string
 	}
 
 	localConfig := &diffConfig{
@@ -730,6 +733,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Role:        f.Role,
 		Runtime:     f.Runtime,
 		Handler:     f.Handler,
+		Environment: environ(f.environment().Variables),
 		VPC: vpc.VPC{
 			Subnets:        f.VPC.Subnets,
 			SecurityGroups: f.VPC.SecurityGroups,
@@ -743,6 +747,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Role:        *config.Configuration.Role,
 		Runtime:     *config.Configuration.Runtime,
 		Handler:     *config.Configuration.Handler,
+		Environment: environ(config.Configuration.Environment.Variables),
 	}
 
 	// SDK is inconsistent here. VpcConfig can be nil or empty struct.
@@ -811,4 +816,31 @@ func (f *Function) hookDeploy() error {
 		}
 	}
 	return nil
+}
+
+// environment for lambda calls.
+func (f *Function) environment() *lambda.Environment {
+	env := make(map[string]*string)
+	for k, v := range f.Environment {
+		env[k] = aws.String(v)
+	}
+	return &lambda.Environment{Variables: env}
+}
+
+// environment sorted and joined.
+func environ(env map[string]*string) []string {
+	var keys []string
+	var pairs []string
+
+	for k := range env {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		pairs = append(pairs, fmt.Sprintf("%s=%s", k, *env[k]))
+	}
+
+	return pairs
 }
