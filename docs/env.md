@@ -19,7 +19,15 @@ The `-E, --env-file` flag allows you to set multiple environment variables using
 $ apex deploy --env-file /path/to/env.json
 ```
 
-## JSON config
+Sample env.json:
+
+```json
+{
+  "LOGGLY_TOKEN": "12314212213123"
+}
+```
+
+## Config (project.json or function.json)
 
 Specify environment variables in project.json or function.json, note that the values _must_ be strings.
 
