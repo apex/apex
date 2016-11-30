@@ -92,3 +92,25 @@ Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com
   ]
 }
 ```
+
+### Additional minimum IAM Policy to set VPC for Lambda
+The following additional policies are needed to set VPC for your Lambda functions.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeVpcs"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+Also, the role which apex made during `apex init` should have the `AWSLambdaVPCAccessExecutionRole` policy, see details in [an AWS document](http://docs.aws.amazon.com/lambda/latest/dg/vpc.html).
