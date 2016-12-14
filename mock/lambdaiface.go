@@ -184,6 +184,28 @@ func (_mr *_MockLambdaAPIRecorder) DeleteFunctionRequest(arg0 interface{}) *gomo
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "DeleteFunctionRequest", arg0)
 }
 
+func (_m *MockLambdaAPI) GetAccountSettings(_param0 *lambda.GetAccountSettingsInput) (*lambda.GetAccountSettingsOutput, error) {
+	ret := _m.ctrl.Call(_m, "GetAccountSettings", _param0)
+	ret0, _ := ret[0].(*lambda.GetAccountSettingsOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+func (_mr *_MockLambdaAPIRecorder) GetAccountSettings(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "GetAccountSettings", arg0)
+}
+
+func (_m *MockLambdaAPI) GetAccountSettingsRequest(_param0 *lambda.GetAccountSettingsInput) (*request.Request, *lambda.GetAccountSettingsOutput) {
+	ret := _m.ctrl.Call(_m, "GetAccountSettingsRequest", _param0)
+	ret0, _ := ret[0].(*request.Request)
+	ret1, _ := ret[1].(*lambda.GetAccountSettingsOutput)
+	return ret0, ret1
+}
+
+func (_mr *_MockLambdaAPIRecorder) GetAccountSettingsRequest(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "GetAccountSettingsRequest", arg0)
+}
+
 func (_m *MockLambdaAPI) GetAlias(_param0 *lambda.GetAliasInput) (*lambda.AliasConfiguration, error) {
 	ret := _m.ctrl.Call(_m, "GetAlias", _param0)
 	ret0, _ := ret[0].(*lambda.AliasConfiguration)
