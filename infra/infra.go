@@ -78,7 +78,7 @@ func (p *Proxy) shouldInjectVars(args []string) bool {
 		return false
 	}
 
-	return args[0] == "plan" || args[0] == "apply" || args[0] == "destroy"
+	return args[0] == "plan" || args[0] == "apply" || args[0] == "destroy" || args[0] == "refresh"
 }
 
 // Output fetches output variable `name` from terraform.
