@@ -14,6 +14,8 @@ import (
 	"github.com/Unknwon/goconfig"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/mitchellh/go-homedir"
 	"github.com/rliebling/gitignorer"
 )
@@ -156,10 +158,27 @@ func ProfileFromConfig(environment string) (string, error) {
 	return v.Profile, nil
 }
 
-// UseTempCredentials creates a credentials object
-func UseTempCredentials(region, id, secret, token string) *aws.Config {
-	return &aws.Config{
-		Region:      aws.String(region),
-		Credentials: credentials.NewStaticCredentials(id, secret, token),
+// AssumeRole uses STS to assume the given `role`.
+func AssumeRole(role string, config *aws.Config) (*aws.Config, error) {
+	stscreds := sts.New(session.New(config))
+
+	params := &sts.AssumeRoleInput{
+		RoleArn:         &role,
+		RoleSessionName: aws.String("apex"),
+		DurationSeconds: aws.Int64(1800),
 	}
+
+	res, err := stscreds.AssumeRole(params)
+	if err != nil {
+		return nil, err
+	}
+
+	id := *res.Credentials.AccessKeyId
+	secret := *res.Credentials.SecretAccessKey
+	token := *res.Credentials.SessionToken
+
+	return &aws.Config{
+		Region:      config.Region,
+		Credentials: credentials.NewStaticCredentials(id, secret, token),
+	}, nil
 }

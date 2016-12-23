@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/pkg/errors"
 	"github.com/tj/cobra"
 
 	"github.com/apex/apex/dryrun"
@@ -141,25 +141,11 @@ func Prepare(c *cobra.Command, args []string) error {
 	}
 
 	if iamrole != "" {
-		stscreds := sts.New(session.New(Config))
-
-		stsparams := &sts.AssumeRoleInput{
-			RoleArn:         aws.String(iamrole),
-			RoleSessionName: aws.String("apex"),
-			DurationSeconds: aws.Int64(1800),
-		}
-
-		stsresp, err := stscreds.AssumeRole(stsparams)
-
+		config, err := utils.AssumeRole(iamrole, Config)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "assuming role")
 		}
-
-		Config = utils.UseTempCredentials(
-			region,
-			*stsresp.Credentials.AccessKeyId,
-			*stsresp.Credentials.SecretAccessKey,
-			*stsresp.Credentials.SessionToken)
+		Config = config
 	}
 
 	Session = session.New(Config)

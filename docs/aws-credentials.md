@@ -52,14 +52,7 @@ You may store the profile name in the project.json file itself as shown in the f
 
 ## Via IAM Role
 
-Using an IAM role can be achieved in two ways, via an environment variable or via a command line flag. As with other Apex credential loading, the command line flag will supersede the environment variable.
-
-The ARN format for both command line and environment variable is arn:aws:iam::000000000:role/role_name
-
-Using environment variable only, specify the following:
-
-AWS_ROLE AWS ARN
-Use an IAM role via the command line with the -i or --iamrole flag.
+Using an IAM role can be achieved in two ways, via the __AWS_ROLE__ environment variable or via a command line flag `--iamrole`. As with other Apex credential loading, the command line flag will supersede the environment variable.
 
 ## Precedence
 
@@ -71,6 +64,7 @@ Precedence for loading the AWS credentials is:
 - profile named "default"
 
 ## Minimum IAM Policy
+
 Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com/iam/) which provides the minimum privileges needed to use Apex to manage your Lambda functions.
 
 ```json
@@ -105,6 +99,7 @@ Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com
 ```
 
 ### Additional minimum IAM Policy to set VPC for Lambda
+
 The following additional policies are needed to set VPC for your Lambda functions.
 
 ```json
