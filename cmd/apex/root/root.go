@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/tj/cobra"
 
 	"github.com/apex/apex/dryrun"
@@ -28,6 +29,9 @@ var logLevel string
 
 // profile for AWS.
 var profile string
+
+// iamrole for AWS.
+var iamrole string
 
 // region for AWS.
 var region string
@@ -63,6 +67,7 @@ func init() {
 	f.BoolVarP(&dryRun, "dry-run", "D", false, "Perform a dry-run")
 	f.StringVarP(&logLevel, "log-level", "l", "info", "Log severity level")
 	f.StringVarP(&profile, "profile", "p", "", "AWS profile")
+	f.StringVarP(&iamrole, "iamrole", "i", "", "AWS iamrole")
 	f.StringVarP(&region, "region", "r", "", "AWS region")
 }
 
@@ -128,6 +133,33 @@ func Prepare(c *cobra.Command, args []string) error {
 	// environment from flag or env
 	if environment == "" {
 		environment = os.Getenv("APEX_ENVIRONMENT")
+	}
+
+	// iamrole from flag, env
+	if iamrole == "" {
+		iamrole = os.Getenv("AWS_ROLE")
+	}
+
+	if iamrole != "" {
+		stscreds := sts.New(session.New(Config))
+
+		stsparams := &sts.AssumeRoleInput{
+			RoleArn:         aws.String(iamrole),
+			RoleSessionName: aws.String("apex"),
+			DurationSeconds: aws.Int64(1800),
+		}
+
+		stsresp, err := stscreds.AssumeRole(stsparams)
+
+		if err != nil {
+			return err
+		}
+
+		Config = utils.UseTempCredentials(
+			region,
+			*stsresp.Credentials.AccessKeyId,
+			*stsresp.Credentials.SecretAccessKey,
+			*stsresp.Credentials.SessionToken)
 	}
 
 	Session = session.New(Config)

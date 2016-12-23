@@ -12,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/Unknwon/goconfig"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/mitchellh/go-homedir"
 	"github.com/rliebling/gitignorer"
 )
@@ -152,4 +154,12 @@ func ProfileFromConfig(environment string) (string, error) {
 	}
 
 	return v.Profile, nil
+}
+
+// UseTempCredentials creates a credentials object
+func UseTempCredentials(region, id, secret, token string) *aws.Config {
+	return &aws.Config{
+		Region:      aws.String(region),
+		Credentials: credentials.NewStaticCredentials(id, secret, token),
+	}
 }
