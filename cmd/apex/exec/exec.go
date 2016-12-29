@@ -42,7 +42,6 @@ func run(c *cobra.Command, args []string) error {
 
 	if dir == "" {
 		pwd, err := os.Getwd()
-
 		if err != nil {
 			return err
 		}
@@ -58,7 +57,6 @@ func run(c *cobra.Command, args []string) error {
 	}
 
 	err := root.Project.LoadFunctions()
-
 	if err != nil {
 		return err
 	}

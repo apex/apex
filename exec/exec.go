@@ -21,7 +21,6 @@ type Proxy struct {
 
 // Run command in specified directory.
 func (p *Proxy) Run(command string, args ...string) error {
-
 	log.WithFields(log.Fields{
 		"command": command,
 		"args":    args,
