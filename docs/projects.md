@@ -82,6 +82,12 @@ Runtimes supported:
 - __nodejs__ (Node.js 0.10)
 - __nodejs4.3__ (Node.js 4.3)
 - __golang__ (any version)
+- __rust-musl[^rust-runtime][^rust-linux-only]__ (any version)
+- __rust-gnu[^rust-runtime][^rust-linux-only]__ (any version)
+
+[^rust-runtime]: Rust has two types of libc dependencies and the __rust-musl__ is recommended. Your rust lambda function may refuse to run because of glibc version mismatch between lambda server and your pc when __rust-gnu__ runtime is used.
+
+[^rust-linux-only]: Rust version of lambda currently can only be built on linux machine. If you try to build on MacOS, you will encounter the linker error. One solution is using apex inside a linux docker container on MacOS.
 
 ### memory
 

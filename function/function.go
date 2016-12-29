@@ -46,6 +46,8 @@ func (t timelessInfo) ModTime() time.Time {
 var defaultPlugins = []string{
 	"inference",
 	"hooks",
+	"rust-musl",
+	"rust-gnu",
 	"golang",
 	"python",
 	"nodejs",
