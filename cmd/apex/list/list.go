@@ -79,7 +79,7 @@ func outputTFvars() {
 func outputList() {
 	fmt.Println()
 	for _, fn := range root.Project.Functions {
-		_, err := fn.GetConfigCurrent()
+		awsFn, err := fn.GetConfigCurrent()
 
 		if awserr, ok := err.(awserr.Error); ok && awserr.Code() == "ResourceNotFoundException" {
 			fmt.Printf("  \033[%dm%s\033[0m (not deployed) \n", colors.Blue, fn.Name)
@@ -95,6 +95,9 @@ func outputList() {
 		fmt.Printf("    timeout: %vs\n", fn.Timeout)
 		fmt.Printf("    role: %v\n", fn.Role)
 		fmt.Printf("    handler: %v\n", fn.Handler)
+		if awsFn != nil && awsFn.Configuration != nil && awsFn.Configuration.FunctionArn != nil {
+			fmt.Printf("    arn: %v\n", *awsFn.Configuration.FunctionArn)
+		}
 
 		if err != nil {
 			fmt.Println()
