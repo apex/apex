@@ -47,8 +47,13 @@ if [ -z $LATEST ] ; then
   echo "Error requesting. Download binary from https://github.com/apex/apex/releases"
   exit 1
 else
-  curl -sL https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM -o $DEST
-  chmod +x $DEST
+  echo "Downloading Apex binary from https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM to $DEST"
+  if curl -sL https://github.com/apex/apex/releases/download/$LATEST/apex_$PLATFORM -o $DEST; then
+    chmod +x $DEST
+    echo "Apex installation was successful"
+  else
+    echo "Installation failed. You may need elevated permissions."
+  fi
 fi
 }
 
