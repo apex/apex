@@ -65,13 +65,17 @@ var tf = []string{
 //
 //   $ apex infra --env prod deploy
 //
-func isInfra(args []string) bool {
-	for _, arg := range args {
-		if arg == "infra" {
-			return true
+func endCmdArgs(args []string, off int) []string {
+	return append(args[0:off], append([]string{"--"}, args[off:]...)...)
+}
+
+func indexOf(args []string, key string) int {
+	for i, arg := range args {
+		if arg == key {
+			return i
 		}
 	}
-	return false
+	return -1
 }
 
 func main() {
@@ -82,7 +86,7 @@ func main() {
 	// Cobra does not (currently) allow us to pass flags for a sub-command
 	// as if they were arguments, so we inject -- here after the first TF command.
 	// TODO(tj): replace with a real solution and send PR to Cobra #251
-	if len(os.Args) > 1 && isInfra(os.Args) {
+	if len(os.Args) > 1 && indexOf(os.Args, "infra") > -1 {
 		off := 1
 
 	out:
@@ -95,7 +99,9 @@ func main() {
 			}
 		}
 
-		args = append(args[0:off], append([]string{"--"}, args[off:]...)...)
+		args = endCmdArgs(args, off)
+	} else if len(os.Args) > 1 && indexOf(os.Args, "exec") > -1 {
+		args = endCmdArgs(args, indexOf(os.Args, "exec"))
 	}
 
 	root.Command.SetArgs(args)
