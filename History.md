@@ -1,4 +1,14 @@
 
+v0.12.0 / 2017-01-06
+====================
+
+  * add `exec` sub-command for pass-through of env vars. Closes #619
+  * add improved message if curl failed due to permission error (#634)
+  * add initial rust support (#549)
+  * add function arn to list output (#627)
+  * add IAM role support (#614)
+  * fix shim runtime for new functions, now "nodejs4.3"
+
 v0.11.0 / 2016-11-21
 ====================
 
