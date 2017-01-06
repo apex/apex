@@ -42,6 +42,7 @@ out.on('data', function(line){
 
 exports.handle = function(event, context) {
   ctx = context
+  ctx.callbackWaitsForEmptyEventLoop = false
 
   proc.stdin.write(JSON.stringify({
     "event": event,
