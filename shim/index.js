@@ -15,7 +15,7 @@ var callback
 var proc = child.spawn('./main', { stdio: ['pipe', 'pipe', process.stderr] })
 
 proc.on('error', function(err){
-  console.error('error: %s', err)
+  console.error('[shim] error: %s', err)
   process.exit(1)
 })
 
