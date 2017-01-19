@@ -370,6 +370,42 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 	return fn, nil
 }
 
+func (p *Project) CreateOrUpdateAlias(alias, version string) error {
+	p.Log.Debugf("updating %d functions", len(p.Functions))
+
+	sem := make(semaphore.Semaphore, p.Concurrency)
+	errs := make(chan error)
+
+	go func() {
+		for _, fn := range p.Functions {
+			fn := fn
+			sem.Acquire()
+
+			go func() {
+				defer sem.Release()
+
+				err := fn.CreateOrUpdateAlias(alias, version)
+				if err != nil {
+					err = fmt.Errorf("function %s: %s", fn.Name, err)
+				}
+
+				errs <- err
+			}()
+		}
+
+		sem.Wait()
+		close(errs)
+	}()
+
+	for err := range errs {
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // name returns the computed name for `fn`, using the nameTemplate.
 func (p *Project) name(fn *function.Function) (string, error) {
 	data := struct {
