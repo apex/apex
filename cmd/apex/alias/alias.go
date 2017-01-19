@@ -17,17 +17,20 @@ var version string
 
 // example output.
 const example = `
-    Alias prod as current version
+    Alias all functions as "prod"
     $ apex alias prod
 
-    Alias prod as version
-    $ apex alias -v version prod
+		Alias all "api_*" functions to "prod"
+    $ apex alias prod api_*
 
-    Alias prod as current version for specific function
-    $ apex alias prod function
+    Alias all functions of version 5 to "prod"
+    $ apex alias -v v5 prod
 
-    Alias prod as version for specific function
-    $ apex alias -v version prod function
+    Alias specific function to "stage"
+    $ apex alias stage myfunction
+
+    Alias specific function's version 10 to "stage"
+    $ apex alias -v v10 stage myfunction
 `
 
 // Command config.
