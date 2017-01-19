@@ -370,6 +370,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 	return fn, nil
 }
 
+// CreateOrUpdateAlias ensures the given `alias` is available for `version`.
 func (p *Project) CreateOrUpdateAlias(alias, version string) error {
 	p.Log.Debugf("updating %d functions", len(p.Functions))
 
