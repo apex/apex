@@ -95,6 +95,7 @@ type Config struct {
 	Hooks            hooks.Hooks       `json:"hooks"`
 	RetainedVersions *int              `json:"retainedVersions"`
 	VPC              vpc.VPC           `json:"vpc"`
+	KMSKeyArn        string            `json:"kms_arn"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -287,6 +288,7 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 		Role:         &f.Role,
 		Runtime:      &f.Runtime,
 		Handler:      &f.Handler,
+		KMSKeyArn:    &f.KMSKeyArn,
 		Environment:  f.environment(),
 		VpcConfig: &lambda.VpcConfig{
 			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
@@ -377,6 +379,7 @@ func (f *Function) Create(zip []byte) error {
 		Runtime:      &f.Runtime,
 		Handler:      &f.Handler,
 		Role:         &f.Role,
+		KMSKeyArn:    &f.KMSKeyArn,
 		Publish:      aws.Bool(true),
 		Environment:  f.environment(),
 		Code: &lambda.FunctionCode{
@@ -726,6 +729,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Handler     string
 		VPC         vpc.VPC
 		Environment []string
+		KMSKeyArn   string
 	}
 
 	localConfig := &diffConfig{
@@ -735,6 +739,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Role:        f.Role,
 		Runtime:     f.Runtime,
 		Handler:     f.Handler,
+		KMSKeyArn:   f.KMSKeyArn,
 		Environment: environ(f.environment().Variables),
 		VPC: vpc.VPC{
 			Subnets:        f.VPC.Subnets,
@@ -749,6 +754,7 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Role:        *config.Configuration.Role,
 		Runtime:     *config.Configuration.Runtime,
 		Handler:     *config.Configuration.Handler,
+		KMSKeyArn:   *config.Configuration.KMSKeyArn,
 	}
 
 	if config.Configuration.Environment != nil {
