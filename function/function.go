@@ -658,6 +658,23 @@ func (f *Function) GroupName() string {
 	return fmt.Sprintf("/aws/lambda/%s", f.FunctionName)
 }
 
+// Return function version from alias name, if alias not found, return the input
+func (f *Function) GetVersionFromAlias(alias string) (string, error) {
+	var version string = alias
+	aliases, err := f.GetAliases()
+	if err != nil {
+		return version, err
+	}
+
+	for _, fnAlias := range aliases.Aliases {
+		if strings.Compare(version, *fnAlias.Name) == 0 {
+			version = *fnAlias.FunctionVersion
+			break
+		}
+	}
+	return version, nil
+}
+
 // cleanup removes any deployed functions beyond the configured `RetainedVersions` value
 func (f *Function) cleanup() error {
 	versionsToCleanup, err := f.versionsToCleanup()

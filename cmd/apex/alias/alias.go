@@ -20,7 +20,7 @@ const example = `
     Alias all functions as "prod"
     $ apex alias prod
 
-		Alias all "api_*" functions to "prod"
+    Alias all "api_*" functions to "prod"
     $ apex alias prod api_*
 
     Alias all functions of version 5 to "prod"
@@ -47,7 +47,7 @@ func init() {
 	root.Register(Command)
 
 	f := Command.Flags()
-	f.StringVarP(&version, "version", "v", "$LATEST", "Function version")
+	f.StringVarP(&version, "version", "v", "current", "Function version")
 }
 
 // PreRun errors if the alias argument is missing.

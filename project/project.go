@@ -385,7 +385,12 @@ func (p *Project) CreateOrUpdateAlias(alias, version string) error {
 			go func() {
 				defer sem.Release()
 
-				err := fn.CreateOrUpdateAlias(alias, version)
+				version, err := fn.GetVersionFromAlias(version)
+				if err != nil {
+					err = fmt.Errorf("function %s: %s", fn.Name, err)
+				}
+
+				err = fn.CreateOrUpdateAlias(alias, version)
 				if err != nil {
 					err = fmt.Errorf("function %s: %s", fn.Name, err)
 				}
