@@ -59,7 +59,7 @@ Example projects for all supported runtimes can be found in [_examples](_example
 
 ## Sponsors
 
-Use Apex? Love Apex? Help [sponsor the project](https://opencollective.com/apex#sponsor) and help fill our mugs with coffee.
+Does your company use Apex? Help keep the project bug-free and feature rich by [sponsoring the project](https://opencollective.com/apex#sponsor).
 
   <a href="https://opencollective.com/apex/sponsors/0/website" target="_blank"><img src="https://opencollective.com/apex/sponsors/0/avatar"></a>
   <a href="https://opencollective.com/apex/sponsors/1/website" target="_blank"><img src="https://opencollective.com/apex/sponsors/1/avatar"></a>
