@@ -67,6 +67,9 @@ func (p *Proxy) functionVars() (args []string) {
 
 		args = append(args, "-var")
 		args = append(args, fmt.Sprintf("apex_function_%s=%s", fn.Name, *config.Configuration.FunctionArn))
+
+		args = append(args, "-var")
+		args = append(args, fmt.Sprintf("apex_function_%s_name=%s", fn.Name, fn.FunctionName))
 	}
 
 	return args
