@@ -1,0 +1,6 @@
+{
+  "name": "groovy",
+  "description": "Groovy example project",
+  "role": "arn:aws:iam::293503197324:role/apex_lambda_function",
+  "runtime" : "java"
+}

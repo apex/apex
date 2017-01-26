@@ -1,0 +1,9 @@
+{
+  "description": "Groovy example function with existing build.gradle",
+  "handler": "lambda.Example::handler",
+  "runtime": "java",
+  "hooks": {
+    "build": "gradle build",
+    "clean": "gradle clean"
+  }
+}
