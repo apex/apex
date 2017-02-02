@@ -782,7 +782,10 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 		Role:        *config.Configuration.Role,
 		Runtime:     *config.Configuration.Runtime,
 		Handler:     *config.Configuration.Handler,
-		KMSKeyArn:   *config.Configuration.KMSKeyArn,
+	}
+
+	if config.Configuration.KMSKeyArn != nil {
+		remoteConfig.KMSKeyArn = *config.Configuration.KMSKeyArn
 	}
 
 	if config.Configuration.Environment != nil {
