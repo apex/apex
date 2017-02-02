@@ -132,7 +132,7 @@ Each function uses a function.json configuration file to define function-specifi
 {
   "name": "bar",
   "description": "Node.js example function",
-  "runtime": "nodejs",
+  "runtime": "nodejs4.3",
   "memory": 128,
   "timeout": 5,
   "role": "arn:aws:iam::293503197324:role/lambda"
