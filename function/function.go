@@ -281,7 +281,7 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 func (f *Function) DeployConfigAndCode(zip []byte) error {
 	f.Log.Info("updating config")
 
-	_, err := f.Service.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
+	params := &lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &f.FunctionName,
 		MemorySize:   &f.Memory,
 		Timeout:      &f.Timeout,
@@ -295,11 +295,15 @@ func (f *Function) DeployConfigAndCode(zip []byte) error {
 			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
 			SubnetIds:        aws.StringSlice(f.VPC.Subnets),
 		},
-		DeadLetterConfig: &lambda.DeadLetterConfig{
-			TargetArn: &f.DeadLetterARN,
-		},
-	})
+	}
 
+	if f.DeadLetterARN != "" {
+		params.DeadLetterConfig = &lambda.DeadLetterConfig{
+			TargetArn: &f.DeadLetterARN,
+		}
+	}
+
+	_, err := f.Service.UpdateFunctionConfiguration(params)
 	if err != nil {
 		return err
 	}
@@ -375,7 +379,7 @@ func (f *Function) Update(zip []byte) error {
 func (f *Function) Create(zip []byte) error {
 	f.Log.Info("creating function")
 
-	created, err := f.Service.CreateFunction(&lambda.CreateFunctionInput{
+	params := &lambda.CreateFunctionInput{
 		FunctionName: &f.FunctionName,
 		Description:  &f.Description,
 		MemorySize:   &f.Memory,
@@ -393,11 +397,15 @@ func (f *Function) Create(zip []byte) error {
 			SecurityGroupIds: aws.StringSlice(f.VPC.SecurityGroups),
 			SubnetIds:        aws.StringSlice(f.VPC.Subnets),
 		},
-		DeadLetterConfig: &lambda.DeadLetterConfig{
-			TargetArn: &f.DeadLetterARN,
-		},
-	})
+	}
 
+	if f.DeadLetterARN != "" {
+		params.DeadLetterConfig = &lambda.DeadLetterConfig{
+			TargetArn: &f.DeadLetterARN,
+		}
+	}
+
+	created, err := f.Service.CreateFunction(params)
 	if err != nil {
 		return err
 	}
