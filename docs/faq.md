@@ -23,7 +23,7 @@ Serverless is written using Node.js, Apex is written in Go. Apex aims to be a si
 
 ## Is using the Node.js shim slow?
 
-The shim creates a child process, thus creates a few-hundred millisecond delay for the first invocation. Subsequent calls to a function are likely to hit an active container, unless the function sees very little traffic.
+The shim creates a child process, thus creates a few-hundred millisecond delay for the first invocation. Subsequent calls to a function are likely to hit an active container, unless the function sees very little traffic, after which the latency is roughly 0.5ms.
 
 ## Do shimmed languages have any limitations?
 
