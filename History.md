@@ -1,4 +1,13 @@
 
+v0.13.0 / 2017-02-15
+====================
+
+  * add clojure support (#674)
+  * add variable apex_function_NAME_name to the exported variable to terraform (Closes #654) (#660)
+  * add support for DLQ ARN (#649)
+  * add support for KMS ARN (#648)
+  * add alias command (#647)
+
 v0.12.0 / 2017-01-06
 ====================
 
