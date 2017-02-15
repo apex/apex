@@ -1,7 +1,7 @@
 {
   "name": "lamb",
   "description": "Clojure example project using Lein",
-  "role": "arn:aws:iam::012345678901:role/lambylamby",
+  "role": "arn:aws:iam::293503197324:role/apex_lambda_function",
   "runtime": "clojure",
   "handler": "org.example.lambsay::handleRequest"
 }
