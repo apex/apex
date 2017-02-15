@@ -1,0 +1,9 @@
+{
+  "presets": [
+    "stage-0",
+    "latest"
+  ],
+  "plugins": [
+    "transform-runtime"
+  ]
+}
