@@ -1,0 +1,7 @@
+{
+  "name": "lamb",
+  "description": "Clojure example project using Lein",
+  "role": "arn:aws:iam::012345678901:role/lambylamby",
+  "runtime": "clojure",
+  "handler": "org.example.lambsay::handleRequest"
+}

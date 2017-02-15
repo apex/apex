@@ -32,6 +32,7 @@ import (
 	_ "github.com/apex/apex/plugins/golang"
 	_ "github.com/apex/apex/plugins/hooks"
 	_ "github.com/apex/apex/plugins/inference"
+	_ "github.com/apex/apex/plugins/clojure"
 	_ "github.com/apex/apex/plugins/java"
 	_ "github.com/apex/apex/plugins/nodejs"
 	_ "github.com/apex/apex/plugins/python"
