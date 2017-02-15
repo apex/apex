@@ -82,6 +82,7 @@ Runtimes supported:
 - __nodejs__ (Node.js 0.10)
 - __nodejs4.3__ (Node.js 4.3)
 - __golang__ (any version)
+- __clojure__ (any version)
 - __rust-musl[^rust-runtime][^rust-linux-only]__ (any version)
 - __rust-gnu[^rust-runtime][^rust-linux-only]__ (any version)
 
