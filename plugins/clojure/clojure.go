@@ -60,6 +60,7 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if fn.Runtime != Runtime {
 		return nil
 	}
+
 	fn.Runtime = RuntimeCanonical
 
 	jar := filepath.Join(fn.Path, "target", jarFile)

@@ -67,14 +67,13 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	fn.Runtime = RuntimeCanonical
 
 	fn.Log.Debugf("searching for JAR (%s) in directories: %s", jarFile, strings.Join(jarSearchPaths, ", "))
-	expectedJarPath := findJar(fn.Path)
-	if expectedJarPath == "" {
-		return errors.New("Expected jar file not found")
+	jar := findJar(fn.Path)
+	if jar == "" {
+		return errors.Errorf("missing jar file %q", jar)
 	}
-	fn.Log.Debugf("found jar path: %s", expectedJarPath)
 
 	fn.Log.Debug("appending compiled files")
-	reader, err := azip.OpenReader(expectedJarPath)
+	reader, err := azip.OpenReader(jar)
 	if err != nil {
 		return err
 	}
