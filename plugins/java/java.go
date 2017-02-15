@@ -3,7 +3,6 @@ package java
 
 import (
 	azip "archive/zip"
-	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/apex/apex/archive"
 	"github.com/apex/apex/function"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -83,12 +83,12 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	for _, file := range reader.File {
 		r, err := file.Open()
 		if err != nil {
-			return err
+			return errors.Wrap(err, "opening file")
 		}
 
 		b, err := ioutil.ReadAll(r)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "reading file")
 		}
 		r.Close()
 
@@ -100,10 +100,11 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 
 func findJar(fnPath string) string {
 	for _, path := range jarSearchPaths {
-		jarPath := filepath.Join(fnPath, path, jarFile)
-		if _, err := os.Stat(jarPath); err == nil {
-			return jarPath
+		jar := filepath.Join(fnPath, path, jarFile)
+		if _, err := os.Stat(jar); err == nil {
+			return jar
 		}
 	}
+
 	return ""
 }
