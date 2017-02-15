@@ -100,3 +100,11 @@ List of subnets IDs
 
 - type: `array`
 - inherited
+
+### kms_arn
+
+Optional ARN of the KMS key used to encrypt your function's environment variables. If empty, it means you are using the AWS Lambda default service key.
+
+### deadletter_arn
+
+Optional ARN of an Amazon SQS queue or Amazon SNS topic you specify as your Dead Letter Queue (DLQ).

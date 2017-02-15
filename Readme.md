@@ -31,6 +31,8 @@ Currently supports:
 - Golang
 - Python
 - Java
+- Rust
+- Clojure
 
 Example projects for all supported runtimes can be found in [_examples](_examples) directory.
 
