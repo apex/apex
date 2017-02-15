@@ -41,7 +41,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 	}
 
 	if fn.Hooks.Clean == "" {
-		fn.Hooks.Clean = "rm -f target"
+		fn.Hooks.Clean = "rm -fr target"
 	}
 
 	if _, err := os.Stat(".apexignore"); err != nil {
