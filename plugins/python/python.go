@@ -10,6 +10,7 @@ func init() {
 const (
 	// Runtime name used by Apex
 	Runtime = "python"
+
 	// RuntimeCanonical represents names used by AWS Lambda
 	RuntimeCanonical = "python2.7"
 )

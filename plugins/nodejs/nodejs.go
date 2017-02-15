@@ -6,6 +6,7 @@ import "github.com/apex/apex/function"
 const (
 	// Runtime name used by Apex and by AWS Lambda for Node.js 0.10
 	Runtime = "nodejs"
+
 	// Runtime43 name used by Apex and by AWS Lambda for Node.js 4.3.2
 	Runtime43 = "nodejs4.3"
 )

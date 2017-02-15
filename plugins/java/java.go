@@ -16,8 +16,10 @@ import (
 const (
 	// Runtime name used by Apex
 	Runtime = "java"
+
 	// RuntimeCanonical represents names used by AWS Lambda
 	RuntimeCanonical = "java8"
+
 	// jarFile
 	jarFile = "apex.jar"
 )
