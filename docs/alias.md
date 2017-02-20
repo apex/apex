@@ -18,7 +18,7 @@ $ apex alias prod api_*
 Alias all functions of version 5 to "prod":
 
 ```
-$ apex alias -v v5 prod
+$ apex alias -v 5 prod
 ```
 
 Alias specific function to "stage":
@@ -30,5 +30,5 @@ $ apex alias stage myfunction
 Alias specific function's version 10 to "stage":
 
 ```
-$ apex alias -v v10 stage myfunction
+$ apex alias -v 10 stage myfunction
 ```
