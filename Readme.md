@@ -180,7 +180,7 @@ $ echo '{ "name": "Tobi" }' | apex invoke bar
 { "hello": "Tobi" }
 ```
 
-See the [Documentation](docs) for more information.
+See the [Documentation](http://apex.run) for more information.
 
 ## Links
 
