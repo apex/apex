@@ -186,6 +186,7 @@ See the [Documentation](http://apex.run) for more information.
 
 - [Website](http://apex.run)
 - [Medium](https://medium.com/apex-serverless)
+- [Slack](https://apex-dev.azurewebsites.net/)
 
 ## Notes
 
