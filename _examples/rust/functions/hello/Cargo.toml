@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["Your Name <your email@email.com>"]
 
 [dependencies]
-rust-apex = "0.1.0"
-serde_json = "0.8.0"
+rust-apex = "0.2"
+serde_json = "0.9"
+

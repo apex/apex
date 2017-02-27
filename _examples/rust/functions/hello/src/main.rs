@@ -25,7 +25,7 @@ impl Error for DummyError {
 fn main() {
     rust_apex::run::<_, _, DummyError, _>(|input: Value, c: rust_apex::Context| {
         let mut bt = BTreeMap::new();
-        bt.insert("c", to_value(&c));
+        bt.insert("c", to_value(&c).unwrap());
         bt.insert("i", input);
         Ok(bt)
     });
