@@ -2,7 +2,7 @@
   "runtime": "nodejs4.3",
   "handler": "lib.default",
   "hooks": {
-    "build": "../../node_modules/.bin/webpack --config ../../webpack.config.babel.js",
+    "build": "../../node_modules/.bin/webpack --config ../../webpack.config.babel.js --bail",
     "clean": "rm -fr lib"
   }
 }
