@@ -50,7 +50,7 @@ You may store the profile name in the project.json file itself as shown in the f
 }
 ```
 
-## Via IAM Role
+## Via IAM Role
 
 Using an IAM role can be achieved in two ways, via the __AWS_ROLE__ environment variable or via a command line flag `--iamrole`. As with other Apex credential loading, the command line flag will supersede the environment variable.
 
