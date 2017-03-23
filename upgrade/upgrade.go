@@ -2,6 +2,7 @@
 package upgrade
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -10,7 +11,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-        "context"
 
 	"github.com/apex/log"
 	"github.com/google/go-github/github"
