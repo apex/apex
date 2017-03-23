@@ -1,11 +1,12 @@
 // NOTE: paths are relative to each functions folder
+import path from 'path';
 import Webpack from 'webpack';
 
 export default {
   entry: './src/index.js',
   target: 'node',
   output: {
-    path: './lib',
+    path: path.join(process.cwd(), 'lib'),
     filename: 'index.js',
     libraryTarget: 'commonjs2',
   },
