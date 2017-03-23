@@ -1,4 +1,12 @@
 
+v0.13.1 / 2017-03-23
+====================
+
+  * add Node v6.10 support. Closes #493
+  * change runtime to nodejs43 for rust lambdas (#689)
+  * fix context for gh ListReleases call (#691)
+  * fix alias command example by removing v prefix: v5 should be just 5 (#681)
+
 v0.13.0 / 2017-02-15
 ====================
 
