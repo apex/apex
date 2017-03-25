@@ -779,9 +779,12 @@ func (f *Function) configChanged(config *lambda.GetFunctionOutput) bool {
 			Subnets:        f.VPC.Subnets,
 			SecurityGroups: f.VPC.SecurityGroups,
 		},
-		DeadLetterConfig: lambda.DeadLetterConfig{
+	}
+
+	if f.DeadLetterARN != "" {
+		localConfig.DeadLetterConfig = lambda.DeadLetterConfig{
 			TargetArn: &f.DeadLetterARN,
-		},
+		}
 	}
 
 	remoteConfig := &diffConfig{
