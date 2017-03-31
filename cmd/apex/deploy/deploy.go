@@ -23,6 +23,9 @@ var concurrency int
 // alias.
 var alias string
 
+// zip path.
+var zip string
+
 // example output.
 const example = `
     Deploy all functions
@@ -36,6 +39,9 @@ const example = `
 
     Deploy functions in a different project
     $ apex deploy -C ~/dev/myapp
+
+		Deploy function with existing zip
+		$ apex build > out.zip && apex deploy foo --zip out.zip
 
     Deploy all functions starting with "auth"
     $ apex deploy auth*`
@@ -56,6 +62,7 @@ func init() {
 	f.StringSliceVarP(&env, "set", "s", nil, "Set environment variable")
 	f.StringVarP(&envFile, "env-file", "E", "", "Set environment variables from JSON file")
 	f.StringVarP(&alias, "alias", "a", "current", "Function alias")
+	f.StringVarP(&zip, "zip", "z", "", "Zip path")
 	f.IntVarP(&concurrency, "concurrency", "c", 5, "Concurrent deploys")
 }
 
@@ -64,12 +71,14 @@ func run(c *cobra.Command, args []string) error {
 	stats.Track("Deploy", map[string]interface{}{
 		"concurrency": concurrency,
 		"has_alias":   alias != "",
+		"has_zip":     zip != "",
 		"env":         len(env),
 		"args":        len(args),
 	})
 
 	root.Project.Concurrency = concurrency
 	root.Project.Alias = alias
+	root.Project.Zip = zip
 
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
@@ -79,6 +88,7 @@ func run(c *cobra.Command, args []string) error {
 		stats.Track("Deploy Function", map[string]interface{}{
 			"runtime":      fn.Runtime,
 			"has_alias":    alias != "",
+			"has_zip":      zip != "",
 			"has_env_file": envFile != "",
 			"env":          len(env),
 		})

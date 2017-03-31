@@ -55,6 +55,7 @@ type Config struct {
 	Environment        map[string]string `json:"environment"`
 	Hooks              hooks.Hooks       `json:"hooks"`
 	VPC                vpc.VPC           `json:"vpc"`
+	Zip                string            `json:"zip"`
 }
 
 // Project represents zero or more Lambda functions.
@@ -348,6 +349,7 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 			Environment:      copyStringMap(p.Config.Environment),
 			RetainedVersions: p.RetainedVersions,
 			VPC:              copyVPC(p.VPC),
+			Zip:              p.Zip,
 		},
 		Name:       name,
 		Path:       path,

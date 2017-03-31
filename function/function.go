@@ -98,6 +98,7 @@ type Config struct {
 	VPC              vpc.VPC           `json:"vpc"`
 	KMSKeyArn        string            `json:"kms_arn"`
 	DeadLetterARN    string            `json:"deadletter_arn"`
+	Zip              string            `json:"zip"`
 }
 
 // Function represents a Lambda function, with configuration loaded
@@ -230,7 +231,7 @@ func (f *Function) Setenv(name, value string) {
 func (f *Function) Deploy() error {
 	f.Log.Debug("deploying")
 
-	zip, err := f.BuildBytes()
+	zip, err := f.ZipBytes()
 	if err != nil {
 		return err
 	}
@@ -580,6 +581,18 @@ func (f *Function) RollbackVersion(version string) error {
 	f.Log.WithField("current version", version).Info("function rolled back")
 
 	return nil
+}
+
+// ZipBytes builds the in-memory zip, or reads
+// the .Zip from disk if specified.
+func (f *Function) ZipBytes() ([]byte, error) {
+	if f.Zip == "" {
+		f.Log.Debug("building zip")
+		return f.BuildBytes()
+	}
+
+	f.Log.Debugf("reading zip %q", f.Zip)
+	return ioutil.ReadFile(f.Zip)
 }
 
 // BuildBytes returns the generated zip as bytes.
