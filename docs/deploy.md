@@ -40,3 +40,10 @@ Deploy all functions ending with "_reporter".
 ```sh
 $ apex deploy *_reporter
 ```
+
+Deploy an existing zip file.
+
+```sh
+$ apex build auth > /tmp/auth.zip
+$ apex deploy auth --zip /tmp/auth.zip
+```
