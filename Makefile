@@ -1,4 +1,5 @@
 
+# Release the given VERSION.
 release:
 	@echo "[+] releasing $(VERSION)"
 	@echo "[+] re-generating"
@@ -10,14 +11,17 @@ release:
 	@echo "[+] complete"
 .PHONY: release
 
+# Test all packages.
 test:
 	@go test -cover ./...
 .PHONY: test
 
+# Build release binaries.
 build:
 	@gox -os="linux darwin windows openbsd" ./...
 .PHONY: build
 
+# Clean build artifacts.
 clean:
 	@git clean -f
 .PHONY: clean

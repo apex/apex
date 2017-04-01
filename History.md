@@ -1,4 +1,12 @@
 
+v0.14.0 / 2017-03-31
+====================
+
+  * add support for deploying existing zips. Closes #480
+  * change index.js inference to use v6.10
+  * fix empty DeadLetterARN config triggering deploy no matter what. Possibly Closes #701 (#713)
+  * fix webpack2 example for version 2.3.1 (#709)
+
 v0.13.1 / 2017-03-23
 ====================
 
