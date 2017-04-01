@@ -40,8 +40,8 @@ const example = `
     Deploy functions in a different project
     $ apex deploy -C ~/dev/myapp
 
-		Deploy function with existing zip
-		$ apex build > out.zip && apex deploy foo --zip out.zip
+    Deploy function with existing zip
+    $ apex build > out.zip && apex deploy foo --zip out.zip
 
     Deploy all functions starting with "auth"
     $ apex deploy auth*`
