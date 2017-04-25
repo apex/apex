@@ -270,11 +270,11 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 		f.Log.Info("code unchanged")
 
 		version := config.Configuration.Version
+
 		// Creating an alias to $LATEST would mean its tied to any future deploys.
 		// To correct this behaviour, we take the latest version at the time of deploy.
 		if *version == "$LATEST" {
 			versions, err := f.versions()
-
 			if err != nil {
 				return err
 			}

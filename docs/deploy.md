@@ -47,3 +47,9 @@ Deploy an existing zip file.
 $ apex build auth > /tmp/auth.zip
 $ apex deploy auth --zip /tmp/auth.zip
 ```
+
+Deploy with an alias. The alias is added regardless of changes to the function and its config.
+
+```sh
+$ apex deploy --alias prod api
+```
