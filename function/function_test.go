@@ -14,12 +14,14 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/mock"
+	"github.com/apex/apex/utils"
 )
 
 func init() {
@@ -106,6 +108,120 @@ func TestFunction_Delete_failed(t *testing.T) {
 	err := fn.Delete()
 
 	assert.EqualError(t, err, "API err")
+}
+
+func TestFunction_DeployCode_Success(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
+	code := []byte("something")
+	codeSha256 := utils.Sha256([]byte("something else"))
+	functionOutput := &lambda.GetFunctionOutput{
+		Configuration: &lambda.FunctionConfiguration{
+			CodeSha256: &codeSha256,
+		},
+	}
+	fnName := "testfn"
+	updatedVersion := "1"
+	fnAlias := "current"
+	retainedVersions := 1
+
+	serviceMock.EXPECT().UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
+		FunctionName: &fnName,
+		Publish:      aws.Bool(true),
+		ZipFile:      code,
+	}).Return(&lambda.FunctionConfiguration{
+		Version: &updatedVersion,
+	}, nil)
+	serviceMock.EXPECT().CreateAlias(&lambda.CreateAliasInput{
+		FunctionName:    &fnName,
+		FunctionVersion: &updatedVersion,
+		Name:            &fnAlias,
+	}).Return(&lambda.AliasConfiguration{}, nil)
+	serviceMock.EXPECT().ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
+		FunctionName: &fnName,
+	}).Return(&lambda.ListVersionsByFunctionOutput{
+		Versions: []*lambda.FunctionConfiguration{
+			&lambda.FunctionConfiguration{},
+		},
+	}, nil)
+
+	fn := &function.Function{
+		FunctionName: fnName,
+		Service:      serviceMock,
+		Log:          log.Log,
+		Alias:        fnAlias,
+		Config: function.Config{
+			RetainedVersions: &retainedVersions,
+			Environment:      make(map[string]string),
+		},
+	}
+
+	err := fn.DeployCode(code, functionOutput)
+
+	assert.Nil(t, err)
+}
+
+func TestFunction_DeployCode_UnchangedUpdatesAlias(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
+	code := []byte("something")
+	codeSha256 := utils.Sha256(code)
+	currentFnVersion := "$LATEST"
+	functionOutput := &lambda.GetFunctionOutput{
+		Configuration: &lambda.FunctionConfiguration{
+			Version:    &currentFnVersion,
+			CodeSha256: &codeSha256,
+		},
+	}
+	fnName := "testfn"
+	fnAlias := "current"
+	retainedVersions := 1
+
+	versions := []string{"1", "2", "3"}
+
+	serviceMock.EXPECT().ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
+		FunctionName: &fnName,
+	}).Return(&lambda.ListVersionsByFunctionOutput{
+		Versions: []*lambda.FunctionConfiguration{
+			&lambda.FunctionConfiguration{},
+			&lambda.FunctionConfiguration{
+				Version: &versions[0],
+			},
+			&lambda.FunctionConfiguration{
+				Version: &versions[1],
+			},
+			&lambda.FunctionConfiguration{
+				Version: &versions[2],
+			},
+		},
+	}, nil)
+	serviceMock.EXPECT().CreateAlias(&lambda.CreateAliasInput{
+		FunctionName:    &fnName,
+		FunctionVersion: &versions[2],
+		Name:            &fnAlias,
+	}).Return(nil, awserr.New("ResourceConflictException", "message", errors.New("message")))
+	serviceMock.EXPECT().UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &fnName,
+		FunctionVersion: &versions[2],
+		Name:            &fnAlias,
+	}).Return(&lambda.AliasConfiguration{}, nil)
+
+	fn := &function.Function{
+		FunctionName: fnName,
+		Service:      serviceMock,
+		Log:          log.Log,
+		Alias:        fnAlias,
+		Config: function.Config{
+			RetainedVersions: &retainedVersions,
+			Environment:      make(map[string]string),
+		},
+	}
+
+	err := fn.DeployCode(code, functionOutput)
+
+	assert.Nil(t, err)
 }
 
 func TestFunction_Rollback_GetAlias_failed(t *testing.T) {

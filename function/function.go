@@ -268,7 +268,21 @@ func (f *Function) DeployCode(zip []byte, config *lambda.GetFunctionOutput) erro
 
 	if localHash == remoteHash {
 		f.Log.Info("code unchanged")
-		return nil
+
+		version := config.Configuration.Version
+		// Creating an alias to $LATEST would mean its tied to any future deploys.
+		// To correct this behaviour, we take the latest version at the time of deploy.
+		if *version == "$LATEST" {
+			versions, err := f.versions()
+
+			if err != nil {
+				return err
+			}
+
+			version = versions[len(versions)-1].Version
+		}
+
+		return f.CreateOrUpdateAlias(f.Alias, *version)
 	}
 
 	f.Log.WithFields(log.Fields{
