@@ -33,7 +33,7 @@ const (
 	DefaultTimeout = 3
 
 	// DefaultRetainedVersions defines numbers of retained versions
-	DefaultRetainedVersions = 10
+	DefaultRetainedVersions = 25
 
 	// functions directory
 	functionsDir = "functions"

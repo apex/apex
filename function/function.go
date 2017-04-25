@@ -762,6 +762,7 @@ func (f *Function) removeVersions(versions []*lambda.FunctionConfiguration) erro
 			FunctionName: &f.FunctionName,
 			Qualifier:    v.Version,
 		})
+
 		if err != nil {
 			return err
 		}
