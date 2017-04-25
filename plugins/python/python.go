@@ -1,30 +1,32 @@
 // Package python implements the "python" runtime.
 package python
 
-import "github.com/apex/apex/function"
+import (
+	"strings"
+
+	"github.com/apex/apex/function"
+)
 
 func init() {
 	function.RegisterPlugin("python", &Plugin{})
 }
 
-const (
-	// Runtime name used by Apex
-	Runtime = "python"
-
-	// RuntimeCanonical represents names used by AWS Lambda
-	RuntimeCanonical = "python2.7"
-)
+// Runtime for inference.
+const Runtime = "python3.6"
 
 // Plugin implementation.
 type Plugin struct{}
 
 // Open adds python defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != Runtime {
+	if !strings.HasPrefix(fn.Runtime, "python") {
 		return nil
 	}
 
-	fn.Runtime = RuntimeCanonical
+	// Support "python" for backwards compat.
+	if fn.Runtime == "python" {
+		fn.Runtime = "python2.7"
+	}
 
 	if fn.Handler == "" {
 		fn.Handler = "main.handle"

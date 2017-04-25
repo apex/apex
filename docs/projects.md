@@ -78,8 +78,8 @@ Default runtime of function(s) unless specified in their function.json configura
 Runtimes supported:
 
 - __java__ (Java 8)
-- __python__ (Python 2.7)
-- __nodejs__ (Node.js 0.10)
+- __python2.7__ (Python 2.7)
+- __python3.6__ (Python 3.6)
 - __nodejs4.3__ (Node.js 4.3)
 - __nodejs6.10__ (Node.js 6.10)
 - __golang__ (any version)
