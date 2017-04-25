@@ -87,6 +87,7 @@ Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com
         "lambda:CreateAlias",
         "lambda:UpdateAlias",
         "lambda:GetAlias",
+        "lambda:ListAliases",
         "lambda:ListVersionsByFunction",
         "logs:FilterLogEvents",
         "cloudwatch:GetMetricStatistics"
