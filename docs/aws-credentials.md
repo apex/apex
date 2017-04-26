@@ -78,6 +78,7 @@ Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com
         "iam:AttachRolePolicy",
         "iam:PassRole",
         "lambda:GetFunction",
+        "lambda:ListFunctions",
         "lambda:CreateFunction",
         "lambda:DeleteFunction",
         "lambda:InvokeFunction",
