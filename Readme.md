@@ -210,7 +210,7 @@ To opt-out at any time simply run:
 $ touch ~/.apex/disable
 ```
 
-## Badges
+---
 
 [![Build Status](https://semaphoreci.com/api/v1/projects/d27ff350-b9c5-4d99-96e5-64b1afb441c5/649392/badge.svg)](https://semaphoreci.com/tj/apex)
 [![Slack Status](https://apex-dev.azurewebsites.net/badge.svg)](https://apex-dev.azurewebsites.net/)
