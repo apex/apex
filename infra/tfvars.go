@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apex/log"
 	"github.com/apex/apex/function"
+	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/service/lambda"
 )
 
 // ConfigRelation is a structure to store a combination of a function and it's configuration
 type ConfigRelation struct {
-	Function *function.Function
+	Function      *function.Function
 	Configuration *lambda.FunctionConfiguration
 }
 
@@ -58,9 +58,7 @@ func getFunctionArnVars(relations []ConfigRelation) (args []string) {
 	log.Debugf("Generating the tfvar apex_function_FUNCTION")
 	for _, rel := range relations {
 		args = append(args, "-var")
-		args = append(
-			args,
-			fmt.Sprintf("apex_function_%s=%s", rel.Function.Name, *rel.Configuration.FunctionArn))
+		args = append(args, fmt.Sprintf("apex_function_%s=%s", rel.Function.Name, *rel.Configuration.FunctionArn))
 	}
 	return args
 }
@@ -71,9 +69,7 @@ func getFunctionNameVars(relations []ConfigRelation) (args []string) {
 	log.Debugf("Generating the tfvar apex_function_FUNCTION_name")
 	for _, rel := range relations {
 		args = append(args, "-var")
-		args = append(
-			args,
-			fmt.Sprintf("apex_function_%s_name=%s", rel.Function.Name, rel.Configuration.FunctionArn))
+		args = append(args, fmt.Sprintf("apex_function_%s_name=%s", rel.Function.Name, *rel.Configuration.FunctionArn))
 	}
 	return args
 }
@@ -81,26 +77,23 @@ func getFunctionNameVars(relations []ConfigRelation) (args []string) {
 // Generates a map that has the function's name as a key and the arn of the function as a value
 func getFunctionArns(relations []ConfigRelation) (args []string) {
 	log.Debugf("Generating the tfvar apex_function_arns")
-	var infraFunctionsArn []string
+	var arns []string
 	for _, rel := range relations {
-		infraFunctionsArn = append(
-			infraFunctionsArn,
-			fmt.Sprintf("%s = %q", rel.Function.Name, *rel.Configuration.FunctionArn))
+		arns = append(arns, fmt.Sprintf("%s = %q", rel.Function.Name, *rel.Configuration.FunctionArn))
 	}
 	args = append(args, "-var")
-	args = append(args, fmt.Sprintf("apex_function_arns={ %s }", strings.Join(infraFunctionsArn, ", ")))
+	args = append(args, fmt.Sprintf("apex_function_arns={ %s }", strings.Join(arns, ", ")))
 	return args
 }
 
 // Generates a map that has the function's name as a key and the full name of the function as a value
-func getFunctionNames(relations []ConfigRelation) (args[] string) {
+func getFunctionNames(relations []ConfigRelation) (args []string) {
 	log.Debugf("Generating the tfvar apex_function_names")
-	var infraFunctionsNames []string
+	var names []string
 	for _, rel := range relations {
-		infraFunctionsNames =
-			append( infraFunctionsNames, fmt.Sprintf("%s = %q", rel.Function.Name, rel.Function.FunctionName))
+		names = append(names, fmt.Sprintf("%s = %q", rel.Function.Name, rel.Function.FunctionName))
 	}
 	args = append(args, "-var")
-	args = append(args, fmt.Sprintf("apex_function_names={ %s }", strings.Join(infraFunctionsNames, ", ")))
+	args = append(args, fmt.Sprintf("apex_function_names={ %s }", strings.Join(names, ", ")))
 	return args
 }
