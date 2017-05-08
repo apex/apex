@@ -30,8 +30,8 @@ Currently the following variables are exposed to Terraform:
 - `aws_region` the AWS region name such as "us-west-2"
 - `apex_environment` the environment name such as "prod" or "stage"
 - `apex_function_role` the Lambda role ARN
-- `apex_function_NAME` Lambda function ARNs by __NAME__
-- `apex_function_NAME_name` Lambda function names by __NAME__
+- `apex_function_arns` A map of all lambda functions
+- `apex_function_names` A map of all the names of the lambda functions
 
 ## Notes
 

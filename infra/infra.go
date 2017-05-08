@@ -45,36 +45,6 @@ func (p *Proxy) Run(args ...string) error {
 	return cmd.Run()
 }
 
-// functionVars returns the function ARN's as terraform -var arguments.
-func (p *Proxy) functionVars() (args []string) {
-	args = append(args, "-var")
-	args = append(args, fmt.Sprintf("aws_region=%s", p.Region))
-
-	args = append(args, "-var")
-	args = append(args, fmt.Sprintf("apex_environment=%s", p.Environment))
-
-	if p.Role != "" {
-		args = append(args, "-var")
-		args = append(args, fmt.Sprintf("apex_function_role=%s", p.Role))
-	}
-
-	for _, fn := range p.Functions {
-		config, err := fn.GetConfig()
-		if err != nil {
-			log.Debugf("can't fetch function config: %s", err.Error())
-			continue
-		}
-
-		args = append(args, "-var")
-		args = append(args, fmt.Sprintf("apex_function_%s=%s", fn.Name, *config.Configuration.FunctionArn))
-
-		args = append(args, "-var")
-		args = append(args, fmt.Sprintf("apex_function_%s_name=%s", fn.Name, fn.FunctionName))
-	}
-
-	return args
-}
-
 // shouldInjectVars checks if the command accepts -var flags.
 func (p *Proxy) shouldInjectVars(args []string) bool {
 	if len(args) == 0 {
