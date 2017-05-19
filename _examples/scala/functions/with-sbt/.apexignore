@@ -1,0 +1,8 @@
+*.scala
+*.sbt
+lib_managed/
+project/
+sbt
+src/
+target/
+test.json

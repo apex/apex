@@ -1,0 +1,9 @@
+{
+  "description": "Scala example with sbt.",
+  "handler": "lambda.Example::handler",
+  "runtime": "java",
+  "hooks": {
+    "build": "sbt assembly",
+    "clean": "sbt clean"
+  }
+}
