@@ -1,4 +1,19 @@
 
+v0.15.0 / 2017-06-11
+====================
+
+  * add passing of maps that describe all apex functions to terraform Closes #737 (#744)
+  * added nodejs4.3-edge runtime (#741)
+  * add ListFunctions to min IAM policy example (#733)
+  * add documentation to set alias to another alias (#732)
+  * add arbitrary python version support. Closes #723
+  * Add lambda:ListAliases to min IAM policy (#729)
+  * add --alias docs
+  * change DefaultRetainedVersions to 25
+  * Update function deploy to update the specified alias even if code has not changed. Closes #686 (#712)
+  * upgrade example to use nodejs version 6.10 (#719)
+  * fix tabs in deploy example
+
 v0.14.0 / 2017-03-31
 ====================
 
