@@ -104,6 +104,12 @@ func Prepare(c *cobra.Command, args []string) error {
 	// config defaults
 	Config = aws.NewConfig()
 
+	if chdir != "" {
+		if err := os.Chdir(chdir); err != nil {
+			return err
+		}
+	}
+
 	// profile from flag, config, env, "default"
 	if profile == "" {
 		profile, _ = utils.ProfileFromConfig(environment)
@@ -163,12 +169,6 @@ func Prepare(c *cobra.Command, args []string) error {
 		Project.Concurrency = 1
 	} else {
 		Project.Service = lambda.New(Session)
-	}
-
-	if chdir != "" {
-		if err := os.Chdir(chdir); err != nil {
-			return err
-		}
 	}
 
 	return nil
