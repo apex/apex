@@ -59,14 +59,6 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Dry-run to preview changes
 - VPC support
 
-## Job Board
-
-Looking for a career upgrade?
-
-<a href="https://astro.netlify.com/automattic"><img src="https://astro.netlify.com/static/automattic.png"></a>
-<a href="https://astro.netlify.com/segment"><img src="https://astro.netlify.com/static/segment.png"></a>
-<a href="https://astro.netlify.com/auth0"><img src="https://astro.netlify.com/static/auth0.png"/></a>
-
 ## Sponsors
 
 Does your company use Apex? Help keep the project bug-free and feature rich by [sponsoring the project](https://opencollective.com/apex#sponsor).
