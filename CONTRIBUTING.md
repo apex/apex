@@ -31,6 +31,17 @@ To install Apex from the repo, execute:
 
 Note that this will install to $GOPATH/bin, which must be in your $PATH.
 
+# Running Tests
+To run the test for the project:
+
+    $ go test -v ./...
+
+# Running the Linter
+To run the linter for the project:
+
+    $ go vet ./...
+
+
 # Testing Bash Auto-completion
 
 Some examples for testing bash auto-completion. The value after `--` is
