@@ -18,7 +18,7 @@ defaults for functions, if desired. Here's an example of a project.json file dec
 
 ## Multiple Environments
 
-Multiple environments are supported with the --env flag. By default project.json and function.json are used, however when --env is specified project.ENV.json and function.ENV.json will be used, falling back on function.json for cases when staging and production config is the same. For example your directory structure may look something like the following:
+Multiple environments are supported with the `--env` flag. By default project.json and function.json are used, however when `--env` is specified project.ENV.json and function.ENV.json will be used, falling back on function.json for cases when staging and production config is the same. For example your directory structure may look something like the following:
 
 ```
 project.stage.json
