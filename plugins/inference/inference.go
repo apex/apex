@@ -16,7 +16,7 @@ func init() {
 	function.RegisterPlugin("inference", &Plugin{
 		Files: map[string]string{
 			"main.py":             python.Runtime,
-			"index.js":            nodejs.Runtime6_10,
+			"index.js":            nodejs.Runtime,
 			"main.go":             golang.Runtime,
 			"target/apex.jar":     java.Runtime,
 			"build/libs/apex.jar": java.Runtime,

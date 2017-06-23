@@ -40,7 +40,7 @@ type Plugin struct{}
 // assumed that the build tool generating the fat JAR will handle that workflow
 // on its own.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != Runtime {
+	if !strings.HasPrefix(fn.Runtime, "java") {
 		return nil
 	}
 
@@ -61,7 +61,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 
 // Build adds the jar contents to zipfile.
 func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
-	if fn.Runtime != Runtime {
+	if !strings.HasPrefix(fn.Runtime, "java") {
 		return nil
 	}
 	fn.Runtime = RuntimeCanonical

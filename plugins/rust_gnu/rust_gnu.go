@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/plugins/nodejs"
+	"strings"
 )
 
 func init() {
@@ -21,7 +22,7 @@ type Plugin struct{}
 
 // Open adds the shim and golang defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != Runtime {
+	if !strings.HasPrefix(fn.Runtime, "rust-gnu") {
 		return nil
 	}
 
@@ -30,7 +31,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 	}
 
 	fn.Shim = true
-	fn.Runtime = nodejs.Runtime43
+	fn.Runtime = nodejs.Runtime
 
 	if fn.Hooks.Clean == "" {
 		fn.Hooks.Clean = "rm -f main"

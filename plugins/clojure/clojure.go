@@ -32,7 +32,7 @@ type Plugin struct{}
 
 // Open adds the shim and golang defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if fn.Runtime != Runtime {
+	if !strings.HasPrefix(fn.Runtime, "clojure") {
 		return nil
 	}
 
@@ -57,7 +57,7 @@ func (p *Plugin) Open(fn *function.Function) error {
 
 // Build adds the jar contents to zipfile.
 func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
-	if fn.Runtime != Runtime {
+	if !strings.HasPrefix(fn.Runtime, "clojure") {
 		return nil
 	}
 
