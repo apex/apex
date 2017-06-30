@@ -13,7 +13,6 @@ import (
 	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 )
 
 // alias.
@@ -63,11 +62,6 @@ func preRun(c *cobra.Command, args []string) error {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("Invoke", map[string]interface{}{
-		"has_alias": alias != "",
-		"has_logs":  includeLogs,
-	})
-
 	dec := json.NewDecoder(input())
 
 	root.Project.Alias = alias

@@ -2,13 +2,11 @@ package main
 
 import (
 	"os"
-	"time"
 
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 
 	// commands
 	_ "github.com/apex/apex/cmd/apex/alias"
@@ -29,10 +27,10 @@ import (
 	_ "github.com/apex/apex/cmd/apex/version"
 
 	// plugins
+	_ "github.com/apex/apex/plugins/clojure"
 	_ "github.com/apex/apex/plugins/golang"
 	_ "github.com/apex/apex/plugins/hooks"
 	_ "github.com/apex/apex/plugins/inference"
-	_ "github.com/apex/apex/plugins/clojure"
 	_ "github.com/apex/apex/plugins/java"
 	_ "github.com/apex/apex/plugins/nodejs"
 	_ "github.com/apex/apex/plugins/python"
@@ -111,6 +109,4 @@ func main() {
 	if err := root.Command.Execute(); err != nil {
 		log.Fatalf("Error: %s", err)
 	}
-
-	stats.Client.ConditionalFlush(500, 24*time.Hour)
 }

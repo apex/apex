@@ -8,7 +8,6 @@ import (
 	"github.com/tj/go-prompt"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 )
 
 // Force deletion.
@@ -43,11 +42,6 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("Delete", map[string]interface{}{
-		"force": force,
-		"args":  len(args),
-	})
-
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}

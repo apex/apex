@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 )
 
 var dir string
@@ -37,7 +36,6 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("Exec", nil)
 	var command string
 
 	if dir == "" {

@@ -10,7 +10,6 @@ import (
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/colors"
-	"github.com/apex/apex/stats"
 )
 
 // tfvars output format.
@@ -45,10 +44,6 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("List", map[string]interface{}{
-		"tfvars": tfvars,
-	})
-
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
 	}

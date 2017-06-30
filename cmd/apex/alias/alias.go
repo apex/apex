@@ -6,7 +6,6 @@ import (
 	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 )
 
 // alias name.
@@ -62,11 +61,6 @@ func preRun(c *cobra.Command, args []string) error {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("Alias", map[string]interface{}{
-		"has_version": version != "",
-		"args":        len(args),
-	})
-
 	if err := root.Project.LoadFunctions(args[1:]...); err != nil {
 		return err
 	}

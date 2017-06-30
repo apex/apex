@@ -6,7 +6,6 @@ import (
 
 	"github.com/apex/apex/cmd/apex/root"
 	"github.com/apex/apex/cmd/apex/version"
-	"github.com/apex/apex/stats"
 	"github.com/apex/apex/upgrade"
 )
 
@@ -25,6 +24,5 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("Upgrade", nil)
 	return upgrade.Upgrade(version.Version)
 }

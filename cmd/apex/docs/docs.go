@@ -11,7 +11,6 @@ import (
 
 	"github.com/apex/apex/cmd/apex/root"
 	doc "github.com/apex/apex/docs"
-	"github.com/apex/apex/stats"
 )
 
 // Command config.
@@ -29,8 +28,6 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) (err error) {
-	stats.Track("Docs", nil)
-
 	var w io.WriteCloser = os.Stdout
 
 	if isatty.IsTerminal(os.Stdout.Fd()) {

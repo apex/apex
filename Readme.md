@@ -188,20 +188,6 @@ See the [Documentation](http://apex.run) for more information.
 - [Medium](https://medium.com/apex-serverless)
 - [Slack](https://apex-dev.azurewebsites.net/)
 
-## Notes
-
-Apex collects usage metrics by default to help inform the team, allowing us to determine how commands and flags are used (if ever). No sensitive information is sent, no function names or alias names etc. To get a better idea of what is tracked run:
-
-```
-$ grep -r stats.Track . -A 5
-```
-
-To opt-out at any time simply run:
-
-```
-$ touch ~/.apex/disable
-```
-
 ---
 
 [![Build Status](https://semaphoreci.com/api/v1/projects/d27ff350-b9c5-4d99-96e5-64b1afb441c5/649392/badge.svg)](https://semaphoreci.com/tj/apex)

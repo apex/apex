@@ -10,7 +10,6 @@ import (
 	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 	"github.com/apex/apex/utils"
 )
 
@@ -63,12 +62,6 @@ func run(c *cobra.Command, args []string) error {
 	}
 
 	fn := root.Project.Functions[0]
-
-	stats.Track("Build", map[string]interface{}{
-		"runtime":      fn.Runtime,
-		"env":          len(env),
-		"has_env_file": envFile != "",
-	})
 
 	if envFile != "" {
 		if err := root.Project.LoadEnvFromFile(envFile); err != nil {

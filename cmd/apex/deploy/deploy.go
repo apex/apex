@@ -7,7 +7,6 @@ import (
 	"github.com/tj/cobra"
 
 	"github.com/apex/apex/cmd/apex/root"
-	"github.com/apex/apex/stats"
 	"github.com/apex/apex/utils"
 )
 
@@ -68,30 +67,12 @@ func init() {
 
 // Run command.
 func run(c *cobra.Command, args []string) error {
-	stats.Track("Deploy", map[string]interface{}{
-		"concurrency": concurrency,
-		"has_alias":   alias != "",
-		"has_zip":     zip != "",
-		"env":         len(env),
-		"args":        len(args),
-	})
-
 	root.Project.Concurrency = concurrency
 	root.Project.Alias = alias
 	root.Project.Zip = zip
 
 	if err := root.Project.LoadFunctions(args...); err != nil {
 		return err
-	}
-
-	for _, fn := range root.Project.Functions {
-		stats.Track("Deploy Function", map[string]interface{}{
-			"runtime":      fn.Runtime,
-			"has_alias":    alias != "",
-			"has_zip":      zip != "",
-			"has_env_file": envFile != "",
-			"env":          len(env),
-		})
 	}
 
 	if envFile != "" {
