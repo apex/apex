@@ -2,13 +2,14 @@
 package nodejs
 
 import (
-	"github.com/apex/apex/function"
 	"strings"
+
+	"github.com/apex/apex/function"
 )
 
 const (
-	// Runtime name used by Apex and by AWS Lambda for Node.js 0.10
-	Runtime = "nodejs"
+	// Runtime for inference.
+	Runtime = "nodejs6.10"
 )
 
 func init() {

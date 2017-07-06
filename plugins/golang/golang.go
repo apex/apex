@@ -13,7 +13,7 @@ func init() {
 }
 
 const (
-	// Runtime name used by Apex
+	// Runtime for inference.
 	Runtime = "golang"
 )
 
@@ -32,6 +32,10 @@ func (p *Plugin) Open(fn *function.Function) error {
 
 	fn.Shim = true
 	fn.Runtime = nodejs.Runtime
+
+	if fn.Handler == "" {
+		fn.Handler = "index.handle"
+	}
 
 	if fn.Hooks.Clean == "" {
 		fn.Hooks.Clean = "rm -f main"
