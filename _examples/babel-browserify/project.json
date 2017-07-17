@@ -2,10 +2,9 @@
   "name": "babel",
   "description": "Node.js Babel (using browserify) example project",
   "role": "arn:aws:iam::293503197324:role/apex_lambda_function",
-  "runtime": "nodejs",
   "handler": "main.default",
   "hooks": {
-    "build": "../../node_modules/.bin/browserify --node -s default -t babelify -o main.js index.js",
+    "build": "../../node_modules/.bin/browserify -s default -t [ babelify --presets es2015 ] -o main.js index.js",
     "clean": "rm -f main.js"
   }
 }
