@@ -44,7 +44,7 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Batteries included but optional (opt-in to higher level abstractions)
 - Environment variable population via command-line, file, or inline config
 - Idempotent deployments (checksums skip already-deployed code)
-- Multiple environments via project.ENV.json and function.ENV.json files
+- Multiple environments via `project.ENV.json` and `function.ENV.json` files
 - Configuration inheritance and overrides
 - Command-line function invocation with JSON streams
 - Command & function name autocompletion
@@ -106,7 +106,7 @@ Love our work and community? [Become a backer](https://opencollective.com/apex).
 
 ## Example
 
-Apex projects are made up of a project.json configuration file, and zero or more Lambda functions defined in the "functions" directory. Here's an example file structure:
+Apex projects are made up of a `project.json` configuration file, and zero or more Lambda functions defined in the "functions" directory. Here's an example file structure:
 
 ```
 project.json
@@ -119,7 +119,7 @@ functions
     └── index.js
 ```
 
-The project.json file defines project level configuration that applies to all functions, and defines dependencies. For this simple example the following will do:
+The `project.json` file defines project level configuration that applies to all functions, and defines dependencies. For this simple example the following will do:
 
 ```json
 {
@@ -128,7 +128,7 @@ The project.json file defines project level configuration that applies to all fu
 }
 ```
 
-Each function uses a function.json configuration file to define function-specific properties such as the runtime, amount of memory allocated, and timeout. This file is completely optional, as you can specify defaults in your project.json file. For example:
+Each function uses a `function.json` configuration file to define function-specific properties such as the runtime, amount of memory allocated, and timeout. This file is completely optional, as you can specify defaults in your `project.json` file. For example:
 
 ```json
 {
