@@ -17,6 +17,8 @@ curl https://raw.githubusercontent.com/apex/apex/master/install.sh | sudo sh
 
 On Windows download [binary](https://github.com/apex/apex/releases).
 
+After downloading, rename binary file 'apex.exe', then add to PATH.
+
 If already installed, upgrade with:
 
 ```
