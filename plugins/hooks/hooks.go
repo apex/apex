@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 
 	"github.com/apex/log"
 
@@ -57,7 +58,12 @@ func (p *Plugin) run(hook, command string, fn *function.Function) error {
 		"command": command,
 	}).Debug("hook")
 
-	cmd := exec.Command("sh", "-c", command)
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/c", command)
+	} else {
+		cmd = exec.Command("sh", "-c", command)
+	}
 	cmd.Env = os.Environ()
 	cmd.Dir = fn.Path
 
