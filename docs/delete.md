@@ -15,13 +15,13 @@ The following will be deleted:
 Are you sure? (yes/no):
 ```
 
-For delete of all functions:
+Force delete of all functions:
 
 ```sh
 $ apex delete -f
 ```
 
-For delete of specific functions:
+Force delete of specific functions:
 
 ```sh
 $ apex delete -f foo bar
