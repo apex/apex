@@ -6,16 +6,19 @@ var byline = require('./byline');
  * A map of string(id) to callback function, used for when
  * many concurrent requests are outstanding.
  */
+
 var callbacks = {};
 
 /**
  * The last id attached to a request / callback pair
  */
+
 var lastId = (Date.now() / 1000) | 0;
 
 /**
- * nextId generates ids which will only be repeated every 2^52 times bening generated
+ * nextId generates ids which will only be repeated every 2^52 times being generated
  */
+
 function nextId(){
   // Prevent bugs where integer precision wraps around on floating point numbers
   // (usually around 52-53 bits)
@@ -69,10 +72,11 @@ out.on('data', function(line){
   delete callbacks[msg.id];
 
   if (!c) {
-    if (process.env.DEBUG_SHIM) console.log('[shim] unexpected double response: `%s`', line)
-  } else {
-    c(msg.error, msg.value);
+    if (process.env.DEBUG_SHIM) console.log('[shim] unexpected duplicate response: `%s`', line)
+    return
   }
+
+  c(msg.error, msg.value);
 });
 
 
