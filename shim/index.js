@@ -3,6 +3,12 @@ var child = require('child_process');
 var byline = require('./byline');
 
 /**
+ * Debug env var.
+ */
+
+const debug = process.env.DEBUG_SHIM;
+
+/**
  * A map of string(id) to callback function, used for when
  * many concurrent requests are outstanding.
  */
@@ -53,7 +59,7 @@ proc.on('exit', function(code, signal){
 var out = byline(proc.stdout)
 
 out.on('data', function(line){
-  if (process.env.DEBUG_SHIM) console.log('[shim] parsing: `%s`', line)
+  if (debug) console.log('[shim] parsing: `%s`', line)
 
   var msg;
   try {
@@ -72,7 +78,7 @@ out.on('data', function(line){
   delete callbacks[msg.id];
 
   if (!c) {
-    if (process.env.DEBUG_SHIM) console.log('[shim] unexpected duplicate response: `%s`', line)
+    if (debug) console.log('[shim] unexpected duplicate response: `%s`', line)
     return
   }
 
