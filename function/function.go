@@ -51,8 +51,8 @@ var defaultPlugins = []string{
 	"golang",
 	"python",
 	"nodejs",
-	"clojure",
 	"java",
+	"clojure",
 	"env",
 	"shim",
 }
