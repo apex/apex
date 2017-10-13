@@ -13,7 +13,7 @@ const (
 )
 
 func init() {
-	function.RegisterPlugin(Runtime, &Plugin{})
+	function.RegisterPlugin("nodejs", &Plugin{})
 }
 
 // Plugin implementation.
