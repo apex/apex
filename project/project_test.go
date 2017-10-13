@@ -36,8 +36,8 @@ func TestProject_LoadFunctions_loadAll(t *testing.T) {
 		Log:  log.Log,
 	}
 
-	p.Open()
-	p.LoadFunctions()
+	assert.NoError(t, p.Open(), "open")
+	assert.NoError(t, p.LoadFunctions(), "load")
 
 	assert.Equal(t, 2, len(p.Functions))
 	assert.Equal(t, "bar", p.Functions[0].Name)
@@ -50,8 +50,8 @@ func TestProject_LoadFunctions_loadSpecified(t *testing.T) {
 		Log:  log.Log,
 	}
 
-	p.Open()
-	p.LoadFunctions("foo")
+	assert.NoError(t, p.Open(), "open")
+	assert.NoError(t, p.LoadFunctions("foo"), "load")
 
 	assert.Equal(t, 1, len(p.Functions))
 	assert.Equal(t, "foo", p.Functions[0].Name)
@@ -63,8 +63,8 @@ func TestProject_LoadFunctions_onlyExisting(t *testing.T) {
 		Log:  log.Log,
 	}
 
-	p.Open()
-	p.LoadFunctions("foo", "buz")
+	assert.NoError(t, p.Open(), "open")
+	assert.NoError(t, p.LoadFunctions("foo", "something"), "load")
 
 	assert.Equal(t, 1, len(p.Functions))
 	assert.Equal(t, "foo", p.Functions[0].Name)
@@ -77,7 +77,7 @@ func TestProject_LoadFunctions_noFunctionLoaded(t *testing.T) {
 	}
 
 	p.Open()
-	err := p.LoadFunctions("buz")
+	err := p.LoadFunctions("something")
 
 	assert.EqualError(t, err, "no function loaded")
 }
@@ -88,8 +88,8 @@ func TestProject_LoadFunctionByPath_mergeEnvWithFunctionEnv(t *testing.T) {
 		Log:  log.Log,
 	}
 
-	p.Open()
-	p.LoadFunctions("foo")
+	assert.NoError(t, p.Open(), "open")
+	assert.NoError(t, p.LoadFunctions("foo"), "load")
 
 	assert.Equal(t, map[string]string{"PROJECT_ENV": "projectEnv", "FUNCTION_ENV": "functionEnv", "APEX_FUNCTION_NAME": "foo", "LAMBDA_FUNCTION_NAME": "envMerge_foo"}, p.Functions[0].Environment)
 }
