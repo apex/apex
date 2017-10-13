@@ -4,7 +4,6 @@ package project
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
+	"github.com/pkg/errors"
 	"github.com/tj/go-sync/semaphore"
 	"gopkg.in/validator.v2"
 
@@ -155,7 +155,7 @@ func (p *Project) LoadFunctions(patterns ...string) error {
 	for _, name := range names {
 		match, err := matches(name, patterns)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "matching %s", name)
 		}
 
 		if !match {
@@ -164,7 +164,7 @@ func (p *Project) LoadFunctions(patterns ...string) error {
 
 		fn, err := p.LoadFunction(name)
 		if err != nil {
-			return err
+			return errors.Wrapf(err, "loading %s", name)
 		}
 
 		p.Functions = append(p.Functions, fn)

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -21,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/dustin/go-humanize"
+	"github.com/pkg/errors"
 	"gopkg.in/validator.v2"
 
 	"github.com/apex/apex/archive"
@@ -127,21 +127,22 @@ func (f *Function) Open(environment string) error {
 	f.Log.Debug("open")
 
 	if err := f.loadConfig(environment); err != nil {
-		return err
+		return errors.Wrap(err, "loading config")
 	}
 
 	if err := f.hookOpen(); err != nil {
-		return err
+		return errors.Wrap(err, "open hook")
 	}
 
 	if err := validator.Validate(&f.Config); err != nil {
-		return fmt.Errorf("error opening function %s: %s", f.Name, err.Error())
+		return errors.Wrap(err, "validating")
 	}
 
 	ignoreFile, err := utils.ReadIgnoreFile(f.Path)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "reading ignore file")
 	}
+
 	f.IgnoreFile = append(f.IgnoreFile, []byte("\n")...)
 	f.IgnoreFile = append(f.IgnoreFile, ignoreFile...)
 
