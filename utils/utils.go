@@ -17,7 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/mitchellh/go-homedir"
-	"github.com/rliebling/gitignorer"
+	gitignorer "github.com/rliebling/gitignorer"
 )
 
 // Sha256 returns a base64 encoded SHA256 hash of `b`.
