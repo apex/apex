@@ -61,8 +61,6 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 		return nil
 	}
 
-	fn.Runtime = RuntimeCanonical
-
 	jar := filepath.Join(fn.Path, "target", jarFile)
 	if _, err := os.Stat(jar); err != nil {
 		return errors.Errorf("missing jar file %q", jar)
@@ -96,6 +94,15 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 
 		zip.AddBytes(file.Name, b)
 	}
+
+	return nil
+}
+
+func (p *Plugin) Deploy(fn *function.Function) error {
+	if !strings.HasPrefix(fn.Runtime, "clojure") {
+		return nil
+	}
+	fn.Runtime = RuntimeCanonical
 
 	return nil
 }

@@ -64,7 +64,6 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 	if !strings.HasPrefix(fn.Runtime, "java") {
 		return nil
 	}
-	fn.Runtime = RuntimeCanonical
 
 	fn.Log.Debugf("searching for JAR (%s) in directories: %s", jarFile, strings.Join(jarSearchPaths, ", "))
 	jar := findJar(fn.Path)
@@ -93,6 +92,15 @@ func (p *Plugin) Build(fn *function.Function, zip *archive.Zip) error {
 
 		zip.AddBytes(file.Name, b)
 	}
+
+	return nil
+}
+
+func (p *Plugin) Deploy(fn *function.Function) error {
+	if !strings.HasPrefix(fn.Runtime, "java") {
+		return nil
+	}
+	fn.Runtime = RuntimeCanonical
 
 	return nil
 }
