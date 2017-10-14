@@ -1,4 +1,17 @@
 
+v0.16.0 / 2017-10-14
+====================
+
+  * add `./vendor`
+  * refactor: move `process.env` out of the shim event handlers
+  * refactor shim, allowing for concurrent calls to handler (#822)
+  * remove analytics. Closes #777
+  * fix node runtime
+  * fix deploying java and clojure functions from zipfile (#820)
+  * fix #815 - clojure deployments being doubled by java plugin (#816)
+  * fix for issue #380 (#814)
+  * fix: move -C chdir flag check to beginning of preparation function. (#766)
+
 v0.15.0 / 2017-06-11
 ====================
 
