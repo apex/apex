@@ -2,6 +2,8 @@
 
 Apex lets you build, deploy, and manage [AWS Lambda](https://aws.amazon.com/lambda/) functions with ease. With Apex you can use languages that are not natively supported by AWS Lambda, such as Golang, through the use of a Node.js shim injected into the build. A variety of workflow related tooling is provided for testing functions, rolling back deploys, viewing metrics, tailing logs, hooking into the build system and more.
 
+This project is designed for event-driven pipelines as it does not abstract away FaaS (functions as a service). If you are building web applications, APIs, or sites, consider using [Apex Up](https://github.com/apex/up).
+
 ## Sponsor
 
 <a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/GwV8HHZxxo8zKH61wncNRkss/apex/apex'>
