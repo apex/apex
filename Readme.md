@@ -4,12 +4,6 @@ Apex lets you build, deploy, and manage [AWS Lambda](https://aws.amazon.com/lamb
 
 This project is designed for event-driven pipelines as it does not abstract away FaaS (functions as a service). If you are building web applications, APIs, or sites, consider using [Apex Up](https://github.com/apex/up), which provides a more out-of-the-box experience for these use-cases.
 
-## Sponsor
-
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/GwV8HHZxxo8zKH61wncNRkss/apex/apex'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/GwV8HHZxxo8zKH61wncNRkss/apex/apex.svg' />
-</a>
-
 ## Installation
 
 On macOS, Linux, or OpenBSD run the following:
