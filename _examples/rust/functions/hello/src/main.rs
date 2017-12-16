@@ -1,32 +1,21 @@
 extern crate rust_apex;
+#[macro_use]
 extern crate serde_json;
+extern crate failure;
 
-use std::error::Error;
-use std::collections::BTreeMap;
-use std::fmt::{Display, Formatter, Error as FmtError};
-
-use serde_json::{Value, to_value};
-
-#[derive(Debug)]
-struct DummyError;
-
-impl Display for DummyError {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), FmtError> {
-        write!(f, "{:?}", self)
-    }
-}
-
-impl Error for DummyError {
-    fn description(&self) -> &str {
-        "dummy"
-    }
-}
+use failure::{Compat, Error};
+use serde_json::{to_value, Value};
+use rust_apex::Context;
 
 fn main() {
-    rust_apex::run::<_, _, DummyError, _>(|input: Value, c: rust_apex::Context| {
-        let mut bt = BTreeMap::new();
-        bt.insert("c", to_value(&c).unwrap());
-        bt.insert("i", input);
-        Ok(bt)
+    rust_apex::run::<_, _, Compat<Error>, _>(|input: Value, c: Context| {
+        Ok(json!({
+            "name": to_value(&c).unwrap(),
+            "age": input,
+            "phones": [
+                "+44 1234567",
+                "+44 2345678"
+            ]
+        }))
     });
 }
