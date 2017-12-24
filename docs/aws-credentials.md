@@ -9,12 +9,12 @@ Using environment variables only, you must specify the following:
 - `AWS_SECRET_ACCESS_KEY` AWS account secret key
 - `AWS_REGION` AWS region
 
-If you have multiple AWS projects you may want to consider using a tool such as [direnv](http://direnv.net/) to localize and automatically set the variables when
+If you have multiple AWS projects you may want to consider using a tool such as [direnv](https://direnv.net/) to localize and automatically set the variables when
 you're working on a project.
 
 ## Via ~/.aws files
 
-Using the ~/.aws/credentials and ~/.aws/config files you may specify `AWS_PROFILE` to tell apex which one to reference. However, if you do not have a ~/.aws/config file, or "region" is not defined, you should set it with the `AWS_REGION` environment variable. To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
+Using the ~/.aws/credentials and ~/.aws/config files you may specify `AWS_PROFILE` to tell apex which one to reference. However, if you do not have a ~/.aws/config file, or "region" is not defined, you should set it with the `AWS_REGION` environment variable. To read more on configuring these files view [Configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
 Here's an example of ~/.aws/credentials:
 
@@ -65,7 +65,7 @@ Precedence for loading the AWS credentials is:
 
 ## Minimum IAM Policy
 
-Below is a policy for AWS [Identity and Access Management](http://aws.amazon.com/iam/) which provides the minimum privileges needed to use Apex to manage your Lambda functions.
+Below is a policy for AWS [Identity and Access Management](https://aws.amazon.com/iam/) which provides the minimum privileges needed to use Apex to manage your Lambda functions.
 
 ```json
 {
@@ -121,4 +121,4 @@ The following additional policies are needed to set VPC for your Lambda function
 }
 ```
 
-Also, the role which apex made during `apex init` should have the `AWSLambdaVPCAccessExecutionRole` policy, see details in [an AWS document](http://docs.aws.amazon.com/lambda/latest/dg/vpc.html).
+Also, the role which apex made during `apex init` should have the `AWSLambdaVPCAccessExecutionRole` policy, see details in [an AWS document](https://docs.aws.amazon.com/lambda/latest/dg/vpc.html).
