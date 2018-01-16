@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/apex/apex/function"
-	"github.com/apex/apex/plugins/nodejs"
 )
 
 func init() {
@@ -14,7 +13,7 @@ func init() {
 
 const (
 	// Runtime for inference.
-	Runtime = "golang"
+	Runtime = "go1.x"
 )
 
 // Plugin implementation.
@@ -26,15 +25,16 @@ func (p *Plugin) Open(fn *function.Function) error {
 		return nil
 	}
 
+	if fn.Runtime == "golang" {
+		fn.Runtime = Runtime
+	}
+
 	if fn.Hooks.Build == "" {
 		fn.Hooks.Build = "GOOS=linux GOARCH=amd64 go build -o main *.go"
 	}
 
-	fn.Shim = true
-	fn.Runtime = nodejs.Runtime
-
 	if fn.Handler == "" {
-		fn.Handler = "index.handle"
+		fn.Handler = "main"
 	}
 
 	if fn.Hooks.Clean == "" {
