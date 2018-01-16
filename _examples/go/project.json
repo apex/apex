@@ -1,5 +1,5 @@
 {
   "name": "go",
   "description": "Go example project",
-  "role": "arn:aws:iam::293503197324:role/apex_lambda_function"
+  "role": "arn:aws:iam::337344593553:role/api-function"
 }

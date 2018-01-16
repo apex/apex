@@ -21,7 +21,7 @@ type Plugin struct{}
 
 // Open adds the shim and golang defaults.
 func (p *Plugin) Open(fn *function.Function) error {
-	if !strings.HasPrefix(fn.Runtime, "golang") {
+	if !strings.HasPrefix(fn.Runtime, "go") {
 		return nil
 	}
 
