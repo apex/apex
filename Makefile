@@ -18,7 +18,7 @@ test:
 
 # Build release binaries.
 build:
-	@gox -os="linux darwin windows openbsd" ./...
+	@goreleaser -p 1 --rm-dist -config .goreleaser.yml
 .PHONY: build
 
 # Clean build artifacts.
