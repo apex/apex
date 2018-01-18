@@ -6,14 +6,13 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-// Input of the function.
-type Input struct {
-	Name string
+type input struct {
+	Name    string
+	Species string
 }
 
-// greet function.
-func greet(in *Input) (string, error) {
-	return fmt.Sprintf("Hello %s", in.Name), nil
+func greet(in *input) (string, error) {
+	return fmt.Sprintf("Hello %s, you are a %s", in.Name, in.Species), nil
 }
 
 func main() {
