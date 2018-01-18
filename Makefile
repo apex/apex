@@ -13,7 +13,7 @@ test:
 .PHONY: test
 
 # Release binaries to GitHub.
-release: build
+release:
 	@echo "==> Releasing"
 	@goreleaser -p 1 --rm-dist -config .goreleaser.yml
 	@echo "==> Complete"
