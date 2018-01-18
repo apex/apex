@@ -1,4 +1,11 @@
 
+v1.0.0-rc2 / 2018-01-17
+=======================
+
+  * add new upgrade mechanism to match Up
+  * add utils from Up which are necessary for upgrade
+  * add native Go support. Closes #864
+
 v0.16.0 / 2017-10-14
 ====================
 
