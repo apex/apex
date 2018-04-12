@@ -1,0 +1,6 @@
+{
+  "description": "Example with go dependency on an external package",
+  "hooks":{
+    "build": "go get -v -t -d ./..."
+  }
+}
