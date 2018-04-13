@@ -36,6 +36,9 @@ var iamrole string
 // region for AWS.
 var region string
 
+// endpoint for AWS.
+var endpoint string
+
 // Session instance.
 var Session *session.Session
 
@@ -69,6 +72,7 @@ func init() {
 	f.StringVarP(&profile, "profile", "p", "", "AWS profile")
 	f.StringVarP(&iamrole, "iamrole", "i", "", "AWS iamrole")
 	f.StringVarP(&region, "region", "r", "", "AWS region")
+	f.StringVar(&endpoint, "endpoint", "", "AWS endpoint")
 }
 
 // PreRunNoop noop for other commands.
@@ -152,6 +156,11 @@ func Prepare(c *cobra.Command, args []string) error {
 			return errors.Wrap(err, "assuming role")
 		}
 		Config = config
+	}
+
+	// endpoint from flag
+	if endpoint != "" {
+		Config = Config.WithEndpoint(endpoint)
 	}
 
 	Session = session.New(Config)
