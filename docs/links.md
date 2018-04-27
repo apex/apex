@@ -5,4 +5,4 @@
 - [Project examples](https://github.com/apex/apex/tree/master/_examples) with source
 - [Go](https://github.com/apex/go-apex) runtime package
 - [Node](https://github.com/apex/node-apex) runtime package
-- [![Slack Status](https://apex-dev.azurewebsites.net/badge.svg)](https://apex-dev.azurewebsites.net/)
+- [![Slack Status](https://chat.apex.sh/badge.svg)](https://chat.apex.sh/)
