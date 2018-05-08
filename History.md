@@ -1,4 +1,11 @@
 
+v1.0.0-rc3 / 2018-05-07
+=======================
+
+  * add AWS endpoint flag. Closes #794 (#875)
+  * fix support for >50 lambda versions. Closes https://github.com/apex/apex/issues/846 (#882)
+  * fix broken Slack Status link on website (#880)
+
 v1.0.0-rc2 / 2018-01-17
 =======================
 
