@@ -724,15 +724,28 @@ func (f *Function) cleanup() error {
 
 // versions returns list of all versions deployed to AWS Lambda
 func (f *Function) versions() ([]*lambda.FunctionConfiguration, error) {
-	list, err := f.Service.ListVersionsByFunction(&lambda.ListVersionsByFunctionInput{
+	var list []*lambda.FunctionConfiguration
+	request := lambda.ListVersionsByFunctionInput{
 		FunctionName: &f.FunctionName,
-	})
-
-	if err != nil {
-		return nil, err
 	}
 
-	versions := list.Versions[1:] // remove $LATEST
+	for {
+		page, err := f.Service.ListVersionsByFunction(&request)
+
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, page.Versions...)
+
+		if page.NextMarker == nil {
+			break
+		}
+
+		request.Marker = page.NextMarker
+	}
+
+	versions := list[1:] // remove $LATEST
 	return versions, nil
 }
 
