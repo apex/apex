@@ -15,15 +15,39 @@
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/xml/xmlutil","service/cloudwatch","service/cloudwatch/cloudwatchiface","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/iam/iamiface","service/lambda","service/lambda/lambdaiface","service/sts"]
-  revision = "7cb0cfd8c7a20efc2ec149e50eb55fc770c673d8"
-  version = "v1.12.10"
+  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/sdkio","internal/sdkrand","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/xml/xmlutil","service/cloudwatch","service/cloudwatch/cloudwatchiface","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/iam/iamiface","service/lambda","service/lambda/lambdaiface","service/sts"]
+  revision = "5f796043d63bfddca929cfbcffce01e5a894aad5"
+  version = "v1.13.52"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/aybabtme/rgbterm"
+  packages = ["."]
+  revision = "cc83f3b3ce5911279513a46d6d3316d67bedaa54"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/buger/goterm"
+  packages = ["."]
+  revision = "6d19e6a8df12fdfc44a90a24b677a6d04a80b91f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/c4milo/unpackit"
+  packages = ["."]
+  revision = "4ed373e9ef1c895fe04468d813cb628902d89a0a"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dsnet/compress"
+  packages = [".","bzip2","bzip2/internal/sais","internal","internal/errors","internal/prefix"]
+  revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
 
 [[projects]]
   branch = "master"
@@ -79,6 +103,30 @@
   revision = "0b12d6b5"
 
 [[projects]]
+  name = "github.com/klauspost/compress"
+  packages = ["flate"]
+  revision = "6c8db69c4b49dd4df1fff66996cf556176d0b9bf"
+  version = "v1.2.1"
+
+[[projects]]
+  name = "github.com/klauspost/cpuid"
+  packages = ["."]
+  revision = "ae7887de9fa5d2db4eaa8174a7eff2c1ac00f2da"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/klauspost/crc32"
+  packages = ["."]
+  revision = "cb6bfca970f6908083f26f39a79009d608efd5cd"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/klauspost/pgzip"
+  packages = ["."]
+  revision = "0bf5dcad4ada2814c3c00f996a982270bb81a506"
+  version = "v1.1"
+
+[[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
   revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
@@ -101,6 +149,12 @@
   name = "github.com/opennota/urlesc"
   packages = ["."]
   revision = "de5bf2ad457846296e2031421a34e2568e304e35"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/pascaldekloe/name"
+  packages = ["."]
+  revision = "b20a4701460b50daf648992e8c5f076a0fa22696"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -128,9 +182,33 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/tj/assert"
+  packages = ["."]
+  revision = "018094318fb057577fd5b81af6bc6c910e6b2b9a"
+
+[[projects]]
+  name = "github.com/tj/backoff"
+  packages = ["."]
+  revision = "1560017ae58934ab41c8393558fd179d7305941f"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
   name = "github.com/tj/cobra"
   packages = ["."]
   revision = "5e2db986a6120677c989b75e859244845302978a"
+
+[[projects]]
+  name = "github.com/tj/go"
+  packages = ["term"]
+  revision = "37ad5afde4f847e91b96a8c152901153af7a97bb"
+  version = "v1.8.4"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/tj/go-progress"
+  packages = ["."]
+  revision = "fadc638a53ddb120e0f59c81a2dd8390e97b67d9"
 
 [[projects]]
   name = "github.com/tj/go-prompt"
@@ -145,10 +223,22 @@
   revision = "8448302468e84b34d4b949808dd5874149be15d1"
 
 [[projects]]
+  name = "github.com/tj/go-update"
+  packages = [".","stores/github"]
+  revision = "a963589e45a4db03407f81ef8ae6ec1995a08f62"
+  version = "v2.2.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/tj/pflag"
   packages = ["."]
   revision = "e367e44eec0444d207f7dd7b890a0554772132df"
+
+[[projects]]
+  name = "github.com/ulikunitz/xz"
+  packages = [".","internal/hash","internal/xlog","lzma"]
+  revision = "0c6b41e72360850ca4f98dc341fd999726ea007f"
+  version = "v0.5.4"
 
 [[projects]]
   branch = "master"
@@ -158,9 +248,21 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/net"
+  packages = ["idna","publicsuffix"]
+  revision = "57065200b4b034a1c8ad54ff77069408c2218ae6"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
   revision = "43eea11bc92608addb41b8a406b0407495c106f6"
+
+[[projects]]
+  name = "golang.org/x/text"
+  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "v2"
@@ -171,6 +273,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7a10a3ddcb464513a1023395e10fdcea3dabf6e9e9b5f037e9c6e6edf825b2ea"
+  inputs-digest = "14a75cd7913de23cb8a6e0d9007fbc99513a30874393c150ba682cf333a6913d"
   solver-name = "gps-cdcl"
   solver-version = 1

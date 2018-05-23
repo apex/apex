@@ -1,8 +1,16 @@
 
 GO ?= go
 
+# Provide some targets for external dep management
+BIN_DIR := $(GOPATH)/bin
+MOCKGEN := $(BIN_DIR)/mockgen
+$(MOCKGEN):
+	@echo "==> Installing Mockgen"
+	@go get github.com/golang/mock/gomock
+	@go install github.com/golang/mock/mockgen
+
 # Build all files.
-build:
+build: $(MOCKGEN)
 	@echo "==> Building"
 	@$(GO) generate ./...
 .PHONY: build
@@ -23,3 +31,7 @@ release:
 clean:
 	@git clean -f
 .PHONY: clean
+
+local:
+	go install -a -ldflags "-X github.com/apex/apex/cmd/apex/version.Version=development" github.com/apex/apex/cmd/apex/
+.PHONY: local
