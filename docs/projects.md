@@ -116,6 +116,12 @@ Name of the AWS profile to use, this is the name used to locate AWS credentials 
 
 - type: `string`
 
+### region
+
+Name of the AWS region to use. Use this if you'd prefer not to specify `AWS_REGION` or `--region`.
+
+- type: `string`
+
 ### defaultEnvironment
 
 Default infrastructure environment.

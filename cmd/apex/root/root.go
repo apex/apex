@@ -114,9 +114,11 @@ func Prepare(c *cobra.Command, args []string) error {
 		}
 	}
 
+	configProfile, configRegion, _ := utils.ProfileAndRegionFromConfig(environment)
+
 	// profile from flag, config, env, "default"
 	if profile == "" {
-		profile, _ = utils.ProfileFromConfig(environment)
+		profile = configProfile
 		if profile == "" {
 			profile = os.Getenv("AWS_PROFILE")
 			if profile == "" {
@@ -128,11 +130,14 @@ func Prepare(c *cobra.Command, args []string) error {
 	// the default SharedCredentialsProvider checks the env
 	os.Setenv("AWS_PROFILE", profile)
 
-	// region from flag, env, file
+	// region from flag, config, env, file
 	if region == "" {
-		region = os.Getenv("AWS_REGION")
+		region = configRegion
 		if region == "" {
-			region, _ = utils.GetRegion(profile)
+			region = os.Getenv("AWS_REGION")
+			if region == "" {
+				region, _ = utils.GetRegion(profile)
+			}
 		}
 	}
 

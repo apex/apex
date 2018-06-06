@@ -133,8 +133,8 @@ func ParseEnv(env []string) (map[string]string, error) {
 	return m, nil
 }
 
-// ProfileFromConfig attempts to load the .profile setting from `environment`'s config.
-func ProfileFromConfig(environment string) (string, error) {
+// ProfileAndRegionFromConfig attempts to load the .profile setting from `environment`'s config.
+func ProfileAndRegionFromConfig(environment string) (string, string, error) {
 	configFile := "project.json"
 
 	if environment != "" {
@@ -143,19 +143,20 @@ func ProfileFromConfig(environment string) (string, error) {
 
 	f, err := os.Open(configFile)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	defer f.Close()
 
 	var v struct {
 		Profile string `json:"profile"`
+		Region  string `json:"region"`
 	}
 
 	if err := json.NewDecoder(f).Decode(&v); err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return v.Profile, nil
+	return v.Profile, v.Region, nil
 }
 
 // AssumeRole uses STS to assume the given `role`.
