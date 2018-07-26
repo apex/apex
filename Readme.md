@@ -189,7 +189,7 @@ See the [Documentation](http://apex.run) for more information.
 ## Links
 
 - [Website](http://apex.run)
-- [Medium](https://medium.com/apex-serverless)
+- [Medium](https://medium.com/@tjholowaychuk)
 - [Slack](https://chat.apex.sh/)
 
 ---
