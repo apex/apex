@@ -1,4 +1,10 @@
 
+v1.0.0-rc4 / 2018-08-29
+=======================
+
+  * add `region` field to project configuration (#889)
+  * update AWS SDK versions for assuming roles. Closes #886
+
 v1.0.0-rc3 / 2018-05-07
 =======================
 
