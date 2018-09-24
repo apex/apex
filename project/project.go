@@ -12,7 +12,6 @@ import (
 
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws/awserr"
-	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/pkg/errors"
 	"github.com/tj/go-sync/semaphore"
 	"gopkg.in/validator.v2"
@@ -20,6 +19,7 @@ import (
 	"github.com/apex/apex/function"
 	"github.com/apex/apex/hooks"
 	"github.com/apex/apex/infra"
+	"github.com/apex/apex/service"
 	"github.com/apex/apex/utils"
 	"github.com/apex/apex/vpc"
 	"github.com/aws/aws-sdk-go/aws"
@@ -67,7 +67,7 @@ type Project struct {
 	Environment      string
 	InfraEnvironment string
 	Log              log.Interface
-	Service          lambdaiface.LambdaAPI
+	ServiceProvider  service.Provideriface
 	Functions        []*function.Function
 	IgnoreFile       []byte
 	nameTemplate     *template.Template
@@ -353,7 +353,6 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 		},
 		Name:       name,
 		Path:       path,
-		Service:    p.Service,
 		Log:        p.Log,
 		IgnoreFile: p.IgnoreFile,
 		Alias:      p.Alias,
@@ -368,6 +367,8 @@ func (p *Project) LoadFunctionByPath(name, path string) (*function.Function, err
 	if err := fn.Open(p.Environment); err != nil {
 		return nil, err
 	}
+
+	fn.Service = p.ServiceProvider.NewService(fn.AWSConfig())
 
 	return fn, nil
 }

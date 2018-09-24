@@ -74,6 +74,76 @@ func TestFunction_Open_detectRuntime(t *testing.T) {
 	assert.Nil(t, fn.Open(""))
 }
 
+func TestFunction_Create_edgeFunction(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	serviceMock := mock_lambdaiface.NewMockLambdaAPI(mockCtrl)
+	zip := []byte("abcdef")
+	fnName := "testedgefn"
+	desc := "description"
+	handler := "handle"
+	kmskeyarn := "kmskeyarn"
+	runtime := "node"
+	memorysize := int64(128)
+	timeout := int64(3)
+	role := "testrole"
+	updatedVersion := "1"
+	fnAlias := "current"
+	retainedVersions := 1
+
+	serviceMock.EXPECT().CreateFunction(&lambda.CreateFunctionInput{
+		Code: &lambda.FunctionCode{
+			ZipFile: zip,
+		},
+		FunctionName: &fnName,
+		Description:  &desc,
+		Environment: &lambda.Environment{
+			Variables: make(map[string]*string),
+		}, // Edge does not support environment
+		Publish:    aws.Bool(true),
+		Handler:    &handler,
+		KMSKeyArn:  &kmskeyarn,
+		MemorySize: &memorysize,
+		Role:       &role,
+		Runtime:    &runtime,
+		Timeout:    &timeout,
+		VpcConfig: &lambda.VpcConfig{
+			SecurityGroupIds: []*string{},
+			SubnetIds:        []*string{},
+		},
+	}).Return(&lambda.FunctionConfiguration{
+		Version: &updatedVersion,
+	}, nil)
+	serviceMock.EXPECT().CreateAlias(&lambda.CreateAliasInput{
+		FunctionName:    &fnName,
+		FunctionVersion: &updatedVersion,
+		Name:            &fnAlias,
+	}).Return(&lambda.AliasConfiguration{}, nil)
+
+	fn := &function.Function{
+		FunctionName: fnName,
+		Service:      serviceMock,
+		Log:          log.Log,
+		Alias:        fnAlias,
+		Config: function.Config{
+			Description:      desc,
+			Runtime:          runtime,
+			Memory:           memorysize,
+			Timeout:          timeout,
+			Role:             role,
+			Handler:          handler,
+			KMSKeyArn:        kmskeyarn,
+			Edge:             true,
+			RetainedVersions: &retainedVersions,
+			Environment:      map[string]string{"FOO": "foovalue"},
+		},
+	}
+
+	err := fn.Create(zip)
+
+	assert.Nil(t, err)
+}
+
 func TestFunction_Delete_success(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

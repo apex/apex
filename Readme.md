@@ -62,6 +62,8 @@ Example projects for all supported runtimes can be found in [_examples](_example
 - Concurrency for quick deploys
 - Dry-run to preview changes
 - VPC support
+- Multiple region support
+- Lambda@Edge support
 
 ## Sponsors
 

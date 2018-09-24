@@ -108,3 +108,15 @@ Optional ARN of the KMS key used to encrypt your function's environment variable
 ### deadletter_arn
 
 Optional ARN of an Amazon SQS queue or Amazon SNS topic you specify as your Dead Letter Queue (DLQ).
+
+### region
+
+If your function needs to be deployed different region from the whole project.
+
+- type: `string`
+
+### edge
+
+If your function is for Lambda@Edge. The Edge function needs to be deployed on N. Virginia region, excluding all environment variables.
+
+- type: `boolean`

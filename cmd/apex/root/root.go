@@ -6,12 +6,11 @@ import (
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/pkg/errors"
 	"github.com/tj/cobra"
 
-	"github.com/apex/apex/dryrun"
 	"github.com/apex/apex/project"
+	"github.com/apex/apex/service"
 	"github.com/apex/apex/utils"
 )
 
@@ -179,11 +178,9 @@ func Prepare(c *cobra.Command, args []string) error {
 
 	if dryRun {
 		log.SetLevel(log.WarnLevel)
-		Project.Service = dryrun.New(Session)
 		Project.Concurrency = 1
-	} else {
-		Project.Service = lambda.New(Session)
 	}
+	Project.ServiceProvider = service.NewProvider(Session, dryRun)
 
 	return nil
 }
