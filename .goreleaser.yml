@@ -1,7 +1,7 @@
 build:
   main: cmd/apex/main.go
   binary: apex
-  # ldflags: -s -w -X github.com/apex/apex/cmd/apex/version.Version={{.Tag}}
+  ldflags: -s -w -X github.com/apex/apex/cmd/apex/version.Version={{.Tag}}
   goos:
     - darwin
     - linux
