@@ -1,0 +1,6 @@
+{
+  "description": "Example with ruby dependency on an external package",
+  "hooks":{
+    "build": "bundle install && bundle install --deployment"
+  }
+}

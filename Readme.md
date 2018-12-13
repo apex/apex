@@ -34,6 +34,7 @@ Currently supports:
 - Node.js
 - Golang
 - Python
+- Ruby
 - Java
 - Rust
 - Clojure

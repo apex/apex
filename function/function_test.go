@@ -9,6 +9,7 @@ import (
 	_ "github.com/apex/apex/plugins/inference"
 	_ "github.com/apex/apex/plugins/nodejs"
 	_ "github.com/apex/apex/plugins/python"
+	_ "github.com/apex/apex/plugins/ruby"
 	_ "github.com/apex/apex/plugins/shim"
 
 	"github.com/apex/log"

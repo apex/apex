@@ -1,6 +1,8 @@
 *.zip
 .DS_Store
 examples/go/main
+_examples/ruby/functions/dependency/.bundle/
+_examples/ruby/functions/dependency/Gemfile.lock
 cov.out
 node_modules
 vendor/

@@ -80,6 +80,7 @@ Runtimes supported:
 - __java__ (Java 8)
 - __python2.7__ (Python 2.7)
 - __python3.6__ (Python 3.6)
+- __ruby2.5__ (Ruby 2.5)
 - __nodejs4.3__ (Node.js 4.3)
 - __nodejs4.3-edge__ (Node.js 4.3 Edge)
 - __nodejs6.10__ (Node.js 6.10)

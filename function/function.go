@@ -50,6 +50,7 @@ var defaultPlugins = []string{
 	"rust-gnu",
 	"golang",
 	"python",
+	"ruby",
 	"nodejs",
 	"java",
 	"clojure",

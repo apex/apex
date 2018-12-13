@@ -10,6 +10,7 @@ import (
 	"github.com/apex/apex/plugins/java"
 	"github.com/apex/apex/plugins/nodejs"
 	"github.com/apex/apex/plugins/python"
+	"github.com/apex/apex/plugins/ruby"
 )
 
 func init() {
@@ -20,6 +21,7 @@ func init() {
 			"main.go":             golang.Runtime,
 			"target/apex.jar":     java.Runtime,
 			"build/libs/apex.jar": java.Runtime,
+			"lambda.rb":           ruby.Runtime,
 		},
 	})
 }
