@@ -41,6 +41,7 @@ Event handler name, this is the function invoked for a given event. Defaults are
 - nodejs: `index.handle` (index.js file with `handle` exported function)
 - python: `handle`
 - java: `lambda.Main::handler`
+- ruby: `handler`
 
 ### memory
 
