@@ -45,7 +45,7 @@ Example projects for all supported runtimes can be found in [_examples](_example
 
 - Supports languages Lambda does not natively support via shim
 - Binary install (install apex quickly for continuous deployment in CI etc)
-- Hook support for running commands (transpile code, lint, dependency management , etc)
+- Hook support for running commands (transpile code, lint, dependency management, etc)
 - Batteries included but optional (opt-in to higher level abstractions)
 - Environment variable population via command-line, file, or inline config
 - Idempotent deployments (checksums skip already-deployed code)
