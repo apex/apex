@@ -1,3 +1,8 @@
+
+# No longer maintained
+
+This software is no longer being maintainted and should not be chosen for new projects. See this [issue](https://github.com/apex/apex/issues/932) for more information
+
 ![Apex Serverless Architecture](assets/title.png)
 
 Apex lets you build, deploy, and manage [AWS Lambda](https://aws.amazon.com/lambda/) functions with ease. With Apex you can use languages that are not natively supported by AWS Lambda through the use of a Node.js shim injected into the build. A variety of workflow related tooling is provided for testing functions, rolling back deploys, viewing metrics, tailing logs, hooking into the build system and more.
